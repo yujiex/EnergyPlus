@@ -117,6 +117,8 @@
 #include <EnergyPlus/WaterToWaterHeatPumpEIR.hh>
 #include <EnergyPlus/WaterUse.hh>
 
+#include <omp.h>
+
 namespace EnergyPlus {
 
 namespace PlantManager {
@@ -224,6 +226,9 @@ namespace PlantManager {
         IterPlant = 0;
         InitializeLoops(FirstHVACIteration);
 
+        int number_of_threads(3);
+        omp_set_num_threads(number_of_threads);
+
         while ((SimPlantLoops) && (IterPlant <= MaxPlantSubIterations)) {
             // go through half loops in predetermined calling order
 #pragma omp parallel for default(none)
@@ -263,7 +268,6 @@ namespace PlantManager {
 
             // decide new status for SimPlantLoops flag
             SimPlantLoops = false;
-#pragma omp parallel for default(none)
             for (int LoopNum = 1; LoopNum <= TotNumLoops; ++LoopNum) {
                 for (LoopSideNum = 1; LoopSideNum <= 2; ++LoopSideNum) {
                     if (PlantLoop(LoopNum).LoopSide(LoopSideNum).SimLoopSideNeeded) {

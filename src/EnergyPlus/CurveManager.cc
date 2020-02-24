@@ -109,29 +109,13 @@ namespace CurveManager {
     // validating it, and storing it in such a manner that the curve manager
     // can provide the simulation with performance curve output.
 
-    // METHODOLOGY EMPLOYED:
-    // na
-
-    // REFERENCES:
-    // na
-
-    // OTHER NOTES:
-
-    // USE STATEMENTS:
-    // Use statements for data only modules
-    // Using/Aliasing
     using namespace DataPrecisionGlobals;
     using DataGlobals::AnyEnergyManagementSystemInModel;
     using namespace DataBranchAirLoopPlant;
 
-    // Use statements for access to subroutines in other modules
-
-    // Data
-    // MODULE PARAMETER DEFINITIONS
     static std::string const BlankString;
 
     using json = nlohmann::json;
-
 
     // Curve Type parameters, these can differ from object types (e.g. a CurveType_TableOneIV can be linear, quadratic, etc)
     int const Linear(1);
@@ -165,14 +149,8 @@ namespace CurveManager {
     std::map<std::string, Btwxt::Method>  BtwxtManager::extrapMethods =
             {{"Linear", Btwxt::Method::LINEAR}, {"Constant", Btwxt::Method::CONSTANT}};
 
-    // DERIVED TYPE DEFINITIONS
-
-    // MODULE VARIABLE DECLARATIONS:
-
     int NumCurves(0);              // Autodesk Was used unintialized in InitCurveReporting
     bool GetCurvesInputFlag(true); // First time, input is "gotten"
-
-    // SUBROUTINE SPECIFICATIONS FOR MODULE
 
     // Object Data
     Array1D<PerfomanceCurveData> PerfCurve;
@@ -224,29 +202,8 @@ namespace CurveManager {
         // Reset curve outputs prior to simulating air loops, plant loops, etc.
         // This allows the report variable for curve/table objects to show an inactive state.
 
-        // METHODOLOGY EMPLOYED:
-        // na
-
-        // REFERENCES:
-        // na
-
-        // Using/Aliasing
         using DataLoopNode::SensedNodeFlagValue;
 
-        // Locals
-        // SUBROUTINE PARAMETER DEFINITIONS:
-        // na
-
-        // INTERFACE BLOCK SPECIFICATIONS
-        // na
-
-        // DERIVED TYPE DEFINITIONS
-        // na
-
-        // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        // na
-
-        // SUBROUTINE ARGUMENT DEFINITIONS:
         int CurveIndex;
 
         for (CurveIndex = 1; CurveIndex <= NumCurves; ++CurveIndex) {
@@ -279,29 +236,11 @@ namespace CurveManager {
         // Given the curve index and the values of 1 or 2 independent variables,
         // calls the curve or table routine to return the value of an equipment performance curve or table.
 
-        // METHODOLOGY EMPLOYED:
-        // na
-
-        // REFERENCES:
-        // na
-
         // Using/Aliasing
         using DataGlobals::BeginEnvrnFlag;
 
         // Return value
         Real64 CurveValue(0.0);
-
-        // Locals
-        // FUNCTION ARGUMENT DEFINITIONS:
-
-        // FUNCTION PARAMETER DEFINITIONS:
-        // na
-
-        // INTERFACE BLOCK SPECIFICATIONS
-        // na
-
-        // DERIVED TYPE DEFINITIONS
-        // na
 
         // FUNCTION LOCAL VARIABLE DECLARATIONS:
         static bool MyBeginTimeStepFlag;
@@ -386,7 +325,6 @@ namespace CurveManager {
         using namespace DataIPShortCuts; // Data for field names, blank numerics
         using General::RoundSigDigits;
 
-        // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
         int NumBiQuad;                   // Number of biquadratic curve objects in the input data file
         int NumCubic;                    // Number of cubic curve objects in the input data file
         int NumQuartic;                  // Number of quartic (4th order polynomial) objects in the input data file
@@ -416,12 +354,10 @@ namespace CurveManager {
         int IOStatus;                    // Used in GetObjectItem
         std::string CurrentModuleObject; // for ease in renaming.
         static int MaxTableNums(0);      // Maximum number of numeric input fields in Tables
-        //   certain object in the input file
 
         std::string FileName; // name of external table data file
 
         // Find the number of each type of curve (note: Current Module object not used here, must rename manually)
-
         NumBiQuad = inputProcessor->getNumObjectsFound("Curve:Biquadratic");
         NumCubic = inputProcessor->getNumObjectsFound("Curve:Cubic");
         NumQuartic = inputProcessor->getNumObjectsFound("Curve:Quartic");
@@ -1272,7 +1208,7 @@ namespace CurveManager {
             }
         }
 
-        // cpw22Aug2010 Loop over Fan Pressure Rise curves and load data - udated 15Sep2010 for unit types
+        // Loop over Fan Pressure Rise curves and load data
         CurrentModuleObject = "Curve:FanPressureRise";
         for (CurveIndex = 1; CurveIndex <= NumFanPressRise; ++CurveIndex) {
             inputProcessor->getObjectItem(CurrentModuleObject,
@@ -1326,7 +1262,7 @@ namespace CurveManager {
 
         } // Fan Pressure Rise
 
-        // cpw22Aug2010 Loop over Exponential Skew Normal curves and load data
+        //  Loop over Exponential Skew Normal curves and load data
         CurrentModuleObject = "Curve:ExponentialSkewNormal";
         for (CurveIndex = 1; CurveIndex <= NumExpSkewNorm; ++CurveIndex) {
             inputProcessor->getObjectItem(CurrentModuleObject,
@@ -1382,7 +1318,7 @@ namespace CurveManager {
             }
         } // Exponential Skew Normal
 
-        // cpw22Aug2010 Loop over Sigmoid curves and load data
+        //  Loop over Sigmoid curves and load data
         CurrentModuleObject = "Curve:Sigmoid";
         for (CurveIndex = 1; CurveIndex <= NumSigmoid; ++CurveIndex) {
             inputProcessor->getObjectItem(CurrentModuleObject,
@@ -1439,7 +1375,7 @@ namespace CurveManager {
             }
         } // Sigmoid
 
-        // cpw22Aug2010 Loop over Rectangular Hyperbola Type 1 curves and load data
+        //  Loop over Rectangular Hyperbola Type 1 curves and load data
         CurrentModuleObject = "Curve:RectangularHyperbola1";
         for (CurveIndex = 1; CurveIndex <= NumRectHyper1; ++CurveIndex) {
             inputProcessor->getObjectItem(CurrentModuleObject,
@@ -1494,7 +1430,7 @@ namespace CurveManager {
             }
         } // Rectangular Hyperbola Type 1
 
-        // cpw22Aug2010 Loop over Rectangular Hyperbola Type 2 curves and load data
+        //  Loop over Rectangular Hyperbola Type 2 curves and load data
         CurrentModuleObject = "Curve:RectangularHyperbola2";
         for (CurveIndex = 1; CurveIndex <= NumRectHyper2; ++CurveIndex) {
             inputProcessor->getObjectItem(CurrentModuleObject,
@@ -1549,7 +1485,7 @@ namespace CurveManager {
             }
         } // Rectangular Hyperbola Type 2
 
-        // cpw22Aug2010 Loop over Exponential Decay curves and load data
+        //  Loop over Exponential Decay curves and load data
         CurrentModuleObject = "Curve:ExponentialDecay";
         for (CurveIndex = 1; CurveIndex <= NumExpDecay; ++CurveIndex) {
             inputProcessor->getObjectItem(CurrentModuleObject,
@@ -1604,7 +1540,7 @@ namespace CurveManager {
             }
         } // Exponential Decay
 
-        // ykt July,2011 Loop over DoubleExponential Decay curves and load data
+        // Loop over DoubleExponential Decay curves and load data
         CurrentModuleObject = "Curve:DoubleExponentialDecay";
         for (CurveIndex = 1; CurveIndex <= NumDoubleExpDecay; ++CurveIndex) {
             inputProcessor->getObjectItem(CurrentModuleObject,
@@ -1641,13 +1577,6 @@ namespace CurveManager {
                 PerfCurve(CurveNum).CurveMax = Numbers(9);
                 PerfCurve(CurveNum).CurveMaxPresent = true;
             }
-
-            //  IF (Numbers(4) > Numbers(5)) THEN  ! error
-            //    CALL ShowSevereError('GetCurveInput: For '//TRIM(CurrentModuleObject)//': '//TRIM(Alphas(1)))
-            //    CALL ShowContinueError(TRIM(cNumericFieldNames(4))//'['//TRIM(RoundSigDigits(Numbers(4),2))//'] > '//  &
-            //       TRIM(cNumericFieldNames(5))//' ['//TRIM(RoundSigDigits(Numbers(5),2))//']')
-            //    ErrorsFound=.TRUE.
-            //  ENDIF
 
             if (NumAlphas >= 2) {
                 if (!IsCurveInputTypeValid(Alphas(2))) {
@@ -2368,40 +2297,16 @@ namespace CurveManager {
         // Given the curve index and the values of 1 or 2 independent variables,
         // returns the value of an equipment performance curve.
 
-        // METHODOLOGY EMPLOYED:
-        // na
-
-        // REFERENCES:
-        // na
-
-        // USE STATEMENTS:
-        // na
-
-        // Return value
         Real64 CurveValue;
-
-        // Locals
-        // FUNCTION ARGUMENT DEFINITIONS:
-
-        // FUNCTION PARAMETER DEFINITIONS:
-        // na
-
-        // INTERFACE BLOCK SPECIFICATIONS
-        // na
-
-        // DERIVED TYPE DEFINITIONS
-        // na
-
-        // FUNCTION LOCAL VARIABLE DECLARATIONS:
 
         static Real64 const sqrt_2_inv(1.0 / std::sqrt(2.0));
 
-        Real64 CoeffZ1;         // cpw22Aug2010 Coefficient Z1 in exponential skew normal curve
-        Real64 CoeffZ2;         // cpw22Aug2010 Coefficient Z2 in exponential skew normal curve
-        Real64 CoeffZ3;         // cpw22Aug2010 Coefficient Z3 in exponential skew normal curve
-        Real64 CurveValueNumer; // cpw22Aug2010 Numerator in in exponential skew normal curve
-        Real64 CurveValueDenom; // cpw22Aug2010 Numerator in in exponential skew normal curve
-        Real64 CurveValueExp;   // cpw22Aug2010 Exponential term in sigmoid curve
+        Real64 CoeffZ1;         //  Coefficient Z1 in exponential skew normal curve
+        Real64 CoeffZ2;         //  Coefficient Z2 in exponential skew normal curve
+        Real64 CoeffZ3;         //  Coefficient Z3 in exponential skew normal curve
+        Real64 CurveValueNumer; //  Numerator in in exponential skew normal curve
+        Real64 CurveValueDenom; //  Numerator in in exponential skew normal curve
+        Real64 CurveValueExp;   //  Exponential term in sigmoid curve
         auto const &Curve(PerfCurve(CurveIndex));
 
         Real64 const V1(max(min(Var1, Curve.Var1Max), Curve.Var1Min));                        // 1st independent variable after limits imposed
@@ -2452,29 +2357,27 @@ namespace CurveManager {
                              Tri2ndOrder.CoeffA26 * V1 * V2 * V3;
             } else if (SELECT_CASE_var == Exponent) {
                 CurveValue = Curve.Coeff1 + Curve.Coeff2 * std::pow(V1, Curve.Coeff3);
-            } else if (SELECT_CASE_var == FanPressureRise) { // cpw22Aug2010 Added Fan Pressure Rise curve
+            } else if (SELECT_CASE_var == FanPressureRise) { //  Added Fan Pressure Rise curve
                 CurveValue = V1 * (Curve.Coeff1 * V1 + Curve.Coeff2 + Curve.Coeff3 * std::sqrt(V2)) + Curve.Coeff4 * V2;
-            } else if (SELECT_CASE_var == ExponentialSkewNormal) { // cpw22Aug2010 Added Exponential Skew Normal curve
+            } else if (SELECT_CASE_var == ExponentialSkewNormal) { //  Added Exponential Skew Normal curve
                 CoeffZ1 = (V1 - Curve.Coeff1) / Curve.Coeff2;
                 CoeffZ2 = (Curve.Coeff4 * V1 * std::exp(Curve.Coeff3 * V1) - Curve.Coeff1) / Curve.Coeff2;
                 CoeffZ3 = -Curve.Coeff1 / Curve.Coeff2;
-                //    CurveValueNumer = EXP(-0.5d0 * CoeffZ1**2) * (1.0d0 + SIGN(1.0d0,CoeffZ2) * ErfFunction(ABS(CoeffZ2)/SQRT(2.0d0)))
-                //    CurveValueDenom = EXP(-0.5d0 * CoeffZ3**2) * (1.0d0 + SIGN(1.0d0,CoeffZ3) * ErfFunction(ABS(CoeffZ3)/SQRT(2.0d0)))
                 CurveValueNumer = std::exp(-0.5 * (CoeffZ1 * CoeffZ1)) * (1.0 + sign(1.0, CoeffZ2) * std::erf(std::abs(CoeffZ2) * sqrt_2_inv));
                 CurveValueDenom = std::exp(-0.5 * (CoeffZ3 * CoeffZ3)) * (1.0 + sign(1.0, CoeffZ3) * std::erf(std::abs(CoeffZ3) * sqrt_2_inv));
                 CurveValue = CurveValueNumer / CurveValueDenom;
-            } else if (SELECT_CASE_var == Sigmoid) { // cpw22Aug2010 Added Sigmoid curve
+            } else if (SELECT_CASE_var == Sigmoid) { //  Added Sigmoid curve
                 CurveValueExp = std::exp((Curve.Coeff3 - V1) / Curve.Coeff4);
                 CurveValue = Curve.Coeff1 + Curve.Coeff2 / std::pow(1.0 + CurveValueExp, Curve.Coeff5);
-            } else if (SELECT_CASE_var == RectangularHyperbola1) { // cpw22Aug2010 Added Rectangular Hyperbola Type 1 curve
+            } else if (SELECT_CASE_var == RectangularHyperbola1) { //  Added Rectangular Hyperbola Type 1 curve
                 CurveValueNumer = Curve.Coeff1 * V1;
                 CurveValueDenom = Curve.Coeff2 + V1;
                 CurveValue = (CurveValueNumer / CurveValueDenom) + Curve.Coeff3;
-            } else if (SELECT_CASE_var == RectangularHyperbola2) { // cpw22Aug2010 Added Rectangular Hyperbola Type 2 curve
+            } else if (SELECT_CASE_var == RectangularHyperbola2) { //  Added Rectangular Hyperbola Type 2 curve
                 CurveValueNumer = Curve.Coeff1 * V1;
                 CurveValueDenom = Curve.Coeff2 + V1;
                 CurveValue = (CurveValueNumer / CurveValueDenom) + (Curve.Coeff3 * V1);
-            } else if (SELECT_CASE_var == ExponentialDecay) { // cpw22Aug2010 Added Exponential Decay curve
+            } else if (SELECT_CASE_var == ExponentialDecay) { //  Added Exponential Decay curve
                 CurveValue = Curve.Coeff1 + Curve.Coeff2 * std::exp(Curve.Coeff3 * V1);
             } else if (SELECT_CASE_var == DoubleExponentialDecay) { // ykt Jul 2011 Added Double Exponential Decay curve
                 CurveValue = Curve.Coeff1 + Curve.Coeff2 * std::exp(Curve.Coeff3 * V1) + Curve.Coeff4 * std::exp(Curve.Coeff5 * V1);
@@ -2557,8 +2460,8 @@ namespace CurveManager {
                 IsCurveInputTypeValid = true;
             } else if (UtilityRoutines::SameString(InInputType, "TEMPERATURE")) {
                 IsCurveInputTypeValid = true;
-            } else if (UtilityRoutines::SameString(InInputType, "PRESSURE")) { // cpw22Aug2010
-                IsCurveInputTypeValid = true;                                  // cpw22Aug2010
+            } else if (UtilityRoutines::SameString(InInputType, "PRESSURE")) { //
+                IsCurveInputTypeValid = true;                                  //
                 // CR8124 Glazer - Need to use volumetricflow and massflow not just flow
                 //  ELSEIF (UtilityRoutines::SameString(InInputType,'FLOW')) THEN
                 //    IsCurveInputTypeValid = .TRUE.
@@ -2599,8 +2502,8 @@ namespace CurveManager {
 
         if (UtilityRoutines::SameString(InOutputType, "DIMENSIONLESS")) {
             IsCurveOutputTypeValid = true;
-        } else if (UtilityRoutines::SameString(InOutputType, "PRESSURE")) { // cpw22Aug2010
-            IsCurveOutputTypeValid = true;                                  // cpw22Aug2010
+        } else if (UtilityRoutines::SameString(InOutputType, "PRESSURE")) { //
+            IsCurveOutputTypeValid = true;                                  //
         } else if (UtilityRoutines::SameString(InOutputType, "TEMPERATURE")) {
             IsCurveOutputTypeValid = true;
         } else if (UtilityRoutines::SameString(InOutputType, "CAPACITY")) {
@@ -2653,32 +2556,8 @@ namespace CurveManager {
         // PURPOSE OF THIS FUNCTION:
         // Given a curve index, returns the curve name
 
-        // METHODOLOGY EMPLOYED:
-        // na
-
-        // REFERENCES:
-        // na
-
-        // USE STATEMENTS:
-        // na
-
         // Return value
         std::string GetCurveName;
-
-        // Locals
-        // FUNCTION ARGUMENT DEFINITIONS:
-
-        // FUNCTION PARAMETER DEFINITIONS:
-        // na
-
-        // INTERFACE BLOCK SPECIFICATIONS
-        // na
-
-        // DERIVED TYPE DEFINITIONS
-        // na
-
-        // FUNCTION LOCAL VARIABLE DECLARATIONS:
-        // na
 
         if (CurveIndex > 0) {
             GetCurveName = PerfCurve(CurveIndex).Name;
@@ -2738,9 +2617,6 @@ namespace CurveManager {
         return GetCurveIndex;
     }
 
-    // This utility function grabs a curve index and performs the
-    // error checking
-
     int GetCurveCheck(std::string const &alph, // curve name
                       bool &errFlag,
                       std::string const &ObjName // parent object of curve
@@ -2757,32 +2633,8 @@ namespace CurveManager {
         // This function provides a simple call to both return a curve index as well
         // as check for validity and produce an error message.
 
-        // METHODOLOGY EMPLOYED:
-        // na
-
-        // REFERENCES:
-        // na
-
-        // USE STATEMENTS:
-        // na
-
         // Return value
         int GetCurveCheckOut;
-
-        // Locals
-        // FUNCTION ARGUMENT DEFINITIONS:
-
-        // FUNCTION PARAMETER DEFINITIONS:
-        // na
-
-        // INTERFACE BLOCK SPECIFICATIONS
-        // na
-
-        // DERIVED TYPE DEFINITIONS
-        // na
-
-        // FUNCTION LOCAL VARIABLE DECLARATIONS:
-        // na
 
         GetCurveCheckOut = GetCurveIndex(alph); // convert curve name to pointer
         if (GetCurveCheckOut == 0) {
@@ -2812,27 +2664,6 @@ namespace CurveManager {
         // Given the curve index, returns the minimum and maximum values specified in the input
         // for the independent variables of the performance curve.
 
-        // METHODOLOGY EMPLOYED:
-        // na
-
-        // REFERENCES:
-        // na
-
-        // USE STATEMENTS:
-
-        // Locals
-        // FUNCTION ARGUMENT DEFINITIONS:
-        // FUNCTION PARAMETER DEFINITIONS:
-        // na
-
-        // INTERFACE BLOCK SPECIFICATIONS
-        // na
-
-        // DERIVED TYPE DEFINITIONS
-        // na
-
-        // FUNCTION LOCAL VARIABLE DECLARATIONS:
-
         Var1Min = PerfCurve(CurveIndex).Var1Min;
         Var1Max = PerfCurve(CurveIndex).Var1Max;
         if (present(Var2Min)) Var2Min = PerfCurve(CurveIndex).Var2Min;
@@ -2858,28 +2689,8 @@ namespace CurveManager {
         // Given the curve index, sets the minimum and maximum possible value for this curve.
         // Certain curve types have set limits (e.g., PLF curve should not be greater than 1 or less than 0.7).
 
-        // METHODOLOGY EMPLOYED:
-        // na
-
-        // REFERENCES:
-        // na
-
         // Using/Aliasing
         using General::TrimSigDigits;
-
-        // Locals
-        // FUNCTION ARGUMENT DEFINITIONS:
-
-        // FUNCTION PARAMETER DEFINITIONS:
-        // na
-
-        // INTERFACE BLOCK SPECIFICATIONS
-        // na
-
-        // DERIVED TYPE DEFINITIONS
-        // na
-
-        // FUNCTION LOCAL VARIABLE DECLARATIONS:
 
         if (CurveIndex > 0 && CurveIndex <= NumCurves) {
 
@@ -2913,13 +2724,8 @@ namespace CurveManager {
         // PURPOSE OF THIS SUBROUTINE:
         // Currently it just reads the input for pressure curve objects
 
-        // METHODOLOGY EMPLOYED:
-        // General EnergyPlus Methodology
-
-        // Using/Aliasing
         using namespace DataIPShortCuts;
 
-        // SUBROUTINE PARAMETER DEFINITIONS:
         static std::string const CurveObjectName("Curve:Functional:PressureDrop");
 
         // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
@@ -2996,7 +2802,6 @@ namespace CurveManager {
 
         // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
         int TempCurveIndex;
-        bool FoundCurve;
         std::string GenericCurveType;
 
         // If input is not gotten, go ahead and get it now
@@ -3007,7 +2812,6 @@ namespace CurveManager {
         }
 
         // Initialize
-        FoundCurve = false;
         PressureCurveType = PressureCurve_None;
         PressureCurveIndex = 0;
 
@@ -3059,7 +2863,6 @@ namespace CurveManager {
 
         // At this point, we had a non-blank user entry with no match
         PressureCurveType = PressureCurve_Error;
-        return;
     }
 
     Real64 PressureCurveValue(int const PressureCurveIndex, Real64 const MassFlow, Real64 const Density, Real64 const Viscosity)
@@ -3087,19 +2890,6 @@ namespace CurveManager {
         // Return value
         Real64 PressureCurveValue;
 
-        // Locals
-        // FUNCTION ARGUMENT DEFINITIONS:
-
-        // FUNCTION PARAMETER DEFINITIONS:
-        // na
-
-        // INTERFACE BLOCK SPECIFICATIONS:
-        // na
-
-        // DERIVED TYPE DEFINITIONS:
-        // na
-
-        // FUNCTION LOCAL VARIABLE DECLARATIONS:
         Real64 Diameter;
         Real64 MinorLossCoeff;
         Real64 Length;
@@ -3175,25 +2965,11 @@ namespace CurveManager {
         // Haaland, SE (1983). "Simple and Explicit Formulas for the Friction Factor in Turbulent Flow".
         //   Trans. ASIVIE, J. of Fluids Engineering 103: 89-90.
 
-        // Using/Aliasing
         using General::RoundSigDigits;
 
         // Return value
         Real64 CalculateMoodyFrictionFactor;
 
-        // Locals
-        // FUNCTION ARGUMENT DEFINITIONS:
-
-        // FUNCTION PARAMETER DEFINITIONS:
-        // na
-
-        // INTERFACE BLOCK SPECIFICATIONS:
-        // na
-
-        // DERIVED TYPE DEFINITIONS:
-        // na
-
-        // FUNCTION LOCAL VARIABLE DECLARATIONS:
         Real64 Term1;
         Real64 Term2;
         Real64 Term3;
@@ -3256,7 +3032,6 @@ namespace CurveManager {
         // PURPOSE OF THIS FUNCTION:
         // checks that curve output is within 10% of 1 at curve rating point
 
-        // Locals
         Real64 CurveVal;
 
         if (curveIndex > 0) {
@@ -3268,8 +3043,6 @@ namespace CurveManager {
             }
         }
     }
-
-    //=================================================================================================!
 
 } // namespace CurveManager
 

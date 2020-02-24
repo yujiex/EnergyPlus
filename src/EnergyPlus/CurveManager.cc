@@ -56,16 +56,13 @@
 #include <ObjexxFCL/Array.functions.hh>
 #include <ObjexxFCL/Array3D.hh>
 #include <ObjexxFCL/Fmath.hh>
-#include <ObjexxFCL/gio.hh>
 #include <ObjexxFCL/string.functions.hh>
 
 // EnergyPlus Headers
 #include <EnergyPlus/CurveManager.hh>
 #include <EnergyPlus/DataBranchAirLoopPlant.hh>
-#include <EnergyPlus/DataHeatBalance.hh>
 #include <EnergyPlus/DataIPShortCuts.hh>
 #include <EnergyPlus/DataLoopNode.hh>
-#include <EnergyPlus/DataPrecisionGlobals.hh>
 #include <EnergyPlus/DataSystemVariables.hh>
 #include <EnergyPlus/EMSManager.hh>
 #include <EnergyPlus/General.hh>
@@ -108,10 +105,6 @@ namespace CurveManager {
     // To provide the capabilities of getting the curve data from the input,
     // validating it, and storing it in such a manner that the curve manager
     // can provide the simulation with performance curve output.
-
-    using namespace DataPrecisionGlobals;
-    using DataGlobals::AnyEnergyManagementSystemInModel;
-    using namespace DataBranchAirLoopPlant;
 
     static std::string const BlankString;
 
@@ -202,17 +195,13 @@ namespace CurveManager {
         // Reset curve outputs prior to simulating air loops, plant loops, etc.
         // This allows the report variable for curve/table objects to show an inactive state.
 
-        using DataLoopNode::SensedNodeFlagValue;
-
-        int CurveIndex;
-
-        for (CurveIndex = 1; CurveIndex <= NumCurves; ++CurveIndex) {
-            PerfCurve(CurveIndex).CurveOutput = SensedNodeFlagValue;
-            PerfCurve(CurveIndex).CurveInput1 = SensedNodeFlagValue;
-            PerfCurve(CurveIndex).CurveInput2 = SensedNodeFlagValue;
-            PerfCurve(CurveIndex).CurveInput3 = SensedNodeFlagValue;
-            PerfCurve(CurveIndex).CurveInput4 = SensedNodeFlagValue;
-            PerfCurve(CurveIndex).CurveInput5 = SensedNodeFlagValue;
+        for (int CurveIndex = 1; CurveIndex <= NumCurves; ++CurveIndex) {
+            PerfCurve(CurveIndex).CurveOutput = DataLoopNode::SensedNodeFlagValue;
+            PerfCurve(CurveIndex).CurveInput1 = DataLoopNode::SensedNodeFlagValue;
+            PerfCurve(CurveIndex).CurveInput2 = DataLoopNode::SensedNodeFlagValue;
+            PerfCurve(CurveIndex).CurveInput3 = DataLoopNode::SensedNodeFlagValue;
+            PerfCurve(CurveIndex).CurveInput4 = DataLoopNode::SensedNodeFlagValue;
+            PerfCurve(CurveIndex).CurveInput5 = DataLoopNode::SensedNodeFlagValue;
         }
     }
 
@@ -236,9 +225,6 @@ namespace CurveManager {
         // Given the curve index and the values of 1 or 2 independent variables,
         // calls the curve or table routine to return the value of an equipment performance curve or table.
 
-        // Using/Aliasing
-        using DataGlobals::BeginEnvrnFlag;
-
         // Return value
         Real64 CurveValue(0.0);
 
@@ -247,12 +233,12 @@ namespace CurveManager {
 
         // need to be careful on where and how resetting curve outputs to some "iactive value" is done
         // EMS can intercept curves and modify output
-        if (BeginEnvrnFlag && MyBeginTimeStepFlag) {
+        if (DataGlobals::BeginEnvrnFlag && MyBeginTimeStepFlag) {
             ResetPerformanceCurveOutput();
             MyBeginTimeStepFlag = false;
         }
 
-        if (!BeginEnvrnFlag) {
+        if (!DataGlobals::BeginEnvrnFlag) {
             MyBeginTimeStepFlag = true;
         }
 
@@ -317,13 +303,6 @@ namespace CurveManager {
 
         // PURPOSE OF THIS SUBROUTINE:
         // Obtains input data for EnergyPlus equipment performance curves
-
-        // METHODOLOGY EMPLOYED:
-        // Uses "Get" routines to read in data.
-
-        // Using/Aliasing
-        using namespace DataIPShortCuts; // Data for field names, blank numerics
-        using General::RoundSigDigits;
 
         int NumBiQuad;                   // Number of biquadratic curve objects in the input data file
         int NumCubic;                    // Number of cubic curve objects in the input data file
@@ -401,11 +380,11 @@ namespace CurveManager {
                                           Numbers,
                                           NumNumbers,
                                           IOStatus,
-                                          lNumericFieldBlanks,
+                                          DataIPShortCuts::lNumericFieldBlanks,
                                           _,
-                                          cAlphaFieldNames,
-                                          cNumericFieldNames);
-            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, cAlphaFieldNames(1), ErrorsFound);
+                                          DataIPShortCuts::cAlphaFieldNames,
+                                          DataIPShortCuts::cNumericFieldNames);
+            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, DataIPShortCuts::cAlphaFieldNames(1), ErrorsFound);
             ++CurveNum;
 
             // could add checks for blank numeric fields, and use field names for errors.
@@ -424,25 +403,25 @@ namespace CurveManager {
             PerfCurve(CurveNum).Var1Max = Numbers(8);
             PerfCurve(CurveNum).Var2Min = Numbers(9);
             PerfCurve(CurveNum).Var2Max = Numbers(10);
-            if (NumNumbers > 10 && !lNumericFieldBlanks(11)) {
+            if (NumNumbers > 10 && !DataIPShortCuts::lNumericFieldBlanks(11)) {
                 PerfCurve(CurveNum).CurveMin = Numbers(11);
                 PerfCurve(CurveNum).CurveMinPresent = true;
             }
-            if (NumNumbers > 11 && !lNumericFieldBlanks(12)) {
+            if (NumNumbers > 11 && !DataIPShortCuts::lNumericFieldBlanks(12)) {
                 PerfCurve(CurveNum).CurveMax = Numbers(12);
                 PerfCurve(CurveNum).CurveMaxPresent = true;
             }
 
             if (Numbers(7) > Numbers(8)) { // error
                 ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
-                ShowContinueError(cNumericFieldNames(7) + " [" + RoundSigDigits(Numbers(7), 2) + "] > " + cNumericFieldNames(8) + " [" +
-                                  RoundSigDigits(Numbers(8), 2) + ']');
+                ShowContinueError(DataIPShortCuts::cNumericFieldNames(7) + " [" + General::RoundSigDigits(Numbers(7), 2) + "] > " + DataIPShortCuts::cNumericFieldNames(8) + " [" +
+                                  General::RoundSigDigits(Numbers(8), 2) + ']');
                 ErrorsFound = true;
             }
             if (Numbers(9) > Numbers(10)) { // error
                 ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
-                ShowContinueError(cNumericFieldNames(9) + " [" + RoundSigDigits(Numbers(9), 2) + "] > " + cNumericFieldNames(10) + " [" +
-                                  RoundSigDigits(Numbers(10), 2) + ']');
+                ShowContinueError(DataIPShortCuts::cNumericFieldNames(9) + " [" + General::RoundSigDigits(Numbers(9), 2) + "] > " + DataIPShortCuts::cNumericFieldNames(10) + " [" +
+                                  General::RoundSigDigits(Numbers(10), 2) + ']');
                 ErrorsFound = true;
             }
             if (NumAlphas >= 2) {
@@ -472,11 +451,11 @@ namespace CurveManager {
                                           Numbers,
                                           NumNumbers,
                                           IOStatus,
-                                          lNumericFieldBlanks,
+                                          DataIPShortCuts::lNumericFieldBlanks,
                                           _,
-                                          cAlphaFieldNames,
-                                          cNumericFieldNames);
-            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, cAlphaFieldNames(1), ErrorsFound);
+                                          DataIPShortCuts::cAlphaFieldNames,
+                                          DataIPShortCuts::cNumericFieldNames);
+            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, DataIPShortCuts::cAlphaFieldNames(1), ErrorsFound);
             ++CurveNum;
             PerfCurve(CurveNum).Name = Alphas(1);
 
@@ -505,11 +484,11 @@ namespace CurveManager {
             PerfCurve(CurveNum).Var3Min = Numbers(17);
             PerfCurve(CurveNum).Var3Max = Numbers(18);
 
-            if (NumNumbers > 18 && !lNumericFieldBlanks(19)) {
+            if (NumNumbers > 18 && !DataIPShortCuts::lNumericFieldBlanks(19)) {
                 PerfCurve(CurveNum).CurveMin = Numbers(19);
                 PerfCurve(CurveNum).CurveMinPresent = true;
             }
-            if (NumNumbers > 19 && !lNumericFieldBlanks(20)) {
+            if (NumNumbers > 19 && !DataIPShortCuts::lNumericFieldBlanks(20)) {
                 PerfCurve(CurveNum).CurveMax = Numbers(20);
                 PerfCurve(CurveNum).CurveMaxPresent = true;
             }
@@ -546,12 +525,12 @@ namespace CurveManager {
                                           Numbers,
                                           NumNumbers,
                                           IOStatus,
-                                          lNumericFieldBlanks,
+                                          DataIPShortCuts::lNumericFieldBlanks,
                                           _,
-                                          cAlphaFieldNames,
-                                          cNumericFieldNames);
+                                          DataIPShortCuts::cAlphaFieldNames,
+                                          DataIPShortCuts::cNumericFieldNames);
             ++CurveNum;
-            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, cAlphaFieldNames(1), ErrorsFound);
+            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, DataIPShortCuts::cAlphaFieldNames(1), ErrorsFound);
             PerfCurve(CurveNum).Name = Alphas(1);
             PerfCurve(CurveNum).CurveType = Cubic;
             PerfCurve(CurveNum).ObjectType = CurrentModuleObject;
@@ -563,19 +542,19 @@ namespace CurveManager {
             PerfCurve(CurveNum).Coeff4 = Numbers(4);
             PerfCurve(CurveNum).Var1Min = Numbers(5);
             PerfCurve(CurveNum).Var1Max = Numbers(6);
-            if (NumNumbers > 6 && !lNumericFieldBlanks(7)) {
+            if (NumNumbers > 6 && !DataIPShortCuts::lNumericFieldBlanks(7)) {
                 PerfCurve(CurveNum).CurveMin = Numbers(7);
                 PerfCurve(CurveNum).CurveMinPresent = true;
             }
-            if (NumNumbers > 7 && !lNumericFieldBlanks(8)) {
+            if (NumNumbers > 7 && !DataIPShortCuts::lNumericFieldBlanks(8)) {
                 PerfCurve(CurveNum).CurveMax = Numbers(8);
                 PerfCurve(CurveNum).CurveMaxPresent = true;
             }
 
             if (Numbers(5) > Numbers(6)) { // error
                 ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
-                ShowContinueError(cNumericFieldNames(5) + '[' + RoundSigDigits(Numbers(5), 2) + "] > " + cNumericFieldNames(6) + " [" +
-                                  RoundSigDigits(Numbers(6), 2) + ']');
+                ShowContinueError(DataIPShortCuts::cNumericFieldNames(5) + '[' + General::RoundSigDigits(Numbers(5), 2) + "] > " + DataIPShortCuts::cNumericFieldNames(6) + " [" +
+                                  General::RoundSigDigits(Numbers(6), 2) + ']');
                 ErrorsFound = true;
             }
             if (NumAlphas >= 2) {
@@ -600,11 +579,11 @@ namespace CurveManager {
                                           Numbers,
                                           NumNumbers,
                                           IOStatus,
-                                          lNumericFieldBlanks,
+                                          DataIPShortCuts::lNumericFieldBlanks,
                                           _,
-                                          cAlphaFieldNames,
-                                          cNumericFieldNames);
-            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, cAlphaFieldNames(1), ErrorsFound);
+                                          DataIPShortCuts::cAlphaFieldNames,
+                                          DataIPShortCuts::cNumericFieldNames);
+            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, DataIPShortCuts::cAlphaFieldNames(1), ErrorsFound);
             ++CurveNum;
             PerfCurve(CurveNum).Name = Alphas(1);
             PerfCurve(CurveNum).CurveType = Quartic;
@@ -618,19 +597,19 @@ namespace CurveManager {
             PerfCurve(CurveNum).Coeff5 = Numbers(5);
             PerfCurve(CurveNum).Var1Min = Numbers(6);
             PerfCurve(CurveNum).Var1Max = Numbers(7);
-            if (NumNumbers > 7 && !lNumericFieldBlanks(8)) {
+            if (NumNumbers > 7 && !DataIPShortCuts::lNumericFieldBlanks(8)) {
                 PerfCurve(CurveNum).CurveMin = Numbers(8);
                 PerfCurve(CurveNum).CurveMinPresent = true;
             }
-            if (NumNumbers > 8 && !lNumericFieldBlanks(9)) {
+            if (NumNumbers > 8 && !DataIPShortCuts::lNumericFieldBlanks(9)) {
                 PerfCurve(CurveNum).CurveMax = Numbers(9);
                 PerfCurve(CurveNum).CurveMaxPresent = true;
             }
 
             if (Numbers(6) > Numbers(7)) { // error
                 ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
-                ShowContinueError(cNumericFieldNames(6) + '[' + RoundSigDigits(Numbers(6), 2) + "] > " + cNumericFieldNames(7) + " [" +
-                                  RoundSigDigits(Numbers(7), 2) + ']');
+                ShowContinueError(DataIPShortCuts::cNumericFieldNames(6) + '[' + General::RoundSigDigits(Numbers(6), 2) + "] > " + DataIPShortCuts::cNumericFieldNames(7) + " [" +
+                                  General::RoundSigDigits(Numbers(7), 2) + ']');
                 ErrorsFound = true;
             }
             if (NumAlphas >= 2) {
@@ -655,11 +634,11 @@ namespace CurveManager {
                                           Numbers,
                                           NumNumbers,
                                           IOStatus,
-                                          lNumericFieldBlanks,
+                                          DataIPShortCuts::lNumericFieldBlanks,
                                           _,
-                                          cAlphaFieldNames,
-                                          cNumericFieldNames);
-            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, cAlphaFieldNames(1), ErrorsFound);
+                                          DataIPShortCuts::cAlphaFieldNames,
+                                          DataIPShortCuts::cNumericFieldNames);
+            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, DataIPShortCuts::cAlphaFieldNames(1), ErrorsFound);
             ++CurveNum;
             PerfCurve(CurveNum).Name = Alphas(1);
             PerfCurve(CurveNum).CurveType = Quadratic;
@@ -671,19 +650,19 @@ namespace CurveManager {
             PerfCurve(CurveNum).Coeff3 = Numbers(3);
             PerfCurve(CurveNum).Var1Min = Numbers(4);
             PerfCurve(CurveNum).Var1Max = Numbers(5);
-            if (NumNumbers > 5 && !lNumericFieldBlanks(6)) {
+            if (NumNumbers > 5 && !DataIPShortCuts::lNumericFieldBlanks(6)) {
                 PerfCurve(CurveNum).CurveMin = Numbers(6);
                 PerfCurve(CurveNum).CurveMinPresent = true;
             }
-            if (NumNumbers > 6 && !lNumericFieldBlanks(7)) {
+            if (NumNumbers > 6 && !DataIPShortCuts::lNumericFieldBlanks(7)) {
                 PerfCurve(CurveNum).CurveMax = Numbers(7);
                 PerfCurve(CurveNum).CurveMaxPresent = true;
             }
 
             if (Numbers(4) > Numbers(5)) { // error
                 ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
-                ShowContinueError(cNumericFieldNames(4) + " [" + RoundSigDigits(Numbers(4), 2) + "] > " + cNumericFieldNames(5) + " [" +
-                                  RoundSigDigits(Numbers(5), 2) + ']');
+                ShowContinueError(DataIPShortCuts::cNumericFieldNames(4) + " [" + General::RoundSigDigits(Numbers(4), 2) + "] > " + DataIPShortCuts::cNumericFieldNames(5) + " [" +
+                                  General::RoundSigDigits(Numbers(5), 2) + ']');
                 ErrorsFound = true;
             }
             if (NumAlphas >= 2) {
@@ -708,11 +687,11 @@ namespace CurveManager {
                                           Numbers,
                                           NumNumbers,
                                           IOStatus,
-                                          lNumericFieldBlanks,
+                                          DataIPShortCuts::lNumericFieldBlanks,
                                           _,
-                                          cAlphaFieldNames,
-                                          cNumericFieldNames);
-            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, cAlphaFieldNames(1), ErrorsFound);
+                                          DataIPShortCuts::cAlphaFieldNames,
+                                          DataIPShortCuts::cNumericFieldNames);
+            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, DataIPShortCuts::cAlphaFieldNames(1), ErrorsFound);
             ++CurveNum;
             PerfCurve(CurveNum).Name = Alphas(1);
             PerfCurve(CurveNum).CurveType = QuadraticLinear;
@@ -729,25 +708,25 @@ namespace CurveManager {
             PerfCurve(CurveNum).Var1Max = Numbers(8);
             PerfCurve(CurveNum).Var2Min = Numbers(9);
             PerfCurve(CurveNum).Var2Max = Numbers(10);
-            if (NumNumbers > 10 && !lNumericFieldBlanks(11)) {
+            if (NumNumbers > 10 && !DataIPShortCuts::lNumericFieldBlanks(11)) {
                 PerfCurve(CurveNum).CurveMin = Numbers(11);
                 PerfCurve(CurveNum).CurveMinPresent = true;
             }
-            if (NumNumbers > 11 && !lNumericFieldBlanks(12)) {
+            if (NumNumbers > 11 && !DataIPShortCuts::lNumericFieldBlanks(12)) {
                 PerfCurve(CurveNum).CurveMax = Numbers(12);
                 PerfCurve(CurveNum).CurveMaxPresent = true;
             }
 
             if (Numbers(7) > Numbers(8)) { // error
                 ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
-                ShowContinueError(cNumericFieldNames(7) + " [" + RoundSigDigits(Numbers(7), 2) + "] > " + cNumericFieldNames(8) + " [" +
-                                  RoundSigDigits(Numbers(8), 2) + ']');
+                ShowContinueError(DataIPShortCuts::cNumericFieldNames(7) + " [" + General::RoundSigDigits(Numbers(7), 2) + "] > " + DataIPShortCuts::cNumericFieldNames(8) + " [" +
+                                  General::RoundSigDigits(Numbers(8), 2) + ']');
                 ErrorsFound = true;
             }
             if (Numbers(9) > Numbers(10)) { // error
                 ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
-                ShowContinueError(cNumericFieldNames(9) + " [" + RoundSigDigits(Numbers(9), 2) + "] > " + cNumericFieldNames(10) + " [" +
-                                  RoundSigDigits(Numbers(10), 2) + ']');
+                ShowContinueError(DataIPShortCuts::cNumericFieldNames(9) + " [" + General::RoundSigDigits(Numbers(9), 2) + "] > " + DataIPShortCuts::cNumericFieldNames(10) + " [" +
+                                  General::RoundSigDigits(Numbers(10), 2) + ']');
                 ErrorsFound = true;
             }
             if (NumAlphas >= 2) {
@@ -777,11 +756,11 @@ namespace CurveManager {
                                           Numbers,
                                           NumNumbers,
                                           IOStatus,
-                                          lNumericFieldBlanks,
+                                          DataIPShortCuts::lNumericFieldBlanks,
                                           _,
-                                          cAlphaFieldNames,
-                                          cNumericFieldNames);
-            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, cAlphaFieldNames(1), ErrorsFound);
+                                          DataIPShortCuts::cAlphaFieldNames,
+                                          DataIPShortCuts::cNumericFieldNames);
+            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, DataIPShortCuts::cAlphaFieldNames(1), ErrorsFound);
             ++CurveNum;
             PerfCurve(CurveNum).Name = Alphas(1);
             PerfCurve(CurveNum).CurveType = CubicLinear;
@@ -798,25 +777,25 @@ namespace CurveManager {
             PerfCurve(CurveNum).Var1Max = Numbers(8);
             PerfCurve(CurveNum).Var2Min = Numbers(9);
             PerfCurve(CurveNum).Var2Max = Numbers(10);
-            if (NumNumbers > 10 && !lNumericFieldBlanks(11)) {
+            if (NumNumbers > 10 && !DataIPShortCuts::lNumericFieldBlanks(11)) {
                 PerfCurve(CurveNum).CurveMin = Numbers(11);
                 PerfCurve(CurveNum).CurveMinPresent = true;
             }
-            if (NumNumbers > 11 && !lNumericFieldBlanks(12)) {
+            if (NumNumbers > 11 && !DataIPShortCuts::lNumericFieldBlanks(12)) {
                 PerfCurve(CurveNum).CurveMax = Numbers(12);
                 PerfCurve(CurveNum).CurveMaxPresent = true;
             }
 
             if (Numbers(7) > Numbers(8)) { // error
                 ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
-                ShowContinueError(cNumericFieldNames(7) + " [" + RoundSigDigits(Numbers(7), 2) + "] > " + cNumericFieldNames(8) + " [" +
-                                  RoundSigDigits(Numbers(8), 2) + ']');
+                ShowContinueError(DataIPShortCuts::cNumericFieldNames(7) + " [" + General::RoundSigDigits(Numbers(7), 2) + "] > " + DataIPShortCuts::cNumericFieldNames(8) + " [" +
+                                  General::RoundSigDigits(Numbers(8), 2) + ']');
                 ErrorsFound = true;
             }
             if (Numbers(9) > Numbers(10)) { // error
                 ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
-                ShowContinueError(cNumericFieldNames(9) + " [" + RoundSigDigits(Numbers(9), 2) + "] > " + cNumericFieldNames(10) + " [" +
-                                  RoundSigDigits(Numbers(10), 2) + ']');
+                ShowContinueError(DataIPShortCuts::cNumericFieldNames(9) + " [" + General::RoundSigDigits(Numbers(9), 2) + "] > " + DataIPShortCuts::cNumericFieldNames(10) + " [" +
+                                  General::RoundSigDigits(Numbers(10), 2) + ']');
                 ErrorsFound = true;
             }
             if (NumAlphas >= 2) {
@@ -846,11 +825,11 @@ namespace CurveManager {
                                           Numbers,
                                           NumNumbers,
                                           IOStatus,
-                                          lNumericFieldBlanks,
+                                          DataIPShortCuts::lNumericFieldBlanks,
                                           _,
-                                          cAlphaFieldNames,
-                                          cNumericFieldNames);
-            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, cAlphaFieldNames(1), ErrorsFound);
+                                          DataIPShortCuts::cAlphaFieldNames,
+                                          DataIPShortCuts::cNumericFieldNames);
+            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, DataIPShortCuts::cAlphaFieldNames(1), ErrorsFound);
             ++CurveNum;
             PerfCurve(CurveNum).Name = Alphas(1);
             PerfCurve(CurveNum).CurveType = Linear;
@@ -861,19 +840,19 @@ namespace CurveManager {
             PerfCurve(CurveNum).Coeff2 = Numbers(2);
             PerfCurve(CurveNum).Var1Min = Numbers(3);
             PerfCurve(CurveNum).Var1Max = Numbers(4);
-            if (NumNumbers > 4 && !lNumericFieldBlanks(5)) {
+            if (NumNumbers > 4 && !DataIPShortCuts::lNumericFieldBlanks(5)) {
                 PerfCurve(CurveNum).CurveMin = Numbers(5);
                 PerfCurve(CurveNum).CurveMinPresent = true;
             }
-            if (NumNumbers > 5 && !lNumericFieldBlanks(6)) {
+            if (NumNumbers > 5 && !DataIPShortCuts::lNumericFieldBlanks(6)) {
                 PerfCurve(CurveNum).CurveMax = Numbers(6);
                 PerfCurve(CurveNum).CurveMaxPresent = true;
             }
 
             if (Numbers(3) > Numbers(4)) { // error
                 ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
-                ShowContinueError(cNumericFieldNames(3) + " [" + RoundSigDigits(Numbers(3), 2) + "] > " + cNumericFieldNames(4) + " [" +
-                                  RoundSigDigits(Numbers(4), 2) + ']');
+                ShowContinueError(DataIPShortCuts::cNumericFieldNames(3) + " [" + General::RoundSigDigits(Numbers(3), 2) + "] > " + DataIPShortCuts::cNumericFieldNames(4) + " [" +
+                                  General::RoundSigDigits(Numbers(4), 2) + ']');
                 ErrorsFound = true;
             }
             if (NumAlphas >= 2) {
@@ -898,11 +877,11 @@ namespace CurveManager {
                                           Numbers,
                                           NumNumbers,
                                           IOStatus,
-                                          lNumericFieldBlanks,
+                                          DataIPShortCuts::lNumericFieldBlanks,
                                           _,
-                                          cAlphaFieldNames,
-                                          cNumericFieldNames);
-            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, cAlphaFieldNames(1), ErrorsFound);
+                                          DataIPShortCuts::cAlphaFieldNames,
+                                          DataIPShortCuts::cNumericFieldNames);
+            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, DataIPShortCuts::cAlphaFieldNames(1), ErrorsFound);
             ++CurveNum;
             PerfCurve(CurveNum).Name = Alphas(1);
             PerfCurve(CurveNum).CurveType = BiCubic;
@@ -923,25 +902,25 @@ namespace CurveManager {
             PerfCurve(CurveNum).Var1Max = Numbers(12);
             PerfCurve(CurveNum).Var2Min = Numbers(13);
             PerfCurve(CurveNum).Var2Max = Numbers(14);
-            if (NumNumbers > 14 && !lNumericFieldBlanks(15)) {
+            if (NumNumbers > 14 && !DataIPShortCuts::lNumericFieldBlanks(15)) {
                 PerfCurve(CurveNum).CurveMin = Numbers(15);
                 PerfCurve(CurveNum).CurveMinPresent = true;
             }
-            if (NumNumbers > 15 && !lNumericFieldBlanks(16)) {
+            if (NumNumbers > 15 && !DataIPShortCuts::lNumericFieldBlanks(16)) {
                 PerfCurve(CurveNum).CurveMax = Numbers(16);
                 PerfCurve(CurveNum).CurveMaxPresent = true;
             }
 
             if (Numbers(11) > Numbers(12)) { // error
                 ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
-                ShowContinueError(cNumericFieldNames(11) + " [" + RoundSigDigits(Numbers(11), 2) + "] > " + cNumericFieldNames(12) + " [" +
-                                  RoundSigDigits(Numbers(12), 2) + ']');
+                ShowContinueError(DataIPShortCuts::cNumericFieldNames(11) + " [" + General::RoundSigDigits(Numbers(11), 2) + "] > " + DataIPShortCuts::cNumericFieldNames(12) + " [" +
+                                  General::RoundSigDigits(Numbers(12), 2) + ']');
                 ErrorsFound = true;
             }
             if (Numbers(13) > Numbers(14)) { // error
                 ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
-                ShowContinueError(cNumericFieldNames(13) + " [" + RoundSigDigits(Numbers(13), 2) + "] > " + cNumericFieldNames(14) + " [" +
-                                  RoundSigDigits(Numbers(14), 2) + ']');
+                ShowContinueError(DataIPShortCuts::cNumericFieldNames(13) + " [" + General::RoundSigDigits(Numbers(13), 2) + "] > " + DataIPShortCuts::cNumericFieldNames(14) + " [" +
+                                  General::RoundSigDigits(Numbers(14), 2) + ']');
                 ErrorsFound = true;
             }
             if (NumAlphas >= 2) {
@@ -971,11 +950,11 @@ namespace CurveManager {
                                           Numbers,
                                           NumNumbers,
                                           IOStatus,
-                                          lNumericFieldBlanks,
+                                          DataIPShortCuts::lNumericFieldBlanks,
                                           _,
-                                          cAlphaFieldNames,
-                                          cNumericFieldNames);
-            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, cAlphaFieldNames(1), ErrorsFound);
+                                          DataIPShortCuts::cAlphaFieldNames,
+                                          DataIPShortCuts::cNumericFieldNames);
+            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, DataIPShortCuts::cAlphaFieldNames(1), ErrorsFound);
             ++CurveNum;
             PerfCurve(CurveNum).Name = Alphas(1);
             PerfCurve(CurveNum).CurveType = TriQuadratic;
@@ -1018,31 +997,31 @@ namespace CurveManager {
             PerfCurve(CurveNum).Var2Max = Numbers(31);
             PerfCurve(CurveNum).Var3Min = Numbers(32);
             PerfCurve(CurveNum).Var3Max = Numbers(33);
-            if (NumNumbers > 33 && !lNumericFieldBlanks(34)) {
+            if (NumNumbers > 33 && !DataIPShortCuts::lNumericFieldBlanks(34)) {
                 PerfCurve(CurveNum).CurveMin = Numbers(34);
                 PerfCurve(CurveNum).CurveMinPresent = true;
             }
-            if (NumNumbers > 34 && !lNumericFieldBlanks(35)) {
+            if (NumNumbers > 34 && !DataIPShortCuts::lNumericFieldBlanks(35)) {
                 PerfCurve(CurveNum).CurveMax = Numbers(35);
                 PerfCurve(CurveNum).CurveMaxPresent = true;
             }
 
             if (Numbers(28) > Numbers(29)) { // error
                 ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
-                ShowContinueError(cNumericFieldNames(28) + " [" + RoundSigDigits(Numbers(28), 2) + "] > " + cNumericFieldNames(29) + " [" +
-                                  RoundSigDigits(Numbers(29), 2) + ']');
+                ShowContinueError(DataIPShortCuts::cNumericFieldNames(28) + " [" + General::RoundSigDigits(Numbers(28), 2) + "] > " + DataIPShortCuts::cNumericFieldNames(29) + " [" +
+                                  General::RoundSigDigits(Numbers(29), 2) + ']');
                 ErrorsFound = true;
             }
             if (Numbers(30) > Numbers(31)) { // error
                 ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
-                ShowContinueError(cNumericFieldNames(30) + " [" + RoundSigDigits(Numbers(30), 2) + "] > " + cNumericFieldNames(31) + " [" +
-                                  RoundSigDigits(Numbers(31), 2) + ']');
+                ShowContinueError(DataIPShortCuts::cNumericFieldNames(30) + " [" + General::RoundSigDigits(Numbers(30), 2) + "] > " + DataIPShortCuts::cNumericFieldNames(31) + " [" +
+                                  General::RoundSigDigits(Numbers(31), 2) + ']');
                 ErrorsFound = true;
             }
             if (Numbers(32) > Numbers(33)) { // error
                 ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
-                ShowContinueError(cNumericFieldNames(32) + " [" + RoundSigDigits(Numbers(32), 2) + "] > " + cNumericFieldNames(33) + " [" +
-                                  RoundSigDigits(Numbers(33), 2) + ']');
+                ShowContinueError(DataIPShortCuts::cNumericFieldNames(32) + " [" + General::RoundSigDigits(Numbers(32), 2) + "] > " + DataIPShortCuts::cNumericFieldNames(33) + " [" +
+                                  General::RoundSigDigits(Numbers(33), 2) + ']');
                 ErrorsFound = true;
             }
             if (NumAlphas >= 2) {
@@ -1077,11 +1056,11 @@ namespace CurveManager {
                                           Numbers,
                                           NumNumbers,
                                           IOStatus,
-                                          lNumericFieldBlanks,
+                                          DataIPShortCuts::lNumericFieldBlanks,
                                           _,
-                                          cAlphaFieldNames,
-                                          cNumericFieldNames);
-            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, cAlphaFieldNames(1), ErrorsFound);
+                                          DataIPShortCuts::cAlphaFieldNames,
+                                          DataIPShortCuts::cNumericFieldNames);
+            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, DataIPShortCuts::cAlphaFieldNames(1), ErrorsFound);
             ++CurveNum;
             PerfCurve(CurveNum).Name = Alphas(1);
             PerfCurve(CurveNum).CurveType = QuadLinear;
@@ -1102,37 +1081,37 @@ namespace CurveManager {
             PerfCurve(CurveNum).Var4Min = Numbers(12);
             PerfCurve(CurveNum).Var4Max = Numbers(13);
 
-            if (NumNumbers > 13 && !lNumericFieldBlanks(14)) {
+            if (NumNumbers > 13 && !DataIPShortCuts::lNumericFieldBlanks(14)) {
                 PerfCurve(CurveNum).CurveMin = Numbers(14);
                 PerfCurve(CurveNum).CurveMinPresent = true;
             }
-            if (NumNumbers > 14 && !lNumericFieldBlanks(15)) {
+            if (NumNumbers > 14 && !DataIPShortCuts::lNumericFieldBlanks(15)) {
                 PerfCurve(CurveNum).CurveMax = Numbers(15);
                 PerfCurve(CurveNum).CurveMaxPresent = true;
             }
 
             if (Numbers(6) > Numbers(7)) { // error
                 ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
-                ShowContinueError(cNumericFieldNames(6) + " [" + RoundSigDigits(Numbers(6), 2) + "] > " + cNumericFieldNames(7) + " [" +
-                                  RoundSigDigits(Numbers(7), 2) + ']');
+                ShowContinueError(DataIPShortCuts::cNumericFieldNames(6) + " [" + General::RoundSigDigits(Numbers(6), 2) + "] > " + DataIPShortCuts::cNumericFieldNames(7) + " [" +
+                                  General::RoundSigDigits(Numbers(7), 2) + ']');
                 ErrorsFound = true;
             }
             if (Numbers(8) > Numbers(9)) { // error
                 ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
-                ShowContinueError(cNumericFieldNames(8) + " [" + RoundSigDigits(Numbers(8), 2) + "] > " + cNumericFieldNames(9) + " [" +
-                                  RoundSigDigits(Numbers(9), 2) + ']');
+                ShowContinueError(DataIPShortCuts::cNumericFieldNames(8) + " [" + General::RoundSigDigits(Numbers(8), 2) + "] > " + DataIPShortCuts::cNumericFieldNames(9) + " [" +
+                                  General::RoundSigDigits(Numbers(9), 2) + ']');
                 ErrorsFound = true;
             }
             if (Numbers(10) > Numbers(11)) { // error
                 ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
-                ShowContinueError(cNumericFieldNames(10) + " [" + RoundSigDigits(Numbers(10), 2) + "] > " + cNumericFieldNames(11) + " [" +
-                                  RoundSigDigits(Numbers(11), 2) + ']');
+                ShowContinueError(DataIPShortCuts::cNumericFieldNames(10) + " [" + General::RoundSigDigits(Numbers(10), 2) + "] > " + DataIPShortCuts::cNumericFieldNames(11) + " [" +
+                                  General::RoundSigDigits(Numbers(11), 2) + ']');
                 ErrorsFound = true;
             }
             if (Numbers(12) > Numbers(13)) { // error
                 ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
-                ShowContinueError(cNumericFieldNames(12) + " [" + RoundSigDigits(Numbers(12), 2) + "] > " + cNumericFieldNames(13) + " [" +
-                                  RoundSigDigits(Numbers(13), 2) + ']');
+                ShowContinueError(DataIPShortCuts::cNumericFieldNames(12) + " [" + General::RoundSigDigits(Numbers(12), 2) + "] > " + DataIPShortCuts::cNumericFieldNames(13) + " [" +
+                                  General::RoundSigDigits(Numbers(13), 2) + ']');
                 ErrorsFound = true;
             }
 
@@ -1172,11 +1151,11 @@ namespace CurveManager {
                                           Numbers,
                                           NumNumbers,
                                           IOStatus,
-                                          lNumericFieldBlanks,
+                                          DataIPShortCuts::lNumericFieldBlanks,
                                           _,
-                                          cAlphaFieldNames,
-                                          cNumericFieldNames);
-            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, cAlphaFieldNames(1), ErrorsFound);
+                                          DataIPShortCuts::cAlphaFieldNames,
+                                          DataIPShortCuts::cNumericFieldNames);
+            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, DataIPShortCuts::cAlphaFieldNames(1), ErrorsFound);
             ++CurveNum;
             PerfCurve(CurveNum).Name = Alphas(1);
             PerfCurve(CurveNum).CurveType = Exponent;
@@ -1188,11 +1167,11 @@ namespace CurveManager {
             PerfCurve(CurveNum).Coeff3 = Numbers(3);
             PerfCurve(CurveNum).Var1Min = Numbers(4);
             PerfCurve(CurveNum).Var1Max = Numbers(5);
-            if (NumNumbers > 5 && !lNumericFieldBlanks(6)) {
+            if (NumNumbers > 5 && !DataIPShortCuts::lNumericFieldBlanks(6)) {
                 PerfCurve(CurveNum).CurveMin = Numbers(6);
                 PerfCurve(CurveNum).CurveMinPresent = true;
             }
-            if (NumNumbers > 6 && !lNumericFieldBlanks(7)) {
+            if (NumNumbers > 6 && !DataIPShortCuts::lNumericFieldBlanks(7)) {
                 PerfCurve(CurveNum).CurveMax = Numbers(7);
                 PerfCurve(CurveNum).CurveMaxPresent = true;
             }
@@ -1218,11 +1197,11 @@ namespace CurveManager {
                                           Numbers,
                                           NumNumbers,
                                           IOStatus,
-                                          lNumericFieldBlanks,
+                                          DataIPShortCuts::lNumericFieldBlanks,
                                           _,
-                                          cAlphaFieldNames,
-                                          cNumericFieldNames);
-            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, cAlphaFieldNames(1), ErrorsFound);
+                                          DataIPShortCuts::cAlphaFieldNames,
+                                          DataIPShortCuts::cNumericFieldNames);
+            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, DataIPShortCuts::cAlphaFieldNames(1), ErrorsFound);
             ++CurveNum;
             PerfCurve(CurveNum).Name = Alphas(1);
             PerfCurve(CurveNum).CurveType = FanPressureRise;
@@ -1238,25 +1217,25 @@ namespace CurveManager {
             PerfCurve(CurveNum).Var2Min = Numbers(7);
             PerfCurve(CurveNum).Var2Max = Numbers(8);
 
-            if (NumNumbers > 8 && !lNumericFieldBlanks(9)) {
+            if (NumNumbers > 8 && !DataIPShortCuts::lNumericFieldBlanks(9)) {
                 PerfCurve(CurveNum).CurveMin = Numbers(9);
                 PerfCurve(CurveNum).CurveMinPresent = true;
             }
-            if (NumNumbers > 9 && !lNumericFieldBlanks(10)) {
+            if (NumNumbers > 9 && !DataIPShortCuts::lNumericFieldBlanks(10)) {
                 PerfCurve(CurveNum).CurveMax = Numbers(10);
                 PerfCurve(CurveNum).CurveMaxPresent = true;
             }
 
             if (Numbers(5) > Numbers(6)) { // error
                 ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
-                ShowContinueError(cNumericFieldNames(5) + '[' + RoundSigDigits(Numbers(5), 2) + "] > " + cNumericFieldNames(6) + " [" +
-                                  RoundSigDigits(Numbers(6), 2) + ']');
+                ShowContinueError(DataIPShortCuts::cNumericFieldNames(5) + '[' + General::RoundSigDigits(Numbers(5), 2) + "] > " + DataIPShortCuts::cNumericFieldNames(6) + " [" +
+                                  General::RoundSigDigits(Numbers(6), 2) + ']');
                 ErrorsFound = true;
             }
             if (Numbers(7) > Numbers(8)) { // error
                 ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
-                ShowContinueError(cNumericFieldNames(7) + '[' + RoundSigDigits(Numbers(7), 2) + "] > " + cNumericFieldNames(8) + " [" +
-                                  RoundSigDigits(Numbers(8), 2) + ']');
+                ShowContinueError(DataIPShortCuts::cNumericFieldNames(7) + '[' + General::RoundSigDigits(Numbers(7), 2) + "] > " + DataIPShortCuts::cNumericFieldNames(8) + " [" +
+                                  General::RoundSigDigits(Numbers(8), 2) + ']');
                 ErrorsFound = true;
             }
 
@@ -1272,11 +1251,11 @@ namespace CurveManager {
                                           Numbers,
                                           NumNumbers,
                                           IOStatus,
-                                          lNumericFieldBlanks,
+                                          DataIPShortCuts::lNumericFieldBlanks,
                                           _,
-                                          cAlphaFieldNames,
-                                          cNumericFieldNames);
-            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, cAlphaFieldNames(1), ErrorsFound);
+                                          DataIPShortCuts::cAlphaFieldNames,
+                                          DataIPShortCuts::cNumericFieldNames);
+            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, DataIPShortCuts::cAlphaFieldNames(1), ErrorsFound);
             ++CurveNum;
             PerfCurve(CurveNum).Name = Alphas(1);
             PerfCurve(CurveNum).CurveType = ExponentialSkewNormal;
@@ -1290,19 +1269,19 @@ namespace CurveManager {
             PerfCurve(CurveNum).Var1Min = Numbers(5);
             PerfCurve(CurveNum).Var1Max = Numbers(6);
 
-            if (NumNumbers > 6 && !lNumericFieldBlanks(7)) {
+            if (NumNumbers > 6 && !DataIPShortCuts::lNumericFieldBlanks(7)) {
                 PerfCurve(CurveNum).CurveMin = Numbers(7);
                 PerfCurve(CurveNum).CurveMinPresent = true;
             }
-            if (NumNumbers > 7 && !lNumericFieldBlanks(8)) {
+            if (NumNumbers > 7 && !DataIPShortCuts::lNumericFieldBlanks(8)) {
                 PerfCurve(CurveNum).CurveMax = Numbers(8);
                 PerfCurve(CurveNum).CurveMaxPresent = true;
             }
 
             if (Numbers(5) > Numbers(6)) { // error
                 ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
-                ShowContinueError(cNumericFieldNames(5) + '[' + RoundSigDigits(Numbers(5), 2) + "] > " + cNumericFieldNames(6) + " [" +
-                                  RoundSigDigits(Numbers(6), 2) + ']');
+                ShowContinueError(DataIPShortCuts::cNumericFieldNames(5) + '[' + General::RoundSigDigits(Numbers(5), 2) + "] > " + DataIPShortCuts::cNumericFieldNames(6) + " [" +
+                                  General::RoundSigDigits(Numbers(6), 2) + ']');
                 ErrorsFound = true;
             }
 
@@ -1328,11 +1307,11 @@ namespace CurveManager {
                                           Numbers,
                                           NumNumbers,
                                           IOStatus,
-                                          lNumericFieldBlanks,
+                                          DataIPShortCuts::lNumericFieldBlanks,
                                           _,
-                                          cAlphaFieldNames,
-                                          cNumericFieldNames);
-            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, cAlphaFieldNames(1), ErrorsFound);
+                                          DataIPShortCuts::cAlphaFieldNames,
+                                          DataIPShortCuts::cNumericFieldNames);
+            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, DataIPShortCuts::cAlphaFieldNames(1), ErrorsFound);
             ++CurveNum;
             PerfCurve(CurveNum).Name = Alphas(1);
             PerfCurve(CurveNum).CurveType = Sigmoid;
@@ -1347,19 +1326,19 @@ namespace CurveManager {
             PerfCurve(CurveNum).Var1Min = Numbers(6);
             PerfCurve(CurveNum).Var1Max = Numbers(7);
 
-            if (NumNumbers > 7 && !lNumericFieldBlanks(8)) {
+            if (NumNumbers > 7 && !DataIPShortCuts::lNumericFieldBlanks(8)) {
                 PerfCurve(CurveNum).CurveMin = Numbers(8);
                 PerfCurve(CurveNum).CurveMinPresent = true;
             }
-            if (NumNumbers > 8 && !lNumericFieldBlanks(9)) {
+            if (NumNumbers > 8 && !DataIPShortCuts::lNumericFieldBlanks(9)) {
                 PerfCurve(CurveNum).CurveMax = Numbers(9);
                 PerfCurve(CurveNum).CurveMaxPresent = true;
             }
 
             if (Numbers(6) > Numbers(7)) { // error
                 ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
-                ShowContinueError(cNumericFieldNames(6) + '[' + RoundSigDigits(Numbers(6), 2) + "] > " + cNumericFieldNames(7) + " [" +
-                                  RoundSigDigits(Numbers(7), 2) + ']');
+                ShowContinueError(DataIPShortCuts::cNumericFieldNames(6) + '[' + General::RoundSigDigits(Numbers(6), 2) + "] > " + DataIPShortCuts::cNumericFieldNames(7) + " [" +
+                                  General::RoundSigDigits(Numbers(7), 2) + ']');
                 ErrorsFound = true;
             }
 
@@ -1385,11 +1364,11 @@ namespace CurveManager {
                                           Numbers,
                                           NumNumbers,
                                           IOStatus,
-                                          lNumericFieldBlanks,
+                                          DataIPShortCuts::lNumericFieldBlanks,
                                           _,
-                                          cAlphaFieldNames,
-                                          cNumericFieldNames);
-            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, cAlphaFieldNames(1), ErrorsFound);
+                                          DataIPShortCuts::cAlphaFieldNames,
+                                          DataIPShortCuts::cNumericFieldNames);
+            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, DataIPShortCuts::cAlphaFieldNames(1), ErrorsFound);
             ++CurveNum;
             PerfCurve(CurveNum).Name = Alphas(1);
             PerfCurve(CurveNum).CurveType = RectangularHyperbola1;
@@ -1402,19 +1381,19 @@ namespace CurveManager {
             PerfCurve(CurveNum).Var1Min = Numbers(4);
             PerfCurve(CurveNum).Var1Max = Numbers(5);
 
-            if (NumNumbers > 5 && !lNumericFieldBlanks(6)) {
+            if (NumNumbers > 5 && !DataIPShortCuts::lNumericFieldBlanks(6)) {
                 PerfCurve(CurveNum).CurveMin = Numbers(6);
                 PerfCurve(CurveNum).CurveMinPresent = true;
             }
-            if (NumNumbers > 6 && !lNumericFieldBlanks(7)) {
+            if (NumNumbers > 6 && !DataIPShortCuts::lNumericFieldBlanks(7)) {
                 PerfCurve(CurveNum).CurveMax = Numbers(7);
                 PerfCurve(CurveNum).CurveMaxPresent = true;
             }
 
             if (Numbers(4) > Numbers(5)) { // error
                 ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
-                ShowContinueError(cNumericFieldNames(4) + '[' + RoundSigDigits(Numbers(4), 2) + "] > " + cNumericFieldNames(5) + " [" +
-                                  RoundSigDigits(Numbers(5), 2) + ']');
+                ShowContinueError(DataIPShortCuts::cNumericFieldNames(4) + '[' + General::RoundSigDigits(Numbers(4), 2) + "] > " + DataIPShortCuts::cNumericFieldNames(5) + " [" +
+                                  General::RoundSigDigits(Numbers(5), 2) + ']');
                 ErrorsFound = true;
             }
 
@@ -1440,11 +1419,11 @@ namespace CurveManager {
                                           Numbers,
                                           NumNumbers,
                                           IOStatus,
-                                          lNumericFieldBlanks,
+                                          DataIPShortCuts::lNumericFieldBlanks,
                                           _,
-                                          cAlphaFieldNames,
-                                          cNumericFieldNames);
-            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, cAlphaFieldNames(1), ErrorsFound);
+                                          DataIPShortCuts::cAlphaFieldNames,
+                                          DataIPShortCuts::cNumericFieldNames);
+            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, DataIPShortCuts::cAlphaFieldNames(1), ErrorsFound);
             ++CurveNum;
             PerfCurve(CurveNum).Name = Alphas(1);
             PerfCurve(CurveNum).CurveType = RectangularHyperbola2;
@@ -1457,19 +1436,19 @@ namespace CurveManager {
             PerfCurve(CurveNum).Var1Min = Numbers(4);
             PerfCurve(CurveNum).Var1Max = Numbers(5);
 
-            if (NumNumbers > 5 && !lNumericFieldBlanks(6)) {
+            if (NumNumbers > 5 && !DataIPShortCuts::lNumericFieldBlanks(6)) {
                 PerfCurve(CurveNum).CurveMin = Numbers(6);
                 PerfCurve(CurveNum).CurveMinPresent = true;
             }
-            if (NumNumbers > 6 && !lNumericFieldBlanks(7)) {
+            if (NumNumbers > 6 && !DataIPShortCuts::lNumericFieldBlanks(7)) {
                 PerfCurve(CurveNum).CurveMax = Numbers(7);
                 PerfCurve(CurveNum).CurveMaxPresent = true;
             }
 
             if (Numbers(4) > Numbers(5)) { // error
                 ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
-                ShowContinueError(cNumericFieldNames(4) + '[' + RoundSigDigits(Numbers(4), 2) + "] > " + cNumericFieldNames(5) + " [" +
-                                  RoundSigDigits(Numbers(5), 2) + ']');
+                ShowContinueError(DataIPShortCuts::cNumericFieldNames(4) + '[' + General::RoundSigDigits(Numbers(4), 2) + "] > " + DataIPShortCuts::cNumericFieldNames(5) + " [" +
+                                  General::RoundSigDigits(Numbers(5), 2) + ']');
                 ErrorsFound = true;
             }
 
@@ -1495,11 +1474,11 @@ namespace CurveManager {
                                           Numbers,
                                           NumNumbers,
                                           IOStatus,
-                                          lNumericFieldBlanks,
+                                          DataIPShortCuts::lNumericFieldBlanks,
                                           _,
-                                          cAlphaFieldNames,
-                                          cNumericFieldNames);
-            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, cAlphaFieldNames(1), ErrorsFound);
+                                          DataIPShortCuts::cAlphaFieldNames,
+                                          DataIPShortCuts::cNumericFieldNames);
+            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, DataIPShortCuts::cAlphaFieldNames(1), ErrorsFound);
             ++CurveNum;
             PerfCurve(CurveNum).Name = Alphas(1);
             PerfCurve(CurveNum).CurveType = ExponentialDecay;
@@ -1512,19 +1491,19 @@ namespace CurveManager {
             PerfCurve(CurveNum).Var1Min = Numbers(4);
             PerfCurve(CurveNum).Var1Max = Numbers(5);
 
-            if (NumNumbers > 5 && !lNumericFieldBlanks(6)) {
+            if (NumNumbers > 5 && !DataIPShortCuts::lNumericFieldBlanks(6)) {
                 PerfCurve(CurveNum).CurveMin = Numbers(6);
                 PerfCurve(CurveNum).CurveMinPresent = true;
             }
-            if (NumNumbers > 6 && !lNumericFieldBlanks(7)) {
+            if (NumNumbers > 6 && !DataIPShortCuts::lNumericFieldBlanks(7)) {
                 PerfCurve(CurveNum).CurveMax = Numbers(7);
                 PerfCurve(CurveNum).CurveMaxPresent = true;
             }
 
             if (Numbers(4) > Numbers(5)) { // error
                 ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
-                ShowContinueError(cNumericFieldNames(4) + '[' + RoundSigDigits(Numbers(4), 2) + "] > " + cNumericFieldNames(5) + " [" +
-                                  RoundSigDigits(Numbers(5), 2) + ']');
+                ShowContinueError(DataIPShortCuts::cNumericFieldNames(4) + '[' + General::RoundSigDigits(Numbers(4), 2) + "] > " + DataIPShortCuts::cNumericFieldNames(5) + " [" +
+                                  General::RoundSigDigits(Numbers(5), 2) + ']');
                 ErrorsFound = true;
             }
 
@@ -1550,11 +1529,11 @@ namespace CurveManager {
                                           Numbers,
                                           NumNumbers,
                                           IOStatus,
-                                          lNumericFieldBlanks,
+                                          DataIPShortCuts::lNumericFieldBlanks,
                                           _,
-                                          cAlphaFieldNames,
-                                          cNumericFieldNames);
-            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, cAlphaFieldNames(1), ErrorsFound);
+                                          DataIPShortCuts::cAlphaFieldNames,
+                                          DataIPShortCuts::cNumericFieldNames);
+            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, DataIPShortCuts::cAlphaFieldNames(1), ErrorsFound);
             ++CurveNum;
             PerfCurve(CurveNum).Name = Alphas(1);
             PerfCurve(CurveNum).CurveType = DoubleExponentialDecay;
@@ -1569,11 +1548,11 @@ namespace CurveManager {
             PerfCurve(CurveNum).Var1Min = Numbers(6);
             PerfCurve(CurveNum).Var1Max = Numbers(7);
 
-            if (NumNumbers > 7 && !lNumericFieldBlanks(8)) {
+            if (NumNumbers > 7 && !DataIPShortCuts::lNumericFieldBlanks(8)) {
                 PerfCurve(CurveNum).CurveMin = Numbers(8);
                 PerfCurve(CurveNum).CurveMinPresent = true;
             }
-            if (NumNumbers > 8 && !lNumericFieldBlanks(9)) {
+            if (NumNumbers > 8 && !DataIPShortCuts::lNumericFieldBlanks(9)) {
                 PerfCurve(CurveNum).CurveMax = Numbers(9);
                 PerfCurve(CurveNum).CurveMaxPresent = true;
             }
@@ -1608,10 +1587,10 @@ namespace CurveManager {
                                               Numbers,
                                               NumNumbers,
                                               IOStatus,
-                                              lNumericFieldBlanks,
+                                              DataIPShortCuts::lNumericFieldBlanks,
                                               _,
-                                              cAlphaFieldNames,
-                                              cNumericFieldNames);
+                                              DataIPShortCuts::cAlphaFieldNames,
+                                              DataIPShortCuts::cNumericFieldNames);
 
                 std::string wpcName = Alphas(1); // Name of CP array
                 int numWindDir = NumNumbers;
@@ -1629,8 +1608,8 @@ namespace CurveManager {
                             ShowContinueError("has either the same values for two consecutive wind directions, or a lower wind direction value after "
                                               "a higher wind direction value.");
                             ShowContinueError("Wind direction values must be entered in ascending order.");
-                            ShowContinueError(cNumericFieldNames(j) + " = " + RoundSigDigits(windDirs[j - 2], 2) + ' ' + cNumericFieldNames[j + 1] +
-                                              " = " + RoundSigDigits(windDirs[j - 1], 2));
+                            ShowContinueError(DataIPShortCuts::cNumericFieldNames(j) + " = " + General::RoundSigDigits(windDirs[j - 2], 2) + ' ' + DataIPShortCuts::cNumericFieldNames[j + 1] +
+                                              " = " + General::RoundSigDigits(windDirs[j - 1], 2));
                             ErrorsFound = true;
                         }
                     }
@@ -1638,7 +1617,7 @@ namespace CurveManager {
                 // Check that the first table value is zero
                 if (dirMin != 0.0) {
                     ShowSevereError("GetCurveInput: An " + CurrentModuleObject + " object ");
-                    ShowContinueError("has a nonzero minimum value of " + RoundSigDigits(dirMin, 2));
+                    ShowContinueError("has a nonzero minimum value of " + General::RoundSigDigits(dirMin, 2));
                     ShowContinueError("Wind direction values must begin at zero.");
                     ErrorsFound = true;
                 }
@@ -1653,16 +1632,16 @@ namespace CurveManager {
                                                   Numbers,
                                                   NumNumbers,
                                                   IOStatus,
-                                                  lNumericFieldBlanks,
+                                                  DataIPShortCuts::lNumericFieldBlanks,
                                                   _,
-                                                  cAlphaFieldNames,
-                                                  cNumericFieldNames);
+                                                  DataIPShortCuts::cAlphaFieldNames,
+                                                  DataIPShortCuts::cNumericFieldNames);
                     ++CurveNum;
-                    GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, cAlphaFieldNames(1), ErrorsFound);
+                    GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurrentModuleObject, DataIPShortCuts::cAlphaFieldNames(1), ErrorsFound);
 
                     // Ensure the CP array name should be the same as the name of AirflowNetwork:MultiZone:WindPressureCoefficientArray
                     if (!UtilityRoutines::SameString(Alphas(2), wpcName)) {
-                        ShowSevereError("GetCurveInput: Invalid " + cAlphaFieldNames(2) + " = " + Alphas(2) + " in " + CurrentModuleObject + " = " +
+                        ShowSevereError("GetCurveInput: Invalid " + DataIPShortCuts::cAlphaFieldNames(2) + " = " + Alphas(2) + " in " + CurrentModuleObject + " = " +
                                         Alphas(1));
                         ShowContinueError("The valid name is " + wpcName);
                         ErrorsFound = true;
@@ -1693,7 +1672,7 @@ namespace CurveManager {
                         ShowSevereError("GetCurveInput: For " + CurrentModuleObject + ": " + Alphas(1));
                         ShowContinueError("The number of data entries must match the number of wind directions given in the wind pressure "
                                           "coefficient array. Number of data entries = " +
-                                          RoundSigDigits(NumNumbers));
+                                          General::RoundSigDigits(NumNumbers));
                         ErrorsFound = true;
                     } else {
                         std::vector<double> axis;
@@ -2226,34 +2205,34 @@ namespace CurveManager {
                                 PerfCurve(CurveIndex).Name);
         }
 
-        for (CurveIndex = 1; CurveIndex <= NumPressureCurves; ++CurveIndex) {
+        for (CurveIndex = 1; CurveIndex <= DataBranchAirLoopPlant::NumPressureCurves; ++CurveIndex) {
             SetupOutputVariable("Performance Curve Input Variable 1 Value",
                                 OutputProcessor::Unit::None,
-                                PressureCurve(CurveIndex).CurveInput1,
+                                DataBranchAirLoopPlant::PressureCurve(CurveIndex).CurveInput1,
                                 "HVAC",
                                 "Average",
-                                PressureCurve(CurveIndex).Name);
+                                DataBranchAirLoopPlant::PressureCurve(CurveIndex).Name);
             SetupOutputVariable("Performance Curve Input Variable 2 Value",
                                 OutputProcessor::Unit::None,
-                                PressureCurve(CurveIndex).CurveInput2,
+                                DataBranchAirLoopPlant::PressureCurve(CurveIndex).CurveInput2,
                                 "HVAC",
                                 "Average",
-                                PressureCurve(CurveIndex).Name);
+                                DataBranchAirLoopPlant::PressureCurve(CurveIndex).Name);
             SetupOutputVariable("Performance Curve Input Variable 3 Value",
                                 OutputProcessor::Unit::None,
-                                PressureCurve(CurveIndex).CurveInput3,
+                                DataBranchAirLoopPlant::PressureCurve(CurveIndex).CurveInput3,
                                 "HVAC",
                                 "Average",
-                                PressureCurve(CurveIndex).Name);
+                                DataBranchAirLoopPlant::PressureCurve(CurveIndex).Name);
             SetupOutputVariable("Performance Curve Output Value",
                                 OutputProcessor::Unit::None,
-                                PressureCurve(CurveIndex).CurveOutput,
+                                DataBranchAirLoopPlant::PressureCurve(CurveIndex).CurveOutput,
                                 "HVAC",
                                 "Average",
-                                PressureCurve(CurveIndex).Name);
+                                DataBranchAirLoopPlant::PressureCurve(CurveIndex).Name);
         }
 
-        if (AnyEnergyManagementSystemInModel) { // provide hook for possible EMS control
+        if (DataGlobals::AnyEnergyManagementSystemInModel) { // provide hook for possible EMS control
             for (CurveIndex = 1; CurveIndex <= NumCurves; ++CurveIndex) {
                 SetupEMSActuator("Curve",
                                  PerfCurve(CurveIndex).Name,
@@ -2263,14 +2242,14 @@ namespace CurveManager {
                                  PerfCurve(CurveIndex).EMSOverrideCurveValue);
             } // All performance curves
         }
-        if (AnyEnergyManagementSystemInModel) { // provide hook for possible EMS control
-            for (CurveIndex = 1; CurveIndex <= NumPressureCurves; ++CurveIndex) {
+        if (DataGlobals::AnyEnergyManagementSystemInModel) { // provide hook for possible EMS control
+            for (CurveIndex = 1; CurveIndex <= DataBranchAirLoopPlant::NumPressureCurves; ++CurveIndex) {
                 SetupEMSActuator("Curve",
-                                 PressureCurve(CurveIndex).Name,
+                                 DataBranchAirLoopPlant::PressureCurve(CurveIndex).Name,
                                  "Curve Result",
                                  "[unknown]",
-                                 PressureCurve(CurveIndex).EMSOverrideOn,
-                                 PressureCurve(CurveIndex).EMSOverrideCurveValue);
+                                 DataBranchAirLoopPlant::PressureCurve(CurveIndex).EMSOverrideOn,
+                                 DataBranchAirLoopPlant::PressureCurve(CurveIndex).EMSOverrideCurveValue);
             } // All pressure curves
         }
     }
@@ -2689,9 +2668,6 @@ namespace CurveManager {
         // Given the curve index, sets the minimum and maximum possible value for this curve.
         // Certain curve types have set limits (e.g., PLF curve should not be greater than 1 or less than 0.7).
 
-        // Using/Aliasing
-        using General::TrimSigDigits;
-
         if (CurveIndex > 0 && CurveIndex <= NumCurves) {
 
             if (present(CurveMin)) {
@@ -2706,8 +2682,8 @@ namespace CurveManager {
 
         } else {
 
-            ShowSevereError("SetCurveOutputMinMaxValues: CurveIndex=[" + TrimSigDigits(CurveIndex) +
-                            "] not in range of curves=[1:" + TrimSigDigits(NumCurves) + "].");
+            ShowSevereError("SetCurveOutputMinMaxValues: CurveIndex=[" + General::TrimSigDigits(CurveIndex) +
+                            "] not in range of curves=[1:" + General::TrimSigDigits(NumCurves) + "].");
             ErrorsFound = true;
         }
     }
@@ -2724,8 +2700,6 @@ namespace CurveManager {
         // PURPOSE OF THIS SUBROUTINE:
         // Currently it just reads the input for pressure curve objects
 
-        using namespace DataIPShortCuts;
-
         static std::string const CurveObjectName("Curve:Functional:PressureDrop");
 
         // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
@@ -2739,7 +2713,7 @@ namespace CurveManager {
         int CurveNum;
 
         NumPressure = inputProcessor->getNumObjectsFound(CurveObjectName);
-        PressureCurve.allocate(NumPressure);
+        DataBranchAirLoopPlant::PressureCurve.allocate(NumPressure);
         for (CurveNum = 1; CurveNum <= NumPressure; ++CurveNum) {
             inputProcessor->getObjectItem(CurveObjectName,
                                           CurveNum,
@@ -2748,25 +2722,25 @@ namespace CurveManager {
                                           Numbers,
                                           NumNumbers,
                                           IOStatus,
-                                          lNumericFieldBlanks,
+                                          DataIPShortCuts::lNumericFieldBlanks,
                                           _,
-                                          cAlphaFieldNames,
-                                          cNumericFieldNames);
-            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurveObjectName, cAlphaFieldNames(1), ErrsFound);
-            PressureCurve(CurveNum).Name = Alphas(1);
-            PressureCurve(CurveNum).EquivDiameter = Numbers(1);
-            PressureCurve(CurveNum).MinorLossCoeff = Numbers(2);
-            PressureCurve(CurveNum).EquivLength = Numbers(3);
-            PressureCurve(CurveNum).EquivRoughness = Numbers(4);
-            if (NumNumbers > 4 && !lNumericFieldBlanks(5)) {
+                                          DataIPShortCuts::cAlphaFieldNames,
+                                          DataIPShortCuts::cNumericFieldNames);
+            GlobalNames::VerifyUniqueInterObjectName(UniqueCurveNames, Alphas(1), CurveObjectName, DataIPShortCuts::cAlphaFieldNames(1), ErrsFound);
+            DataBranchAirLoopPlant::PressureCurve(CurveNum).Name = Alphas(1);
+            DataBranchAirLoopPlant::PressureCurve(CurveNum).EquivDiameter = Numbers(1);
+            DataBranchAirLoopPlant::PressureCurve(CurveNum).MinorLossCoeff = Numbers(2);
+            DataBranchAirLoopPlant::PressureCurve(CurveNum).EquivLength = Numbers(3);
+            DataBranchAirLoopPlant::PressureCurve(CurveNum).EquivRoughness = Numbers(4);
+            if (NumNumbers > 4 && !DataIPShortCuts::lNumericFieldBlanks(5)) {
                 if (Numbers(5) != 0.0) {
-                    PressureCurve(CurveNum).ConstantFPresent = true;
-                    PressureCurve(CurveNum).ConstantF = Numbers(5);
+                    DataBranchAirLoopPlant::PressureCurve(CurveNum).ConstantFPresent = true;
+                    DataBranchAirLoopPlant::PressureCurve(CurveNum).ConstantF = Numbers(5);
                 }
             }
         }
 
-        NumPressureCurves = NumPressure;
+        DataBranchAirLoopPlant::NumPressureCurves = NumPressure;
 
         if (ErrsFound) {
             ShowFatalError("GetPressureCurveInput: Errors found in Curve Objects.  Preceding condition(s) cause termination.");
@@ -2794,12 +2768,6 @@ namespace CurveManager {
         //  PressureCurve_Pressure    = pressure curve based on friction/minor loss
         //  PressureCurve_Generic     = curvemanager held curve which is function of flow rate
 
-        // Using/Aliasing
-        using DataBranchAirLoopPlant::PressureCurve_Error;
-        using DataBranchAirLoopPlant::PressureCurve_Generic;
-        using DataBranchAirLoopPlant::PressureCurve_None;
-        using DataBranchAirLoopPlant::PressureCurve_Pressure;
-
         // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
         int TempCurveIndex;
         std::string GenericCurveType;
@@ -2812,7 +2780,7 @@ namespace CurveManager {
         }
 
         // Initialize
-        PressureCurveType = PressureCurve_None;
+        PressureCurveType = DataBranchAirLoopPlant::PressureCurve_None;
         PressureCurveIndex = 0;
 
         // Try to retrieve a curve manager object
@@ -2824,7 +2792,7 @@ namespace CurveManager {
             GenericCurveType = PerfCurve(TempCurveIndex).ObjectType;
             {
                 if (PerfCurve(TempCurveIndex).NumDims == 1) {
-                    PressureCurveType = PressureCurve_Generic;
+                    PressureCurveType = DataBranchAirLoopPlant::PressureCurve_Generic;
                     PressureCurveIndex = TempCurveIndex;
                 } else {
                     ShowSevereError("Plant Pressure Simulation: Found error for curve: " + PressureCurveName);
@@ -2838,9 +2806,9 @@ namespace CurveManager {
         }
 
         // Then try to retrieve a pressure curve object
-        if (allocated(PressureCurve)) {
-            if (size(PressureCurve) > 0) {
-                TempCurveIndex = UtilityRoutines::FindItemInList(PressureCurveName, PressureCurve);
+        if (allocated(DataBranchAirLoopPlant::PressureCurve)) {
+            if (size(DataBranchAirLoopPlant::PressureCurve) > 0) {
+                TempCurveIndex = UtilityRoutines::FindItemInList(PressureCurveName, DataBranchAirLoopPlant::PressureCurve);
             } else {
                 TempCurveIndex = 0;
             }
@@ -2848,7 +2816,7 @@ namespace CurveManager {
 
         // See if it is valid
         if (TempCurveIndex > 0) {
-            PressureCurveType = PressureCurve_Pressure;
+            PressureCurveType = DataBranchAirLoopPlant::PressureCurve_Pressure;
             PressureCurveIndex = TempCurveIndex;
             return;
         }
@@ -2857,12 +2825,12 @@ namespace CurveManager {
 
         // Last check, see if it is blank:
         if (PressureCurveName == "") {
-            PressureCurveType = PressureCurve_None;
+            PressureCurveType = DataBranchAirLoopPlant::PressureCurve_None;
             return;
         }
 
         // At this point, we had a non-blank user entry with no match
-        PressureCurveType = PressureCurve_Error;
+        PressureCurveType = DataBranchAirLoopPlant::PressureCurve_Error;
     }
 
     Real64 PressureCurveValue(int const PressureCurveIndex, Real64 const MassFlow, Real64 const Density, Real64 const Viscosity)
@@ -2881,12 +2849,6 @@ namespace CurveManager {
         // Friction factor pressure drop equation:
         // DP = [f*(L/D) + K] * (rho * V^2) / 2
 
-        // REFERENCES:
-        // na
-
-        // Using/Aliasing
-        using DataGlobals::Pi;
-
         // Return value
         Real64 PressureCurveValue;
 
@@ -2903,26 +2865,26 @@ namespace CurveManager {
         Real64 RoughnessRatio;
 
         // Retrieve data from structure
-        Diameter = PressureCurve(PressureCurveIndex).EquivDiameter;
-        MinorLossCoeff = PressureCurve(PressureCurveIndex).MinorLossCoeff;
-        Length = PressureCurve(PressureCurveIndex).EquivLength;
-        Roughness = PressureCurve(PressureCurveIndex).EquivRoughness;
-        IsConstFPresent = PressureCurve(PressureCurveIndex).ConstantFPresent;
-        ConstantF = PressureCurve(PressureCurveIndex).ConstantF;
+        Diameter = DataBranchAirLoopPlant::PressureCurve(PressureCurveIndex).EquivDiameter;
+        MinorLossCoeff = DataBranchAirLoopPlant::PressureCurve(PressureCurveIndex).MinorLossCoeff;
+        Length = DataBranchAirLoopPlant::PressureCurve(PressureCurveIndex).EquivLength;
+        Roughness = DataBranchAirLoopPlant::PressureCurve(PressureCurveIndex).EquivRoughness;
+        IsConstFPresent = DataBranchAirLoopPlant::PressureCurve(PressureCurveIndex).ConstantFPresent;
+        ConstantF = DataBranchAirLoopPlant::PressureCurve(PressureCurveIndex).ConstantF;
 
         // Intermediate calculations
-        CrossSectArea = (Pi / 4.0) * pow_2(Diameter);
+        CrossSectArea = (DataGlobals::Pi / 4.0) * pow_2(Diameter);
         Velocity = MassFlow / (Density * CrossSectArea);
         ReynoldsNumber = Density * Diameter * Velocity / Viscosity; // assuming mu here
         RoughnessRatio = Roughness / Diameter;
 
         // If we don't have any flow then exit out
-        if (MassFlow < MassFlowTolerance) {
+        if (MassFlow < DataBranchAirLoopPlant::MassFlowTolerance) {
             PressureCurveValue = 0.0;
-            PressureCurve(PressureCurveIndex).CurveInput1 = MassFlow;
-            PressureCurve(PressureCurveIndex).CurveInput2 = Density;
-            PressureCurve(PressureCurveIndex).CurveInput3 = Velocity;
-            PressureCurve(PressureCurveIndex).CurveOutput = 0.0;
+            DataBranchAirLoopPlant::PressureCurve(PressureCurveIndex).CurveInput1 = MassFlow;
+            DataBranchAirLoopPlant::PressureCurve(PressureCurveIndex).CurveInput2 = Density;
+            DataBranchAirLoopPlant::PressureCurve(PressureCurveIndex).CurveInput3 = Velocity;
+            DataBranchAirLoopPlant::PressureCurve(PressureCurveIndex).CurveOutput = 0.0;
             return PressureCurveValue;
         }
 
@@ -2936,12 +2898,12 @@ namespace CurveManager {
         // Pressure drop calculation
         PressureCurveValue = (FrictionFactor * (Length / Diameter) + MinorLossCoeff) * (Density * pow_2(Velocity)) / 2.0;
 
-        if (PressureCurve(PressureCurveIndex).EMSOverrideOn) PressureCurveValue = PressureCurve(PressureCurveIndex).EMSOverrideCurveValue;
+        if (DataBranchAirLoopPlant::PressureCurve(PressureCurveIndex).EMSOverrideOn) PressureCurveValue = DataBranchAirLoopPlant::PressureCurve(PressureCurveIndex).EMSOverrideCurveValue;
 
-        PressureCurve(PressureCurveIndex).CurveInput1 = MassFlow;
-        PressureCurve(PressureCurveIndex).CurveInput2 = Density;
-        PressureCurve(PressureCurveIndex).CurveInput3 = Velocity;
-        PressureCurve(PressureCurveIndex).CurveOutput = PressureCurveValue;
+        DataBranchAirLoopPlant::PressureCurve(PressureCurveIndex).CurveInput1 = MassFlow;
+        DataBranchAirLoopPlant::PressureCurve(PressureCurveIndex).CurveInput2 = Density;
+        DataBranchAirLoopPlant::PressureCurve(PressureCurveIndex).CurveInput3 = Velocity;
+        DataBranchAirLoopPlant::PressureCurve(PressureCurveIndex).CurveOutput = PressureCurveValue;
 
         return PressureCurveValue;
     }
@@ -2964,8 +2926,6 @@ namespace CurveManager {
         // REFERENCES:
         // Haaland, SE (1983). "Simple and Explicit Formulas for the Friction Factor in Turbulent Flow".
         //   Trans. ASIVIE, J. of Fluids Engineering 103: 89-90.
-
-        using General::RoundSigDigits;
 
         // Return value
         Real64 CalculateMoodyFrictionFactor;
@@ -2997,8 +2957,8 @@ namespace CurveManager {
             CalculateMoodyFrictionFactor = std::pow(Term3, -2.0);
         } else {
             if (!FrictionFactorErrorHasOccurred) {
-                RR = RoundSigDigits(RoughnessRatio, 7);
-                Re = RoundSigDigits(ReynoldsNumber, 1);
+                RR = General::RoundSigDigits(RoughnessRatio, 7);
+                Re = General::RoundSigDigits(ReynoldsNumber, 1);
                 ShowSevereError("Plant Pressure System: Error in moody friction factor calculation");
                 ShowContinueError("Current Conditions: Roughness Ratio=" + RR + "; Reynolds Number=" + Re);
                 ShowContinueError("These conditions resulted in an unhandled numeric issue.");

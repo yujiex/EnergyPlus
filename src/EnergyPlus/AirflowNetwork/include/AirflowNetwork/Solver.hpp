@@ -52,6 +52,8 @@
 #include <ObjexxFCL/Array1A.hh>
 #include <ObjexxFCL/Array2D.hh>
 
+#include <unordered_map>
+
 #include "AirflowNetwork/Properties.hpp"
 
 namespace EnergyPlus {
@@ -71,48 +73,58 @@ namespace AirflowNetwork {
         Real64 viscosity{AIRDYNAMICVISCOSITY(20.0)};
     };
 
+    // Forward declaration
+    struct AirflowElement;
+
     struct Solver
     {
-        std::vector<AirProperties> properties;
+        std::unordered_map<std::string, AirflowElement *> elements;
+        //std::vector<AirProperties> properties;
 
-        int NetworkNumOfLinks;
-        int NetworkNumOfNodes;
+        //int NetworkNumOfLinks;
+        //int NetworkNumOfNodes;
 
-        int const NrInt; // Number of intervals for a large opening
+        //int const NrInt; // Number of intervals for a large opening
 
         // Common block AFEDAT
-        Array1D<Real64> AFECTL;
-        Array1D<Real64> AFLOW2;
-        Array1D<Real64> AFLOW;
-        Array1D<Real64> PS;
-        Array1D<Real64> PW;
+        //Array1D<Real64> AFECTL;
+        //Array1D<Real64> AFLOW2;
+        //Array1D<Real64> AFLOW;
+        //Array1D<Real64> PS;
+        //Array1D<Real64> PW;
 
         // Common block CONTRL
-        Real64 PB;
-        int LIST;
+        //Real64 PB;
+        //int LIST;
 
         // Common block ZONL
         // extern Array1D<Real64> RHOZ;
         // extern Array1D<Real64> SQRTDZ;
         // extern Array1D<Real64> VISCZ;
-        Array1D<Real64> SUMAF;
+        //Array1D<Real64> SUMAF;
         // extern Array1D<Real64> TZ; // Temperature [C]
         // extern Array1D<Real64> WZ; // Humidity ratio [kg/kg]
-        Array1D<Real64> PZ; // Pressure [Pa]
+        //Array1D<Real64> PZ; // Pressure [Pa]
 
         // Other array variables
-        Array1D_int ID;
-        Array1D_int IK;
-        Array1D<Real64> AD;
-        Array1D<Real64> AU;
+        //Array1D_int ID;
+        //Array1D_int IK;
+        //Array1D<Real64> AD;
+        //Array1D<Real64> AU;
 
 #ifdef SKYLINE_MATRIX_REMOVE_ZERO_COLUMNS
-        Array1D_int newIK;     // noel
-        Array1D<Real64> newAU; // noel
+        //Array1D_int newIK;     // noel
+        //Array1D<Real64> newAU; // noel
 #endif
 
         // REAL(r64), ALLOCATABLE, DIMENSION(:) :: AL
-        Array1D<Real64> SUMF;
+        //Array1D<Real64> SUMF;
+
+        void clear()
+        {
+            elements.clear();
+        }
+
     };
 
     extern std::vector<AirProperties> properties;
@@ -132,7 +144,7 @@ namespace AirflowNetwork {
 
     // Common block CONTRL
     extern Real64 PB;
-    extern int LIST;
+    //extern int LIST;
 
     // Common block ZONL
     // extern Array1D<Real64> RHOZ;

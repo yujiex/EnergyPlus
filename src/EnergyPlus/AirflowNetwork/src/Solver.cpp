@@ -121,7 +121,7 @@ namespace AirflowNetwork {
 
     // Common block CONTRL
     Real64 PB(0.0);
-    int LIST(0);
+    //int LIST(0);
 
     // Common block ZONL
     // Array1D<Real64> RHOZ;
@@ -250,7 +250,7 @@ namespace AirflowNetwork {
 
         PB = 101325.0;
         //   LIST = 5
-        LIST = 0;
+        //LIST = 0;
 
         for (n = 1; n <= NetworkNumOfNodes; ++n) {
             ID(n) = n;
@@ -556,7 +556,7 @@ namespace AirflowNetwork {
         for (n = 1; n <= NetworkNumOfNodes; ++n) {
             SUMAF(n) = 0.0;
         }
-        if (LIST >= 1) ObjexxFCL::gio::write(Unit21, Format_900);
+        //if (LIST >= 1) ObjexxFCL::gio::write(Unit21, Format_900);
         for (i = 1; i <= NetworkNumOfLinks; ++i) {
             n = AirflowNetworkLinkageData(i).NodeNums[0];
             m = AirflowNetworkLinkageData(i).NodeNums[1];
@@ -696,7 +696,7 @@ namespace AirflowNetwork {
         ACCEL = 0;
         NSYM = 0;
         NNZE = IK(NetworkNumOfNodes + 1) - 1;
-        if (LIST >= 2) ObjexxFCL::gio::write(Unit21, fmtLD) << "Initialization" << NetworkNumOfNodes << NetworkNumOfLinks << NNZE;
+        //if (LIST >= 2) ObjexxFCL::gio::write(Unit21, fmtLD) << "Initialization" << NetworkNumOfNodes << NetworkNumOfLinks << NNZE;
         ITER = 0;
 
         for (n = 1; n <= NetworkNumOfNodes; ++n) {
@@ -713,11 +713,11 @@ namespace AirflowNetwork {
                 if (AirflowNetworkNodeData(n).NodeTypeNum == 0) PZ(n) = SUMF(n);
             }
             // Data dump.
-            if (LIST >= 3) {
-                DUMPVD("AD:", AD, NetworkNumOfNodes, Unit21);
-                DUMPVD("AU:", AU, NNZE, Unit21);
-                DUMPVR("AF:", SUMF, NetworkNumOfNodes, Unit21);
-            }
+            //if (LIST >= 3) {
+            //    DUMPVD("AD:", AD, NetworkNumOfNodes, Unit21);
+            //    DUMPVD("AU:", AU, NNZE, Unit21);
+            //    DUMPVR("AF:", SUMF, NetworkNumOfNodes, Unit21);
+            //}
             // Solve linear system for approximate PZ.
 #ifdef SKYLINE_MATRIX_REMOVE_ZERO_COLUMNS
             FACSKY(newAU, AD, newAU, newIK, NetworkNumOfNodes, NSYM);     // noel
@@ -726,21 +726,21 @@ namespace AirflowNetwork {
             FACSKY(AU, AD, AU, IK, NetworkNumOfNodes, NSYM);
             SLVSKY(AU, AD, AU, PZ, IK, NetworkNumOfNodes, NSYM);
 #endif
-            if (LIST >= 2) DUMPVD("PZ:", PZ, NetworkNumOfNodes, Unit21);
+            //if (LIST >= 2) DUMPVD("PZ:", PZ, NetworkNumOfNodes, Unit21);
         }
         // Solve nonlinear airflow network equations by modified Newton's method.
 
         while (ITER < AirflowNetworkSimu.MaxIteration) {
             LFLAG = false;
             ++ITER;
-            if (LIST >= 2) ObjexxFCL::gio::write(Unit21, fmtLD) << "Begin iteration " << ITER;
+            //if (LIST >= 2) ObjexxFCL::gio::write(Unit21, fmtLD) << "Begin iteration " << ITER;
             // Set up the Jacobian matrix.
             FILJAC(NNZE, LFLAG);
             // Data dump.
-            if (LIST >= 3) {
-                DUMPVR("SUMF:", SUMF, NetworkNumOfNodes, Unit21);
-                DUMPVR("SUMAF:", SUMAF, NetworkNumOfNodes, Unit21);
-            }
+            //if (LIST >= 3) {
+            //    DUMPVR("SUMF:", SUMF, NetworkNumOfNodes, Unit21);
+            //    DUMPVR("SUMAF:", SUMAF, NetworkNumOfNodes, Unit21);
+            //}
             // Check convergence.
             CONVG = 1;
             SSUMF = 0.0;
@@ -758,10 +758,10 @@ namespace AirflowNetwork {
             if (CONVG == 1 && ITER > 1) return;
             if (ITER >= AirflowNetworkSimu.MaxIteration) break;
             // Data dump.
-            if (LIST >= 3) {
-                DUMPVD("AD:", AD, NetworkNumOfNodes, Unit21);
-                DUMPVD("AU:", AU, NNZE, Unit21);
-            }
+            //if (LIST >= 3) {
+            //    DUMPVD("AD:", AD, NetworkNumOfNodes, Unit21);
+            //    DUMPVD("AU:", AU, NNZE, Unit21);
+            //}
             // Solve AA * CCF = SUMF.
             for (n = 1; n <= NetworkNumOfNodes; ++n) {
                 CCF(n) = SUMF(n);
@@ -800,12 +800,12 @@ namespace AirflowNetwork {
                 }
             }
             // Data revision dump.
-            if (LIST >= 2) {
-                for (n = 1; n <= NetworkNumOfNodes; ++n) {
-                    if (AirflowNetworkNodeData(n).NodeTypeNum == 0)
-                        ObjexxFCL::gio::write(Unit21, Format_901) << " Rev:" << n << SUMF(n) << CCF(n) << CEF(n) << PZ(n);
-                }
-            }
+            //if (LIST >= 2) {
+            //    for (n = 1; n <= NetworkNumOfNodes; ++n) {
+            //        if (AirflowNetworkNodeData(n).NodeTypeNum == 0)
+            //            ObjexxFCL::gio::write(Unit21, Format_901) << " Rev:" << n << SUMF(n) << CCF(n) << CEF(n) << PZ(n);
+            //    }
+            //}
         }
 
         // Error termination.
@@ -1548,7 +1548,7 @@ namespace AirflowNetwork {
                 }
             }
             // Select laminar or turbulent flow.
-            if (LIST >= 4) ObjexxFCL::gio::write(Unit21, Format_901) << " generic crack: " << PDROP << FL << FT;
+            //if (LIST >= 4) ObjexxFCL::gio::write(Unit21, Format_901) << " generic crack: " << PDROP << FL << FT;
             if (std::abs(FL) <= std::abs(FT)) {
                 F[0] = FL;
                 DF[0] = CDM;

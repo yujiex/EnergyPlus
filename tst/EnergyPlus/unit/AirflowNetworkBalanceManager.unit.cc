@@ -92,7 +92,7 @@ using namespace OutAirNodeManager;
 
 namespace EnergyPlus {
 
-TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManagerTest_TestOtherSideCoefficients)
+TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_OtherSideCoefficients)
 {
 
     int i = 2;
@@ -125,7 +125,7 @@ TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManagerTest_TestOtherSideCoeffici
     Surface.deallocate();
 }
 
-TEST_F(EnergyPlusFixture, TestZoneVentingSch)
+TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_ZoneVentingSch)
 {
 
     // Unit test for #5021
@@ -224,13 +224,14 @@ TEST_F(EnergyPlusFixture, TestZoneVentingSch)
     // MultizoneZoneData has only 1 element so may be hardcoded
     auto GetIndex = UtilityRoutines::FindItemInList(AirflowNetwork::MultizoneZoneData(1).VentingSchName, Schedule({1, NumSchedules}));
     EXPECT_EQ(GetIndex, AirflowNetwork::MultizoneZoneData(1).VentingSchNum);
+    EXPECT_EQ(1, solver.elements.size());
 
     Zone.deallocate();
     Surface.deallocate();
     SurfaceWindow.deallocate();
 }
 
-TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_TestTriangularWindowWarning)
+TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_TriangularWindowWarning)
 {
 
     // Unit test for #5384
@@ -358,7 +359,7 @@ TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_TestTriangularWindowWarni
     SurfaceWindow.deallocate();
 }
 
-TEST_F(EnergyPlusFixture, TestAFNPressureStat)
+TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_AFNPressureStat)
 {
 
     // Unit test for a new feature of PressureStat and #5687
@@ -2378,8 +2379,10 @@ TEST_F(EnergyPlusFixture, TestAFNPressureStat)
     EXPECT_NEAR(36.7133377, AirflowNetwork::AirflowNetworkReportData(2).MultiZoneMixLatGainW, 0.0001);
     EXPECT_NEAR(89.3450925, AirflowNetwork::AirflowNetworkReportData(3).MultiZoneInfiLatLossW, 0.0001);
 
+    EXPECT_EQ(33, solver.elements.size());
+
 }
-TEST_F(EnergyPlusFixture, TestZoneVentingSchWithAdaptiveCtrl)
+TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_ZoneVentingSchWithAdaptiveCtrl)
 {
 
     // Unit test for #5490
@@ -2481,7 +2484,7 @@ TEST_F(EnergyPlusFixture, TestZoneVentingSchWithAdaptiveCtrl)
     People.deallocate();
 }
 
-TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManagerTest_PolygonalWindows)
+TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_PolygonalWindows)
 {
 
     // Unit test for a new feature
@@ -4545,7 +4548,7 @@ TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_AirPrandtl)
     EXPECT_NEAR(AirflowNetwork::airPrandtl(80, 0.001, 101000), 0.7172, tol);
 }
 
-TEST_F(EnergyPlusFixture, TestWindPressureTable)
+TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_WindPressureTable)
 {
     // Test a Table:Lookup object as a wind pressure curve
     std::string const idf_objects = delimited_string({"Table:IndependentVariable,",
@@ -4651,7 +4654,7 @@ TEST_F(EnergyPlusFixture, TestWindPressureTable)
     EXPECT_DOUBLE_EQ(-0.56 * 0.5 * 1.1841123742118911, p);
 }
 
-TEST_F(EnergyPlusFixture, TestWPCValue)
+TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_WPCValue)
 {
     // Test loading a WPC object into a Table:Lookup
     std::string const idf_objects = delimited_string({"AirflowNetwork:MultiZone:WindPressureCoefficientArray,",
@@ -4730,7 +4733,7 @@ TEST_F(EnergyPlusFixture, TestWPCValue)
     EXPECT_DOUBLE_EQ(0.6 * 0.5 * 1.1841123742118911, p);
 }
 
-TEST_F(EnergyPlusFixture, TestExternalNodes)
+TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_ExternalNodes)
 {
     std::string const idf_objects = delimited_string(
         {"Material,", "  A1 - 1 IN STUCCO,        !- Name", "  Smooth,                  !- Roughness",
@@ -5685,7 +5688,7 @@ TEST_F(EnergyPlusFixture, TestExternalNodes)
     EXPECT_DOUBLE_EQ(-0.26 * 0.5 * 118.41123742118911, AirflowNetwork::AirflowNetworkNodeSimu(5).PZ);
 }
 
-TEST_F(EnergyPlusFixture, TestExternalNodesWithTables)
+TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_ExternalNodesWithTables)
 {
     std::string const idf_objects = delimited_string(
         {"Material,", "  A1 - 1 IN STUCCO,        !- Name", "  Smooth,                  !- Roughness",
@@ -6327,7 +6330,7 @@ TEST_F(EnergyPlusFixture, TestExternalNodesWithTables)
     EXPECT_DOUBLE_EQ(-0.26 * 0.5 * 118.41123742118911, AirflowNetwork::AirflowNetworkNodeSimu(5).PZ);
 }
 
-TEST_F(EnergyPlusFixture, TestExternalNodesWithNoInput)
+TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_ExternalNodesWithNoInput)
 {
     std::string const idf_objects = delimited_string(
         {"Curve:Quartic,",
@@ -6971,7 +6974,7 @@ TEST_F(EnergyPlusFixture, TestExternalNodesWithNoInput)
     EXPECT_DOUBLE_EQ(cp105S * 0.5 * 118.41123742118911, AirflowNetwork::AirflowNetworkNodeSimu(4).PZ);
 }
 
-TEST_F(EnergyPlusFixture, TestExternalNodesWithSymmetricTable)
+TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_ExternalNodesWithSymmetricTable)
 {
     std::string const idf_objects = delimited_string(
         {"Material,", "  A1 - 1 IN STUCCO,        !- Name", "  Smooth,                  !- Roughness",
@@ -7577,7 +7580,7 @@ TEST_F(EnergyPlusFixture, TestExternalNodesWithSymmetricTable)
     EXPECT_DOUBLE_EQ(-0.26 * 0.5 * 118.41123742118911, AirflowNetwork::AirflowNetworkNodeSimu(5).PZ);
 }
 
-TEST_F(EnergyPlusFixture, TestExternalNodesWithSymmetricCurve)
+TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_ExternalNodesWithSymmetricCurve)
 {
     std::string const idf_objects = delimited_string(
         {"Curve:Quartic,",
@@ -8220,7 +8223,7 @@ TEST_F(EnergyPlusFixture, TestExternalNodesWithSymmetricCurve)
     EXPECT_NEAR(cp105S * 0.5 * 118.41123742118911, AirflowNetwork::AirflowNetworkNodeSimu(5).PZ, 1e-13);
 }
 
-TEST_F(EnergyPlusFixture, TestExternalNodesWithLocalAirNode)
+TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_ExternalNodesWithLocalAirNode)
 {
     std::string const idf_objects = delimited_string(
         {"Version,9.3;",
@@ -8943,7 +8946,7 @@ TEST_F(EnergyPlusFixture, TestExternalNodesWithLocalAirNode)
     EXPECT_DOUBLE_EQ(-0.26 * 0.5 * rho_1, AirflowNetwork::AirflowNetworkNodeSimu(5).PZ);
 }
 
-TEST_F(EnergyPlusFixture, BasicAdvancedSingleSided)
+TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_BasicAdvancedSingleSided)
 {
     std::string const idf_objects = delimited_string(
         {"Version,9.3;",
@@ -9391,7 +9394,7 @@ TEST_F(EnergyPlusFixture, BasicAdvancedSingleSided)
     }
 }
 
-TEST_F(EnergyPlusFixture, MultiAirLoopTest)
+TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_MultiAirLoop)
 {
 
     std::string const idf_objects = delimited_string({
@@ -12977,7 +12980,7 @@ TEST_F(EnergyPlusFixture, MultiAirLoopTest)
     AirflowNetwork::AirflowNetworkFanActivated = false;
 }
 
-TEST_F(EnergyPlusFixture, AFN_CheckNumOfFansInAirLoopTest)
+TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_CheckNumOfFansInAirLoop)
 {
     DataAirSystems::PrimaryAirSystem.allocate(1);
     DataAirSystems::PrimaryAirSystem(1).NumBranches = 1;
@@ -13004,7 +13007,7 @@ TEST_F(EnergyPlusFixture, AFN_CheckNumOfFansInAirLoopTest)
     EXPECT_TRUE(compare_err_stream(error_string, true));
 }
 
-TEST_F(EnergyPlusFixture, BasicAdvancedSingleSidedAvoidCrashTest)
+TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_BasicAdvancedSingleSidedAvoidCrash)
 {
     std::string const idf_objects = delimited_string(
         { "Version,9.3;",
@@ -13443,7 +13446,7 @@ TEST_F(EnergyPlusFixture, BasicAdvancedSingleSidedAvoidCrashTest)
     EXPECT_FALSE(resimu);
 }
 
-TEST_F(EnergyPlusFixture, TestAFNFanModel)
+TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_AFNFanModel)
 {
 
     // Unit test for a new feature of AFN Fan Model
@@ -15430,7 +15433,7 @@ TEST_F(EnergyPlusFixture, TestAFNFanModel)
 
 
 // Missing an AirflowNetwork:Distribution:Node for the Zone Air Node
-TEST_F(EnergyPlusFixture, AFN_CheckMultiZoneNodes_NoZoneNode)
+TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_CheckMultiZoneNodes_NoZoneNode)
 {
     DataGlobals::NumOfZones = 1;
     DataHeatBalance::Zone.allocate(1);
@@ -15498,7 +15501,7 @@ TEST_F(EnergyPlusFixture, AFN_CheckMultiZoneNodes_NoZoneNode)
 }
 
 // Can't find an inlet node for a Zone referenced in AirflowNetwork:MultiZone:Zone object
-TEST_F(EnergyPlusFixture, AFN_CheckMultiZoneNodes_NoInletNode)
+TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_CheckMultiZoneNodes_NoInletNode)
 {
     DataGlobals::NumOfZones = 1;
     DataHeatBalance::Zone.allocate(1);

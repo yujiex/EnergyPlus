@@ -122,17 +122,18 @@ TEST_F(EnergyPlusFixture, CrossVentMgr_EvolveParaUCSDCV_Test)
 
     EnergyPlus::DataRoomAirModel::AirModel.allocate(NumOfZones);
 
+    EnergyPlus::AirflowNetwork::DetailedOpening detailed;
     EnergyPlus::AirflowNetwork::AirflowNetworkLinkageData.allocate(2);
-    EnergyPlus::AirflowNetwork::AirflowNetworkLinkageData(1).CompNum = 1;
-    EnergyPlus::AirflowNetwork::AirflowNetworkLinkageData(2).CompNum = 1;
+    EnergyPlus::AirflowNetwork::AirflowNetworkLinkageData(1).element = &detailed;
+    EnergyPlus::AirflowNetwork::AirflowNetworkLinkageData(2).element = &detailed;
 
     EnergyPlus::AirflowNetwork::AirflowNetworkCompData.allocate(3);
     EnergyPlus::AirflowNetwork::AirflowNetworkCompData(1).TypeNum = 1;
-    EnergyPlus::AirflowNetwork::AirflowNetworkCompData(1).CompTypeNum = 1;
+    //EnergyPlus::AirflowNetwork::AirflowNetworkCompData(1).CompTypeNum = 1;
     EnergyPlus::AirflowNetwork::AirflowNetworkCompData(2).TypeNum = 1;
-    EnergyPlus::AirflowNetwork::AirflowNetworkCompData(2).CompTypeNum = 3;
+    //EnergyPlus::AirflowNetwork::AirflowNetworkCompData(2).CompTypeNum = 3;
     EnergyPlus::AirflowNetwork::AirflowNetworkCompData(3).TypeNum = 2;
-    EnergyPlus::AirflowNetwork::AirflowNetworkCompData(3).CompTypeNum = 2;
+    //EnergyPlus::AirflowNetwork::AirflowNetworkCompData(3).CompTypeNum = 2;
 
     EnergyPlus::DataRoomAirModel::SurfParametersCVDV.allocate(2);
     EnergyPlus::DataRoomAirModel::SurfParametersCVDV(1).Width = 22.715219999999999;

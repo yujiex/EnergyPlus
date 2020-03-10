@@ -48,8 +48,8 @@
 #ifndef ELEMENTS_HPP
 #define ELEMENTS_HPP
 
-#include "AirflowNetwork/Solver.hpp"
 #include "AirflowNetwork/Properties.hpp"
+#include "AirflowNetwork/Solver.hpp"
 
 namespace EnergyPlus {
 
@@ -360,6 +360,40 @@ namespace AirflowNetwork {
 
     struct AirflowElement
     {
+        enum class Type
+        {
+            DOP=1, // Detailed large opening component
+            SOP, // Simple opening component
+            SCR, // Surface crack component
+            SEL, // Surface effective leakage ratio component
+            PLR, // Distribution system crack component
+            DWC, // Distribution system duct component
+            CVF, // Distribution system constant volume fan component
+            FAN, // Distribution system detailed fan component
+            MRR, // Distribution system multiple curve fit power law resistant flow component
+            DMP, // Distribution system damper component
+            ELR, // Distribution system effective leakage ratio component
+            CPD, // Distribution system constant pressure drop component
+            COI, // Distribution system coil component
+            TMU, // Distribution system terminal unit component
+            EXF, // Zone exhaust fan
+            HEX, // Distribution system heat exchanger
+            HOP, // Horizontal opening component
+            RVD, // Reheat VAV terminal damper
+            OAF, // Distribution system OA
+            REL  // Distribution system relief air
+        };
+
+        virtual int calculate(bool const LFLAG,           // Initialization flag.If = 1, use laminar relationship
+                              Real64 const PDROP,         // Total pressure drop across a component (P1 - P2) [Pa]
+                              int const i,                // Linkage number
+                              const AirProperties &propN, // Node 1 properties
+                              const AirProperties &propM, // Node 2 properties
+                              std::array<Real64, 2> &F,   // Airflow through the component [kg/s]
+                              std::array<Real64, 2> &DF   // Partial derivative:  DF/DP
+        ) = 0;
+
+        virtual Type type() = 0;
     };
 
     struct DetailedOpening : public AirflowElement // Large detailed opening component
@@ -416,6 +450,11 @@ namespace AirflowNetwork {
                       std::array<Real64, 2> &F,   // Airflow through the component [kg/s]
                       std::array<Real64, 2> &DF   // Partial derivative:  DF/DP
         );
+
+        Type type()
+        {
+            return Type::DOP;
+        }
     };
 
     struct SimpleOpening : public AirflowElement // Large simple opening component
@@ -441,6 +480,11 @@ namespace AirflowNetwork {
                       std::array<Real64, 2> &F,   // Airflow through the component [kg/s]
                       std::array<Real64, 2> &DF   // Partial derivative:  DF/DP
         );
+
+        Type type()
+        {
+            return Type::SOP;
+        }
     };
 
     struct HorizontalOpening : public AirflowElement // Large horizontal opening component
@@ -465,6 +509,11 @@ namespace AirflowNetwork {
                       std::array<Real64, 2> &F,   // Airflow through the component [kg/s]
                       std::array<Real64, 2> &DF   // Partial derivative:  DF/DP
         );
+
+        Type type()
+        {
+            return Type::HOP;
+        }
     };
 
     struct ReferenceConditions // Surface crack standard conditions
@@ -510,6 +559,12 @@ namespace AirflowNetwork {
                       std::array<Real64, 2> &F,   // Airflow through the component [kg/s]
                       std::array<Real64, 2> &DF   // Partial derivative:  DF/DP
         );
+
+        Type type()
+        {
+            return Type::SCR;
+        }
+
     };
 
     struct EffectiveLeakageArea : public AirflowElement // Surface effective leakage area component
@@ -536,6 +591,11 @@ namespace AirflowNetwork {
                       std::array<Real64, 2> &F,   // Airflow through the component [kg/s]
                       std::array<Real64, 2> &DF   // Partial derivative:  DF/DP
         );
+
+        Type type()
+        {
+            return Type::SEL;
+        }
     };
 
     struct ZoneExhaustFan : public AirflowElement // Zone exhaust fan component
@@ -569,6 +629,11 @@ namespace AirflowNetwork {
                       std::array<Real64, 2> &F,   // Airflow through the component [kg/s]
                       std::array<Real64, 2> &DF   // Partial derivative:  DF/DP
         );
+
+        Type type()
+        {
+            return Type::EXF;
+        }
     };
 
     struct MultizoneExternalNodeProp // External node properties
@@ -628,9 +693,10 @@ namespace AirflowNetwork {
         int CompNum;                          // Element Number
         std::array<int, 2> NodeNums;          // Node numbers
         int LinkNum;                          // Linkage number
+        AirflowElement *element;              // Pointer to airflow element
 
         // Default Constructor
-        AirflowNetworkLinkage() : NodeHeights{{0.0, 0.0}}, CompNum(0), NodeNums{{0, 0}}, LinkNum(0)
+        AirflowNetworkLinkage() : NodeHeights{{0.0, 0.0}}, CompNum(0), NodeNums{{0, 0}}, LinkNum(0), element(nullptr)
         {
         }
     };
@@ -682,6 +748,11 @@ namespace AirflowNetwork {
                       std::array<Real64, 2> &F,   // Airflow through the component [kg/s]
                       std::array<Real64, 2> &DF   // Partial derivative:  DF/DP
         );
+
+        Type type()
+        {
+            return Type::PLR;
+        }
     };
 
     struct EffectiveLeakageRatio : public AirflowElement // effective leakage ratio component
@@ -706,6 +777,11 @@ namespace AirflowNetwork {
                       std::array<Real64, 2> &F,   // Airflow through the component [kg/s]
                       std::array<Real64, 2> &DF   // Partial derivative:  DF/DP
         );
+
+        Type type()
+        {
+            return Type::ELR;
+        }
     };
 
     struct Duct : public AirflowElement // Duct component
@@ -747,6 +823,11 @@ namespace AirflowNetwork {
                       std::array<Real64, 2> &F,   // Airflow through the component [kg/s]
                       std::array<Real64, 2> &DF   // Partial derivative:  DF/DP
         );
+
+        Type type()
+        {
+            return Type::DWC;
+        }
     };
 
     struct Damper : public AirflowElement // Damper component
@@ -777,6 +858,11 @@ namespace AirflowNetwork {
                       std::array<Real64, 2> &F,   // Airflow through the component [kg/s]
                       std::array<Real64, 2> &DF   // Partial derivative:  DF/DP
         );
+
+        Type type()
+        {
+            return Type::DMP;
+        }
     };
 
     struct ConstantVolumeFan : public AirflowElement // Constant volume fan component
@@ -795,7 +881,8 @@ namespace AirflowNetwork {
 
         // Default Constructor
         ConstantVolumeFan()
-            : FlowRate(0.0), Ctrl(0.0), FanTypeNum(0), FanIndex(0), InletNode(0), OutletNode(0), MaxAirMassFlowRate(0.0), AirLoopNum(0), FanModelFlag(false)
+            : FlowRate(0.0), Ctrl(0.0), FanTypeNum(0), FanIndex(0), InletNode(0), OutletNode(0), MaxAirMassFlowRate(0.0), AirLoopNum(0),
+              FanModelFlag(false)
         {
         }
 
@@ -807,6 +894,11 @@ namespace AirflowNetwork {
                       std::array<Real64, 2> &F,   // Airflow through the component [kg/s]
                       std::array<Real64, 2> &DF   // Partial derivative:  DF/DP
         );
+
+        Type type()
+        {
+            return Type::CVF;
+        }
     };
 
     struct DetailedFan : public AirflowElement // Detailed fan component
@@ -836,6 +928,11 @@ namespace AirflowNetwork {
                       std::array<Real64, 2> &F,   // Airflow through the component [kg/s]
                       std::array<Real64, 2> &DF   // Partial derivative:  DF/DP
         );
+
+        Type type()
+        {
+            return Type::FAN;
+        }
     };
 
     struct DisSysCompCoilProp : public AirflowElement // Coil component
@@ -860,6 +957,11 @@ namespace AirflowNetwork {
                       std::array<Real64, 2> &F,   // Airflow through the component [kg/s]
                       std::array<Real64, 2> &DF   // Partial derivative:  DF/DP
         );
+
+        Type type()
+        {
+            return Type::COI;
+        }
     };
 
     struct DisSysCompHXProp : public AirflowElement // Coil component
@@ -884,6 +986,11 @@ namespace AirflowNetwork {
                       std::array<Real64, 2> &F,   // Airflow through the component [kg/s]
                       std::array<Real64, 2> &DF   // Partial derivative:  DF/DP
         );
+
+        Type type()
+        {
+            return Type::HEX;
+        }
     };
 
     struct DisSysCompTermUnitProp : public AirflowElement // Terminal unit component
@@ -910,6 +1017,11 @@ namespace AirflowNetwork {
                       std::array<Real64, 2> &F,   // Airflow through the component [kg/s]
                       std::array<Real64, 2> &DF   // Partial derivative:  DF/DP
         );
+
+        Type type()
+        {
+            return Type::TMU;
+        }
     };
 
     struct ConstantPressureDrop : public AirflowElement // Constant pressure drop component
@@ -932,6 +1044,11 @@ namespace AirflowNetwork {
                       std::array<Real64, 2> &F,   // Airflow through the component [kg/s]
                       std::array<Real64, 2> &DF   // Partial derivative:  DF/DP
         );
+
+        Type type()
+        {
+            return Type::CPD;
+        }
     };
 
     struct DisSysLinkageProp : public AirflowNetworkLinkage // Distribution system linkage data
@@ -978,7 +1095,7 @@ namespace AirflowNetwork {
     {
         // Members
         std::string Name;          // Provide a unique element name
-        int CompTypeNum;           // Provide numeric equivalent for AirflowNetworkCompType
+        //int CompTypeNum;           // Provide numeric equivalent for AirflowNetworkCompType
         int TypeNum;               // Component number under same component type
         int CompNum;               // General component number
         std::string EPlusName;     // Provide a unique element name
@@ -987,7 +1104,7 @@ namespace AirflowNetwork {
         int EPlusTypeNum;          // Provide EPlus component type
 
         // Default Constructor
-        AirflowNetworkCompProp() : CompTypeNum(0), TypeNum(0), CompNum(0), EPlusTypeNum(0)
+        AirflowNetworkCompProp() : TypeNum(0), CompNum(0), EPlusTypeNum(0)
         {
         }
     };
@@ -1070,6 +1187,11 @@ namespace AirflowNetwork {
                               std::array<Real64, 2> &F,   // Airflow through the component [kg/s]
                               std::array<Real64, 2> &DF   // Partial derivative:  DF/DP
         );
+
+        virtual Type type()
+        {
+            return Type::OAF;
+        }
     };
 
     struct ReliefFlow : public OutdoorAirFan // OA fan component
@@ -1088,6 +1210,11 @@ namespace AirflowNetwork {
                               std::array<Real64, 2> &F,   // Airflow through the component [kg/s]
                               std::array<Real64, 2> &DF   // Partial derivative:  DF/DP
         );
+
+        Type type()
+        {
+            return Type::REL;
+        }
     };
 
     struct AirflowNetworkNodeSimuData // Node variable for simulation

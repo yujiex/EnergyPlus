@@ -54,9 +54,9 @@
 #include <ObjexxFCL/Fmath.hh>
 
 // EnergyPlus Headers
+#include <EnergyPlus/AirflowNetwork/include/AirflowNetwork/Elements.hpp>
 #include <EnergyPlus/ConvectionCoefficients.hh>
 #include <EnergyPlus/CrossVentMgr.hh>
-#include <EnergyPlus/AirflowNetwork/include/AirflowNetwork/Elements.hpp>
 #include <EnergyPlus/DataEnvironment.hh>
 #include <EnergyPlus/DataGlobals.hh>
 #include <EnergyPlus/DataHVACGlobals.hh>
@@ -536,13 +536,24 @@ namespace CrossVentMgr {
 
         // Calculate the opening area for all apertures
         for (Ctd = 1; Ctd <= AirflowNetworkSurfaceUCSDCV(0, ZoneNum); ++Ctd) {
-            int cCompNum = AirflowNetwork::AirflowNetworkLinkageData(Ctd).CompNum;
-            if (AirflowNetwork::AirflowNetworkCompData(cCompNum).CompTypeNum == AirflowNetwork::CompTypeNum_DOP) {
-                CVJetRecFlows(Ctd, ZoneNum).Area =
-                    SurfParametersCVDV(Ctd).Width * SurfParametersCVDV(Ctd).Height * AirflowNetwork::MultizoneSurfaceData(Ctd).OpenFactor;
-            } else if (AirflowNetwork::AirflowNetworkCompData(cCompNum).CompTypeNum == AirflowNetwork::CompTypeNum_SCR) {
-                CVJetRecFlows(Ctd, ZoneNum).Area = SurfParametersCVDV(Ctd).Width * SurfParametersCVDV(Ctd).Height;
-            } else {
+            bool legal_component{false};
+            if (AirflowNetwork::AirflowNetworkLinkageData(Ctd).element != nullptr) {
+                switch (AirflowNetwork::AirflowNetworkLinkageData(Ctd).element->type()) {
+                case AirflowNetwork::AirflowElement::Type::DOP:
+                    CVJetRecFlows(Ctd, ZoneNum).Area =
+                        SurfParametersCVDV(Ctd).Width * SurfParametersCVDV(Ctd).Height * AirflowNetwork::MultizoneSurfaceData(Ctd).OpenFactor;
+                    legal_component = true;
+                    break;
+                case AirflowNetwork::AirflowElement::Type::SCR:
+                    CVJetRecFlows(Ctd, ZoneNum).Area = SurfParametersCVDV(Ctd).Width * SurfParametersCVDV(Ctd).Height;
+                    legal_component = true;
+                    break;
+                default:
+                    // Nothing to do here
+                    break;
+                }
+            }
+            if(!legal_component) {
                 ShowSevereError(
                     "RoomAirModelCrossVent:EvolveParaUCSDCV: Illegal leakage component referenced in the cross ventilation room air model");
                 ShowContinueError("Surface " + AirflowNetwork::AirflowNetworkLinkageData(Ctd).Name + " in zone " + Zone(ZoneNum).Name +

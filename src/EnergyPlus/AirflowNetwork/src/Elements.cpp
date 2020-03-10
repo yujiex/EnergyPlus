@@ -683,7 +683,11 @@ namespace AirflowNetwork {
                         SumTermFlow += Node(k1).MassFlowRate;
                     }
                 }
-                if (AirflowNetworkCompData(AirflowNetworkLinkageData(k).CompNum).CompTypeNum == CompTypeNum_ELR) {
+                bool is_ELR{false};
+                if (AirflowNetworkLinkageData(k).element != nullptr) {
+                    is_ELR = AirflowNetworkLinkageData(k).element->type() == AirflowElement::Type::ELR;
+                }
+                if (is_ELR) {
                     // Calculate supply leak sensible losses
                     Node1 = AirflowNetworkLinkageData(k).NodeNums[0];
                     Node2 = AirflowNetworkLinkageData(k).NodeNums[1];
@@ -1476,13 +1480,13 @@ namespace AirflowNetwork {
         // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
         Real64 DPMID; // pressure drop at mid-height of doorway.
         Real64 C;
-        Real64 DF0;   // derivative factor at the bottom of the door.
-        Real64 DFH;   // derivative factor at the top of the door.
-        Real64 DRHO;  // difference in air densities between rooms.
+        Real64 DF0;  // derivative factor at the bottom of the door.
+        Real64 DFH;  // derivative factor at the top of the door.
+        Real64 DRHO; // difference in air densities between rooms.
         Real64 GDRHO;
-        Real64 F0;    // flow factor at the bottom of the door.
-        Real64 FH;    // flow factor at the top of the door.
-        Real64 Y;     // height of neutral plane rel. to bottom of door (m).
+        Real64 F0; // flow factor at the bottom of the door.
+        Real64 FH; // flow factor at the top of the door.
+        Real64 Y;  // height of neutral plane rel. to bottom of door (m).
         Real64 coeff;
         Real64 Width;
         Real64 Height;

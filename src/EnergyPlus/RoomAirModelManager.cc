@@ -1175,13 +1175,16 @@ namespace RoomAirModelManager {
                      AirflowNetwork::AirflowNetworkNodeData(NodeNum1).EPlusZoneNum == ThisZone)) {
                     CompNum = AirflowNetwork::AirflowNetworkLinkageData(Loop2).CompNum;
                     TypeNum = AirflowNetwork::AirflowNetworkCompData(CompNum).TypeNum;
-                    if (AirflowNetwork::AirflowNetworkCompData(CompNum).CompTypeNum == AirflowNetwork::CompTypeNum_SCR) {
-                        if (AirflowNetwork::MultizoneSurfaceCrackData(TypeNum).FlowExpo != 0.50) {
-                            AirModel(ThisZone).AirModelType = RoomAirModel_Mixing;
-                            ShowWarningError("Problem with " + cCurrentModuleObject + " = " + cAlphaArgs(1));
-                            ShowWarningError("Roomair model will not be applied for Zone=" + cAlphaArgs(1) + '.');
-                            ShowContinueError("AirflowNetwrok:Multizone:Surface crack object must have an air flow coefficient = 0.5, value was=" +
-                                              RoundSigDigits(AirflowNetwork::MultizoneSurfaceCrackData(TypeNum).FlowExpo, 2));
+                    if (AirflowNetwork::AirflowNetworkLinkageData(Loop2).element != nullptr) {
+                        if (AirflowNetwork::AirflowNetworkLinkageData(Loop2).element->type() == AirflowNetwork::AirflowElement::Type::SCR) {
+                            if (AirflowNetwork::MultizoneSurfaceCrackData(TypeNum).FlowExpo != 0.50) {
+                                AirModel(ThisZone).AirModelType = RoomAirModel_Mixing;
+                                ShowWarningError("Problem with " + cCurrentModuleObject + " = " + cAlphaArgs(1));
+                                ShowWarningError("Roomair model will not be applied for Zone=" + cAlphaArgs(1) + '.');
+                                ShowContinueError(
+                                    "AirflowNetwork:Multizone:Surface crack object must have an air flow coefficient = 0.5, value was=" +
+                                    RoundSigDigits(AirflowNetwork::MultizoneSurfaceCrackData(TypeNum).FlowExpo, 2));
+                            }
                         }
                     }
                 }
@@ -2131,28 +2134,31 @@ namespace RoomAirModelManager {
                         if (Surface(AirflowNetwork::MultizoneSurfaceData(Loop2).SurfNum).Zone == Loop) {
                             // SurfNum has the reference surface number relative to AirflowNetworkSurfaceData
                             AirflowNetworkSurfaceUCSDCV(SurfNum, Loop) = Loop2;
-                            // calculate the surface width and height
+                            
                             CompNum = AirflowNetwork::AirflowNetworkLinkageData(Loop2).CompNum;
                             TypeNum = AirflowNetwork::AirflowNetworkCompData(CompNum).TypeNum;
-                            if (AirflowNetwork::AirflowNetworkCompData(CompNum).CompTypeNum == AirflowNetwork::CompTypeNum_DOP) {
+
+                            auto detailed = dynamic_cast<AirflowNetwork::DetailedOpening *>(AirflowNetwork::AirflowNetworkLinkageData(Loop2).element);
+                            if (detailed != nullptr) {
+                                // calculate the surface width and height
                                 WidthFactMax = 0.0;
                                 HeightFactMax = 0.0;
-                                for (Loop3 = 1; Loop3 <= AirflowNetwork::MultizoneCompDetOpeningData(TypeNum).NumFac; ++Loop3) {
+                                for (Loop3 = 1; Loop3 <= detailed->NumFac; ++Loop3) {
                                     if (Loop3 == 1) {
-                                        WidthFact = AirflowNetwork::MultizoneCompDetOpeningData(TypeNum).WidthFac1;
-                                        HeightFact = AirflowNetwork::MultizoneCompDetOpeningData(TypeNum).HeightFac1;
+                                        WidthFact = detailed->WidthFac1;
+                                        HeightFact = detailed->HeightFac1;
                                     }
                                     if (Loop3 == 2) {
-                                        WidthFact = AirflowNetwork::MultizoneCompDetOpeningData(TypeNum).WidthFac2;
-                                        HeightFact = AirflowNetwork::MultizoneCompDetOpeningData(TypeNum).HeightFac2;
+                                        WidthFact = detailed->WidthFac2;
+                                        HeightFact = detailed->HeightFac2;
                                     }
                                     if (Loop3 == 3) {
-                                        WidthFact = AirflowNetwork::MultizoneCompDetOpeningData(TypeNum).WidthFac3;
-                                        HeightFact = AirflowNetwork::MultizoneCompDetOpeningData(TypeNum).HeightFac3;
+                                        WidthFact = detailed->WidthFac3;
+                                        HeightFact = detailed->HeightFac3;
                                     }
                                     if (Loop3 == 4) {
-                                        WidthFact = AirflowNetwork::MultizoneCompDetOpeningData(TypeNum).WidthFac4;
-                                        HeightFact = AirflowNetwork::MultizoneCompDetOpeningData(TypeNum).HeightFac4;
+                                        WidthFact = detailed->WidthFac4;
+                                        HeightFact = detailed->HeightFac4;
                                     }
                                     if (WidthFact > WidthFactMax) {
                                         WidthFactMax = WidthFact;
@@ -2164,15 +2170,8 @@ namespace RoomAirModelManager {
                                 SurfParametersCVDV(Loop2).Width = WidthFactMax * Surface(AirflowNetwork::MultizoneSurfaceData(Loop2).SurfNum).Width;
                                 SurfParametersCVDV(Loop2).Height =
                                     HeightFactMax * Surface(AirflowNetwork::MultizoneSurfaceData(Loop2).SurfNum).Height;
-                            } else if (AirflowNetwork::AirflowNetworkCompData(CompNum).CompTypeNum ==
-                                       AirflowNetwork::CompTypeNum_SCR) { // surface type = CRACK
-                                SurfParametersCVDV(Loop2).Width = Surface(AirflowNetwork::MultizoneSurfaceData(Loop2).SurfNum).Width / 2;
-                                AinCV = AirflowNetwork::MultizoneSurfaceCrackData(TypeNum).FlowCoef /
-                                        (BaseDischargeCoef * std::sqrt(2.0 / PsyRhoAirFnPbTdbW(OutBaroPress, MAT(Loop), ZoneAirHumRat(Loop))));
-                                SurfParametersCVDV(Loop2).Height = AinCV / SurfParametersCVDV(Loop2).Width;
-                            }
-                            // calculate the surface Zmin and Zmax
-                            if (AirflowNetwork::AirflowNetworkCompData(CompNum).CompTypeNum == AirflowNetwork::CompTypeNum_DOP) {
+
+                                // calculate the surface Zmin and Zmax
                                 AirflowNetworkSurfPtr = AirflowNetwork::MultizoneSurfaceData(Loop2).SurfNum;
                                 NSides = Surface(AirflowNetwork::MultizoneSurfaceData(Loop2).SurfNum).Sides;
                                 Real64 z_min(std::numeric_limits<Real64>::max()), z_max(std::numeric_limits<Real64>::lowest());
@@ -2183,18 +2182,28 @@ namespace RoomAirModelManager {
                                 }
                                 SurfParametersCVDV(Loop2).Zmin = z_min - ceilingHeight;
                                 SurfParametersCVDV(Loop2).Zmax = z_max - ceilingHeight;
-                            } else if (AirflowNetwork::AirflowNetworkCompData(CompNum).CompTypeNum ==
-                                       AirflowNetwork::CompTypeNum_SCR) { // surface type = CRACK
-                                AirflowNetworkSurfPtr = AirflowNetwork::MultizoneSurfaceData(Loop2).SurfNum;
-                                NSides = Surface(AirflowNetwork::MultizoneSurfaceData(Loop2).SurfNum).Sides;
-                                Real64 z_min(std::numeric_limits<Real64>::max()), z_max(std::numeric_limits<Real64>::lowest());
-                                for (int i = 1; i <= NSides; ++i) {
-                                    Real64 const z_i(Surface(AirflowNetworkSurfPtr).Vertex(i).z);
-                                    z_min = std::min(z_min, z_i);
-                                    z_max = std::max(z_max, z_i);
+
+                            } else {
+                                auto crack = dynamic_cast<AirflowNetwork::SurfaceCrack *>(AirflowNetwork::AirflowNetworkLinkageData(Loop2).element);
+                                if (crack != nullptr) { // surface type = CRACK
+
+                                    // calculate the surface width and height
+                                    SurfParametersCVDV(Loop2).Width = Surface(AirflowNetwork::MultizoneSurfaceData(Loop2).SurfNum).Width / 2;
+                                    AinCV = crack->FlowCoef/(BaseDischargeCoef * std::sqrt(2.0 / PsyRhoAirFnPbTdbW(OutBaroPress, MAT(Loop), ZoneAirHumRat(Loop))));
+                                    SurfParametersCVDV(Loop2).Height = AinCV / SurfParametersCVDV(Loop2).Width;
+
+                                    // calculate the surface Zmin and Zmax
+                                    AirflowNetworkSurfPtr = AirflowNetwork::MultizoneSurfaceData(Loop2).SurfNum;
+                                    NSides = Surface(AirflowNetwork::MultizoneSurfaceData(Loop2).SurfNum).Sides;
+                                    Real64 z_min(std::numeric_limits<Real64>::max()), z_max(std::numeric_limits<Real64>::lowest());
+                                    for (int i = 1; i <= NSides; ++i) {
+                                        Real64 const z_i(Surface(AirflowNetworkSurfPtr).Vertex(i).z);
+                                        z_min = std::min(z_min, z_i);
+                                        z_max = std::max(z_max, z_i);
+                                    }
+                                    SurfParametersCVDV(Loop2).Zmin = z_min - ceilingHeight;
+                                    SurfParametersCVDV(Loop2).Zmax = z_max - ceilingHeight;
                                 }
-                                SurfParametersCVDV(Loop2).Zmin = z_min - ceilingHeight;
-                                SurfParametersCVDV(Loop2).Zmax = z_max - ceilingHeight;
                             }
 
                             ++SurfNum;
@@ -2596,15 +2605,16 @@ namespace RoomAirModelManager {
                     SetupOutputVariable(
                         "Room Air Zone Is Recirculating Status", OutputProcessor::Unit::None, ZoneCVhasREC(Loop), "Zone", "State", Zone(Loop).Name);
                     for (i = 1; i <= AirflowNetworkSurfaceUCSDCV(0, ZoneNum); ++i) {
-                        N = AirflowNetwork::AirflowNetworkLinkageData(i).CompNum;
-                        if (AirflowNetwork::AirflowNetworkCompData(N).CompTypeNum == AirflowNetwork::CompTypeNum_DOP) {
-                            SurfNum = AirflowNetwork::MultizoneSurfaceData(i).SurfNum;
-                            SetupOutputVariable("Room Air Window Jet Region Average Air Velocity",
-                                                OutputProcessor::Unit::m_s,
-                                                CVJetRecFlows(i, Loop).Ujet,
-                                                "Zone",
-                                                "Average",
-                                                AirflowNetwork::MultizoneSurfaceData(i).SurfName);
+                        if (AirflowNetwork::AirflowNetworkLinkageData(i).element != nullptr) {
+                            if (AirflowNetwork::AirflowNetworkLinkageData(i).element->type() == AirflowNetwork::AirflowElement::Type::DOP) {
+                                SurfNum = AirflowNetwork::MultizoneSurfaceData(i).SurfNum;
+                                SetupOutputVariable("Room Air Window Jet Region Average Air Velocity",
+                                                    OutputProcessor::Unit::m_s,
+                                                    CVJetRecFlows(i, Loop).Ujet,
+                                                    "Zone",
+                                                    "Average",
+                                                    AirflowNetwork::MultizoneSurfaceData(i).SurfName);
+                            }
                         }
                     }
                 }

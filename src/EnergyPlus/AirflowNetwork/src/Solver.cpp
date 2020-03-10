@@ -49,8 +49,8 @@
 #include <ObjexxFCL/Fmath.hh>
 #include <ObjexxFCL/gio.hh>
 
-#include "AirflowNetwork/Solver.hpp"
 #include "AirflowNetwork/Elements.hpp"
+#include "AirflowNetwork/Solver.hpp"
 
 #include <EnergyPlus/DataAirLoop.hh>
 #include <EnergyPlus/DataEnvironment.hh>
@@ -121,7 +121,7 @@ namespace AirflowNetwork {
 
     // Common block CONTRL
     Real64 PB(0.0);
-    //int LIST(0);
+    // int LIST(0);
 
     // Common block ZONL
     // Array1D<Real64> RHOZ;
@@ -235,11 +235,13 @@ namespace AirflowNetwork {
         AD.allocate(NetworkNumOfNodes);
         SUMF.allocate(NetworkNumOfNodes);
 
+        // Count the number of detailed openings
         n = 0;
-        for (i = 1; i <= AirflowNetworkNumOfLinks; ++i) {
-            j = AirflowNetworkCompData(AirflowNetworkLinkageData(i).CompNum).CompTypeNum;
-            if (j == CompTypeNum_DOP) {
-                ++n;
+        for (auto &link : AirflowNetworkLinkageData) {
+            if (link.element != nullptr) {
+                if (link.element->type() == AirflowElement::Type::DOP) {
+                    ++n;
+                }
             }
         }
 
@@ -250,7 +252,7 @@ namespace AirflowNetwork {
 
         PB = 101325.0;
         //   LIST = 5
-        //LIST = 0;
+        // LIST = 0;
 
         for (n = 1; n <= NetworkNumOfNodes; ++n) {
             ID(n) = n;
@@ -280,7 +282,8 @@ namespace AirflowNetwork {
             Unit11 = GetNewUnitNumber();
             ObjexxFCL::gio::open(Unit11, DataStringGlobals::eplusADSFileName);
             for (i = 1; i <= NetworkNumOfNodes; ++i) {
-                ObjexxFCL::gio::write(Unit11, Format_901) << i << AirflowNetworkNodeData(i).NodeTypeNum << AirflowNetworkNodeData(i).NodeHeight << TZ(i)
+                ObjexxFCL::gio::write(Unit11, Format_901) << i << AirflowNetworkNodeData(i).NodeTypeNum << AirflowNetworkNodeData(i).NodeHeight <<
+        TZ(i)
                                                << PZ(i);
             }
             ObjexxFCL::gio::write(Unit11, Format_900) << 0;
@@ -303,8 +306,8 @@ namespace AirflowNetwork {
                         //           CASE (CompTypeNum_CVF) ! 'CVF' Constant volume fan component
                         //              WRITE(Unit11,904) AirflowNetworkCompData(i)%CompNum,4,DisSysCompCVFData(j)%FlowRate
                     } else if (SELECT_CASE_var == CompTypeNum_EXF) { // 'EXF' Zone exhaust fan
-                        ObjexxFCL::gio::write(Unit11, Format_904) << AirflowNetworkCompData(i).CompNum << 4 << MultizoneCompExhaustFanData(j).FlowRate;
-                    } else {
+                        ObjexxFCL::gio::write(Unit11, Format_904) << AirflowNetworkCompData(i).CompNum << 4 <<
+        MultizoneCompExhaustFanData(j).FlowRate; } else {
                     }
                 }
             }
@@ -528,7 +531,7 @@ namespace AirflowNetwork {
             }
             properties[n].sqrtDensity = std::sqrt(properties[n].density);
             properties[n].viscosity = 1.71432e-5 + 4.828e-8 * properties[n].temperature;
-            //if (LIST >= 2) ObjexxFCL::gio::write(Unit21, Format_903) << "D,V:" << n << properties[n].density << properties[n].viscosity;
+            // if (LIST >= 2) ObjexxFCL::gio::write(Unit21, Format_903) << "D,V:" << n << properties[n].density << properties[n].viscosity;
         }
         // Compute stack pressures.
         for (i = 1; i <= NetworkNumOfLinks; ++i) {
@@ -556,26 +559,40 @@ namespace AirflowNetwork {
         for (n = 1; n <= NetworkNumOfNodes; ++n) {
             SUMAF(n) = 0.0;
         }
-        //if (LIST >= 1) ObjexxFCL::gio::write(Unit21, Format_900);
+        // if (LIST >= 1) ObjexxFCL::gio::write(Unit21, Format_900);
         for (i = 1; i <= NetworkNumOfLinks; ++i) {
             n = AirflowNetworkLinkageData(i).NodeNums[0];
             m = AirflowNetworkLinkageData(i).NodeNums[1];
-            //if (LIST >= 1) {
+            // if (LIST >= 1) {
             //    gio::write(Unit21, Format_901) << "Flow: " << i << n << m << AirflowNetworkLinkSimu(i).DP << AFLOW(i) << AFLOW2(i);
             //}
-            if (AirflowNetworkCompData(AirflowNetworkLinkageData(i).CompNum).CompTypeNum == CompTypeNum_HOP) {
-                SUMAF(n) = SUMAF(n) - AFLOW(i);
-                SUMAF(m) += AFLOW(i);
+            if (AirflowNetworkLinkageData(i).element != nullptr) {
+                if (AirflowNetworkLinkageData(i).element->type() == AirflowElement::Type::HOP) {
+                    SUMAF(n) = SUMAF(n) - AFLOW(i);
+                    SUMAF(m) += AFLOW(i);
+                } else {
+                    SUMAF(n) = SUMAF(n) - AFLOW(i) - AFLOW2(i);
+                    SUMAF(m) += AFLOW(i) + AFLOW2(i);
+                }
             } else {
                 SUMAF(n) = SUMAF(n) - AFLOW(i) - AFLOW2(i);
                 SUMAF(m) += AFLOW(i) + AFLOW2(i);
             }
         }
-        //for (n = 1; n <= NetworkNumOfNodes; ++n) {
+        // for (n = 1; n <= NetworkNumOfNodes; ++n) {
         //    if (LIST >= 1) gio::write(Unit21, Format_903) << "Room: " << n << PZ(n) << SUMAF(n) << properties[n].temperature;
         //}
 
         for (i = 1; i <= NetworkNumOfLinks; ++i) {
+            bool is_HOP{false};
+            bool is_SOP{false};
+            if (AirflowNetworkLinkageData(i).element != nullptr) {
+                if (AirflowNetworkLinkageData(i).element->type() == AirflowElement::Type::HOP) {
+                    is_HOP = true;
+                } else if (AirflowNetworkLinkageData(i).element->type() == AirflowElement::Type::SOP) {
+                    is_SOP = true;
+                }
+            }
             if (AFLOW2(i) != 0.0) {
             }
             if (AFLOW(i) > 0.0) {
@@ -585,7 +602,7 @@ namespace AirflowNetwork {
                 AirflowNetworkLinkSimu(i).FLOW = 0.0;
                 AirflowNetworkLinkSimu(i).FLOW2 = -AFLOW(i);
             }
-            if (AirflowNetworkCompData(AirflowNetworkLinkageData(i).CompNum).CompTypeNum == CompTypeNum_HOP) {
+            if (is_HOP) {
                 if (AFLOW(i) > 0.0) {
                     AirflowNetworkLinkSimu(i).FLOW = AFLOW(i) + AFLOW2(i);
                     AirflowNetworkLinkSimu(i).FLOW2 = AFLOW2(i);
@@ -600,7 +617,7 @@ namespace AirflowNetwork {
                     AirflowNetworkLinkSimu(i).FLOW2 = AFLOW2(i);
                 }
             }
-            if (AirflowNetworkCompData(AirflowNetworkLinkageData(i).CompNum).CompTypeNum == CompTypeNum_SOP && AFLOW2(i) != 0.0) {
+            if (is_SOP && AFLOW2(i) != 0.0) {
                 if (AFLOW(i) >= 0.0) {
                     AirflowNetworkLinkSimu(i).FLOW = AFLOW(i);
                     AirflowNetworkLinkSimu(i).FLOW2 = std::abs(AFLOW2(i));
@@ -696,7 +713,7 @@ namespace AirflowNetwork {
         ACCEL = 0;
         NSYM = 0;
         NNZE = IK(NetworkNumOfNodes + 1) - 1;
-        //if (LIST >= 2) ObjexxFCL::gio::write(Unit21, fmtLD) << "Initialization" << NetworkNumOfNodes << NetworkNumOfLinks << NNZE;
+        // if (LIST >= 2) ObjexxFCL::gio::write(Unit21, fmtLD) << "Initialization" << NetworkNumOfNodes << NetworkNumOfLinks << NNZE;
         ITER = 0;
 
         for (n = 1; n <= NetworkNumOfNodes; ++n) {
@@ -713,7 +730,7 @@ namespace AirflowNetwork {
                 if (AirflowNetworkNodeData(n).NodeTypeNum == 0) PZ(n) = SUMF(n);
             }
             // Data dump.
-            //if (LIST >= 3) {
+            // if (LIST >= 3) {
             //    DUMPVD("AD:", AD, NetworkNumOfNodes, Unit21);
             //    DUMPVD("AU:", AU, NNZE, Unit21);
             //    DUMPVR("AF:", SUMF, NetworkNumOfNodes, Unit21);
@@ -726,18 +743,18 @@ namespace AirflowNetwork {
             FACSKY(AU, AD, AU, IK, NetworkNumOfNodes, NSYM);
             SLVSKY(AU, AD, AU, PZ, IK, NetworkNumOfNodes, NSYM);
 #endif
-            //if (LIST >= 2) DUMPVD("PZ:", PZ, NetworkNumOfNodes, Unit21);
+            // if (LIST >= 2) DUMPVD("PZ:", PZ, NetworkNumOfNodes, Unit21);
         }
         // Solve nonlinear airflow network equations by modified Newton's method.
 
         while (ITER < AirflowNetworkSimu.MaxIteration) {
             LFLAG = false;
             ++ITER;
-            //if (LIST >= 2) ObjexxFCL::gio::write(Unit21, fmtLD) << "Begin iteration " << ITER;
+            // if (LIST >= 2) ObjexxFCL::gio::write(Unit21, fmtLD) << "Begin iteration " << ITER;
             // Set up the Jacobian matrix.
             FILJAC(NNZE, LFLAG);
             // Data dump.
-            //if (LIST >= 3) {
+            // if (LIST >= 3) {
             //    DUMPVR("SUMF:", SUMF, NetworkNumOfNodes, Unit21);
             //    DUMPVR("SUMAF:", SUMAF, NetworkNumOfNodes, Unit21);
             //}
@@ -758,7 +775,7 @@ namespace AirflowNetwork {
             if (CONVG == 1 && ITER > 1) return;
             if (ITER >= AirflowNetworkSimu.MaxIteration) break;
             // Data dump.
-            //if (LIST >= 3) {
+            // if (LIST >= 3) {
             //    DUMPVD("AD:", AD, NetworkNumOfNodes, Unit21);
             //    DUMPVD("AU:", AU, NNZE, Unit21);
             //}
@@ -800,7 +817,7 @@ namespace AirflowNetwork {
                 }
             }
             // Data revision dump.
-            //if (LIST >= 2) {
+            // if (LIST >= 2) {
             //    for (n = 1; n <= NetworkNumOfNodes; ++n) {
             //        if (AirflowNetworkNodeData(n).NodeTypeNum == 0)
             //            ObjexxFCL::gio::write(Unit21, Format_901) << " Rev:" << n << SUMF(n) << CCF(n) << CEF(n) << PZ(n);
@@ -904,7 +921,7 @@ namespace AirflowNetwork {
         for (n = 1; n <= NNZE; ++n) {
             AU(n) = 0.0;
         }
-        //                              Set up the Jacobian matrix.
+        // Set up the Jacobian matrix.
         for (i = 1; i <= NetworkNumOfLinks; ++i) {
             n = AirflowNetworkLinkageData(i).NodeNums[0];
             int m = AirflowNetworkLinkageData(i).NodeNums[1];
@@ -915,63 +932,35 @@ namespace AirflowNetwork {
             } else {
                 DP = PZ(n) - PZ(m) + DpL(i, 1) + PW(i);
             }
-            //if (LIST >= 4) ObjexxFCL::gio::write(Unit21, Format_901) << "PS:" << i << n << M << PS(i) << PW(i) << AirflowNetworkLinkSimu(i).DP;
-            j = AirflowNetworkLinkageData(i).CompNum;
-            {
-                auto const SELECT_CASE_var(AirflowNetworkCompData(j).CompTypeNum);
-                if (SELECT_CASE_var == CompTypeNum_PLR) { // Distribution system crack component
-                    NF = DisSysCompLeakData(AirflowNetworkCompData(j).TypeNum).calculate(LFLAG, DP, i, properties[n], properties[m], F, DF);
-                } else if (SELECT_CASE_var == CompTypeNum_DWC) { // Distribution system duct component
-                    NF = DisSysCompDuctData(AirflowNetworkCompData(j).TypeNum).calculate(LFLAG, DP, i, properties[n], properties[m], F, DF);
-                } else if (SELECT_CASE_var == CompTypeNum_CVF) { // Distribution system constant volume fan component
-                    NF = DisSysCompCVFData(AirflowNetworkCompData(j).TypeNum).calculate(LFLAG, DP, i, properties[n], properties[m], F, DF);
-                } else if (SELECT_CASE_var == CompTypeNum_FAN) { // Distribution system detailed fan component
-                    NF = DisSysCompDetFanData(AirflowNetworkCompData(j).TypeNum).calculate(LFLAG, DP, i, properties[n], properties[m], F, DF);
-                    //           Case (CompTypeNum_CPF) ! not currently used in EnergyPlus code -- left for compatibility with AirNet
-                    //              CALL AFECPF(J,LFLAG,DP,I,N,M,F,DF,NF)
-                } else if (SELECT_CASE_var == CompTypeNum_DMP) { // Distribution system damper component
-                    NF = DisSysCompDamperData(AirflowNetworkCompData(j).TypeNum).calculate(LFLAG, DP, i, properties[n], properties[m], F, DF);
-                } else if (SELECT_CASE_var == CompTypeNum_ELR) { // Distribution system effective leakage ratio component
-                    NF = DisSysCompELRData(AirflowNetworkCompData(j).TypeNum).calculate(LFLAG, DP, i, properties[n], properties[m], F, DF);
-                } else if (SELECT_CASE_var == CompTypeNum_CPD) { // Distribution system constant pressure drop component
-                    NF = DisSysCompCPDData(AirflowNetworkCompData(j).TypeNum).calculate(LFLAG, DP, i, properties[n], properties[m], F, DF);
-                    if (DP != 0.0) {
-                        DP = DisSysCompCPDData(AirflowNetworkCompData(j).TypeNum).DP;
-                    }
-                } else if (SELECT_CASE_var == CompTypeNum_DOP) { // Detailed opening
-                    NF = MultizoneCompDetOpeningData(AirflowNetworkCompData(j).TypeNum).calculate(LFLAG, DP, i, properties[n], properties[m], F, DF);
-                } else if (SELECT_CASE_var == CompTypeNum_SOP) { // Simple opening
-                    NF = MultizoneCompSimpleOpeningData(AirflowNetworkCompData(j).TypeNum)
-                             .calculate(LFLAG, DP, i, properties[n], properties[m], F, DF);
-                } else if (SELECT_CASE_var == CompTypeNum_SCR) { // Surface crack component
-                    NF = MultizoneSurfaceCrackData(AirflowNetworkCompData(j).TypeNum).calculate(LFLAG, DP, i, properties[n], properties[m], F, DF);
-                } else if (SELECT_CASE_var == CompTypeNum_SEL) { // Surface effective leakage ratio component
-                    NF = MultizoneSurfaceELAData(AirflowNetworkCompData(j).TypeNum).calculate(LFLAG, DP, i, properties[n], properties[m], F, DF);
-                } else if (SELECT_CASE_var == CompTypeNum_COI) { // Distribution system coil component
-                    NF = DisSysCompCoilData(AirflowNetworkCompData(j).TypeNum).calculate(LFLAG, DP, i, properties[n], properties[m], F, DF);
-                } else if (SELECT_CASE_var == CompTypeNum_TMU) { // Distribution system terminal unit component
-                    NF = DisSysCompTermUnitData(AirflowNetworkCompData(j).TypeNum).calculate(LFLAG, DP, i, properties[n], properties[m], F, DF);
-                } else if (SELECT_CASE_var == CompTypeNum_EXF) { // Exhaust fan component
-                    NF = MultizoneCompExhaustFanData(AirflowNetworkCompData(j).TypeNum).calculate(LFLAG, DP, i, properties[n], properties[m], F, DF);
-                } else if (SELECT_CASE_var == CompTypeNum_HEX) { // Distribution system heat exchanger component
-                    NF = DisSysCompHXData(AirflowNetworkCompData(j).TypeNum).calculate(LFLAG, DP, i, properties[n], properties[m], F, DF);
-                } else if (SELECT_CASE_var == CompTypeNum_HOP) { // Horizontal opening
-                    NF = MultizoneCompHorOpeningData(AirflowNetworkCompData(j).TypeNum).calculate(LFLAG, DP, i, properties[n], properties[m], F, DF);
-                } else if (SELECT_CASE_var == CompTypeNum_OAF) { // OA supply fan
-                    NF = DisSysCompOutdoorAirData(AirflowNetworkCompData(j).TypeNum).calculate(LFLAG, DP, i, properties[n], properties[m], F, DF);
-                } else if (SELECT_CASE_var == CompTypeNum_REL) { // Relief fan
-                    NF = DisSysCompReliefAirData(AirflowNetworkCompData(j).TypeNum).calculate(LFLAG, DP, i, properties[n], properties[m], F, DF);
-                } else {
-                    continue;
-                }
+            // if (LIST >= 4) ObjexxFCL::gio::write(Unit21, Format_901) << "PS:" << i << n << M << PS(i) << PW(i) << AirflowNetworkLinkSimu(i).DP;
+
+            if (AirflowNetworkLinkageData(i).element == nullptr) {
+                // This is not great
+                continue;
             }
+
+            NF = AirflowNetworkLinkageData(i).element->calculate(LFLAG, DP, i, properties[n], properties[m], F, DF);
+
+            // As long as the constant pressure drop and detailed opening are implemented as-is, need a back door
+            AFLOW2(i) = 0.0;
+            switch (AirflowNetworkLinkageData(i).element->type()) {
+            case AirflowElement::Type::CPD:
+                if (DP != 0.0) {
+                    DP = static_cast<ConstantPressureDrop *>(AirflowNetworkLinkageData(i).element)->DP;
+                }
+                break;
+            case AirflowElement::Type::DOP:
+                AFLOW2(i) = F[1];
+                break;
+            default:
+                // Nothing to do here
+                break;
+            }
+
             AirflowNetworkLinkSimu(i).DP = DP;
             AFLOW(i) = F[0];
-            AFLOW2(i) = 0.0;
-            if (AirflowNetworkCompData(j).CompTypeNum == CompTypeNum_DOP) {
-                AFLOW2(i) = F[1];
-            }
-            //if (LIST >= 3) ObjexxFCL::gio::write(Unit21, Format_901) << " NRi:" << i << n << M << AirflowNetworkLinkSimu(i).DP << F[0] << DF[0];
+
+            // if (LIST >= 3) ObjexxFCL::gio::write(Unit21, Format_901) << " NRi:" << i << n << M << AirflowNetworkLinkSimu(i).DP << F[0] << DF[0];
             FLAG = 1;
             if (AirflowNetworkNodeData(n).NodeTypeNum == 0) {
                 ++FLAG;
@@ -990,7 +979,7 @@ namespace AirflowNetwork {
             if (FLAG != 1) FILSKY(X, AirflowNetworkLinkageData(i).NodeNums, IK, AU, AD, FLAG);
             if (NF == 1) continue;
             AFLOW2(i) = F[1];
-            //if (LIST >= 3) ObjexxFCL::gio::write(Unit21, Format_901) << " NRj:" << i << n << m << AirflowNetworkLinkSimu(i).DP << F[1] << DF[1];
+            // if (LIST >= 3) ObjexxFCL::gio::write(Unit21, Format_901) << " NRj:" << i << n << m << AirflowNetworkLinkSimu(i).DP << F[1] << DF[1];
             FLAG = 1;
             if (AirflowNetworkNodeData(n).NodeTypeNum == 0) {
                 ++FLAG;
@@ -1079,7 +1068,6 @@ namespace AirflowNetwork {
 #endif
     }
 
-
     int AFEFAN(int const JA,               // Component number
                bool const LFLAG,           // Initialization flag.If = 1, use laminar relationship
                Real64 const PDROP,         // Total pressure drop across a component (P1 - P2) [Pa]
@@ -1161,12 +1149,14 @@ namespace AirflowNetwork {
         } else {
             PRISE = -PDROP * (DisSysCompDetFanData(CompNum).RhoAir / propN.density) / (DisSysCompDetFanData(CompNum).TranRat * AFECTL(i));
         }
-        //if (LIST >= 4) ObjexxFCL::gio::write(Unit21, Format_901) << " fan:" << i << PDROP << PRISE << AFECTL(i) << DisSysCompDetFanData(CompNum).TranRat;
+        // if (LIST >= 4) ObjexxFCL::gio::write(Unit21, Format_901) << " fan:" << i << PDROP << PRISE << AFECTL(i) <<
+        // DisSysCompDetFanData(CompNum).TranRat;
         if (LFLAG) {
             // Initialization by linear approximation.
             F[0] = -DisSysCompDetFanData(CompNum).Qfree * AFECTL(i) * (1.0 - PRISE / DisSysCompDetFanData(CompNum).Pshut);
             DPDF = -DisSysCompDetFanData(CompNum).Pshut / DisSysCompDetFanData(CompNum).Qfree;
-            //if (LIST >= 4) ObjexxFCL::gio::write(Unit21, Format_901) << " fni:" << JA << DisSysCompDetFanData(CompNum).Qfree << DisSysCompDetFanData(CompNum).Pshut;
+            // if (LIST >= 4) ObjexxFCL::gio::write(Unit21, Format_901) << " fni:" << JA << DisSysCompDetFanData(CompNum).Qfree <<
+            // DisSysCompDetFanData(CompNum).Pshut;
         } else {
             // Solution of the fan performance curve.
             // Determine curve fit range.
@@ -1185,7 +1175,7 @@ namespace AirflowNetwork {
                      DX * (DisSysCompDetFanData(CompNum).Coeff(k + 2) +
                            DX * (DisSysCompDetFanData(CompNum).Coeff(k + 3) + DX * DisSysCompDetFanData(CompNum).Coeff(k + 5))) -
                      PRISE;
-                //if (LIST >= 4) ObjexxFCL::gio::write(Unit21, Format_901) << " fp0:" << j << BX << BY << DX << DY;
+                // if (LIST >= 4) ObjexxFCL::gio::write(Unit21, Format_901) << " fp0:" << j << BX << BY << DX << DY;
                 if (BY * DY <= 0.0) break;
                 ++j;
                 if (j > NumCur) ShowFatalError("Out of range, too high (FAN) in ADS simulation");
@@ -1216,7 +1206,7 @@ namespace AirflowNetwork {
             BY = CY;
             if (CY * CCY > 0.0) DY *= 0.5;
         Label70:;
-            //if (LIST >= 4) ObjexxFCL::gio::write(Unit21, Format_901) << " fpi:" << j << BX << CX << DX << BY << DY;
+            // if (LIST >= 4) ObjexxFCL::gio::write(Unit21, Format_901) << " fpi:" << j << BX << CX << DX << BY << DY;
             if (DX - BX < TOL * CX) goto Label80;
             if (DX - BX < TOL) goto Label80;
             goto Label40;
@@ -1300,7 +1290,6 @@ namespace AirflowNetwork {
 
     // Leave it for the time being and revise later. Or drop this component ???????????
 
-   
     int AFEREL(int const j,                // Component number
                bool const LFLAG,           // Initialization flag.If = 1, use laminar relationship
                Real64 const PDROP,         // Total pressure drop across a component (P1 - P2) [Pa]
@@ -1548,7 +1537,7 @@ namespace AirflowNetwork {
                 }
             }
             // Select laminar or turbulent flow.
-            //if (LIST >= 4) ObjexxFCL::gio::write(Unit21, Format_901) << " generic crack: " << PDROP << FL << FT;
+            // if (LIST >= 4) ObjexxFCL::gio::write(Unit21, Format_901) << " generic crack: " << PDROP << FL << FT;
             if (std::abs(FL) <= std::abs(FT)) {
                 F[0] = FL;
                 DF[0] = CDM;
@@ -2948,7 +2937,7 @@ namespace AirflowNetwork {
         int To;
         int Fromz;
         int Toz;
-        int Ltyp;
+        //int Ltyp;
         int i;
         int ll;
         int j;
@@ -2992,8 +2981,11 @@ namespace AirflowNetwork {
                 ll = 3;
             }
 
-            Ltyp = AirflowNetworkCompData(AirflowNetworkLinkageData(i).CompNum).CompTypeNum;
-            if (Ltyp == CompTypeNum_DOP) {
+            bool is_DOP{false};
+            if (AirflowNetworkLinkageData(i).element != nullptr) {
+                is_DOP = AirflowNetworkLinkageData(i).element->type() == AirflowElement::Type::DOP;
+            }
+            if (is_DOP) {
                 ActLh = MultizoneSurfaceData(i).Height;
                 ActLOwnh = ActLh * 1.0;
             } else {
@@ -3174,7 +3166,7 @@ namespace AirflowNetwork {
             DpP = -psz(Pref, RhoLd(2), 0.0, 0.0, -H, G);
             DpL(i, 2) = (DpF(1) - DpT(1) + DpP);
 
-            if (Ltyp == CompTypeNum_DOP) {
+            if (is_DOP) {
                 Pprof = OpenNum * (NrInt + 2);
                 PresProfile(i, Pprof, G, DpF, DpT, BetaStF, BetaStT, RhoStF, RhoStT, From, To, ActLh, Hfl(i));
                 ++OpenNum;

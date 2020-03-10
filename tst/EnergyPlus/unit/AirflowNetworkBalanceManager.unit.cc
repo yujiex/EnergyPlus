@@ -224,7 +224,7 @@ TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_ZoneVentingSch)
     // MultizoneZoneData has only 1 element so may be hardcoded
     auto GetIndex = UtilityRoutines::FindItemInList(AirflowNetwork::MultizoneZoneData(1).VentingSchName, Schedule({1, NumSchedules}));
     EXPECT_EQ(GetIndex, AirflowNetwork::MultizoneZoneData(1).VentingSchNum);
-    EXPECT_EQ(1, solver.elements.size());
+    EXPECT_EQ(1u, solver.elements.size());
 
     Zone.deallocate();
     Surface.deallocate();
@@ -2379,7 +2379,7 @@ TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_AFNPressureStat)
     EXPECT_NEAR(36.7133377, AirflowNetwork::AirflowNetworkReportData(2).MultiZoneMixLatGainW, 0.0001);
     EXPECT_NEAR(89.3450925, AirflowNetwork::AirflowNetworkReportData(3).MultiZoneInfiLatLossW, 0.0001);
 
-    EXPECT_EQ(33, solver.elements.size());
+    EXPECT_EQ(33u, solver.elements.size());
 
 }
 TEST_F(EnergyPlusFixture, AirflowNetworkBalanceManager_ZoneVentingSchWithAdaptiveCtrl)

@@ -384,6 +384,8 @@ namespace AirflowNetwork {
             REL  // Distribution system relief air
         };
 
+        std::string name; // Name of airflow element
+
         virtual int calculate(bool const LFLAG,           // Initialization flag.If = 1, use laminar relationship
                               Real64 const PDROP,         // Total pressure drop across a component (P1 - P2) [Pa]
                               int const i,                // Linkage number
@@ -399,7 +401,7 @@ namespace AirflowNetwork {
     struct DetailedOpening : public AirflowElement // Large detailed opening component
     {
         // Members
-        std::string Name;     // Name of large detailed opening component
+        //std::string Name;     // Name of large detailed opening component
         Real64 FlowCoef;      // Air Mass Flow Coefficient When Window or Door Is Closed [kg/s at 1Pa]
         Real64 FlowExpo;      // Air Mass Flow exponent When Window or Door Is Closed [dimensionless]
         std::string TypeName; // Name of Large vertical opening type
@@ -460,7 +462,7 @@ namespace AirflowNetwork {
     struct SimpleOpening : public AirflowElement // Large simple opening component
     {
         // Members
-        std::string Name;  // Name of large simple opening component
+        //std::string Name;  // Name of large simple opening component
         Real64 FlowCoef;   // Air Mass Flow Coefficient When Window or Door Is Closed [kg/s at 1Pa]
         Real64 FlowExpo;   // Air Mass Flow exponent When Window or Door Is Closed [dimensionless]
         Real64 MinRhoDiff; // Minimum density difference for two-way flow
@@ -490,7 +492,7 @@ namespace AirflowNetwork {
     struct HorizontalOpening : public AirflowElement // Large horizontal opening component
     {
         // Members
-        std::string Name;  // Name of large horizontal opening component
+        //std::string Name;  // Name of large horizontal opening component
         Real64 FlowCoef;   // Air Mass Flow Coefficient When Window or Door Is Closed [kg/s at 1Pa]
         Real64 FlowExpo;   // Air Mass Flow exponent When Window or Door Is Closed [dimensionless]
         Real64 Slope;      // Sloping plane angle
@@ -538,7 +540,7 @@ namespace AirflowNetwork {
     struct SurfaceCrack : public AirflowElement // Surface crack component
     {
         // Members
-        std::string Name; // Name of crack component
+        //std::string Name; // Name of crack component
         // std::string ExternalNodeNames; // Name of external node.Not required for internal surface
         Real64 FlowCoef;  // Air Mass Flow Coefficient When Window or Door Is Closed [kg/s at 1Pa]
         Real64 FlowExpo;  // Air Mass Flow exponent When Window or Door Is Closed [dimensionless]
@@ -570,7 +572,7 @@ namespace AirflowNetwork {
     struct EffectiveLeakageArea : public AirflowElement // Surface effective leakage area component
     {
         // Members
-        std::string Name;   // Name of effective leakage area component
+        //std::string Name;   // Name of effective leakage area component
         Real64 ELA;         // Effective leakage area
         Real64 DischCoeff;  // Discharge coefficient
         Real64 RefDeltaP;   // Reference pressure difference
@@ -601,7 +603,7 @@ namespace AirflowNetwork {
     struct ZoneExhaustFan : public AirflowElement // Zone exhaust fan component
     {
         // Members
-        std::string Name; // Name of exhaust fan component
+        //std::string Name; // Name of exhaust fan component
         Real64 FlowRate;  // mass flow rate
         int SchedPtr;     // Schedule pointer
         Real64 FlowCoef;  // Air Mass Flow Coefficient [kg/s at 1Pa]
@@ -731,7 +733,7 @@ namespace AirflowNetwork {
     struct DuctLeak : public AirflowElement // duct leak component
     {
         // Members
-        std::string Name; // Name of component leak
+        //std::string Name; // Name of component leak
         Real64 FlowCoef;  // Air Mass Flow Coefficient [kg/s at 1Pa]
         Real64 FlowExpo;  // Air Mass Flow exponent [dimensionless]
 
@@ -758,7 +760,7 @@ namespace AirflowNetwork {
     struct EffectiveLeakageRatio : public AirflowElement // effective leakage ratio component
     {
         // Members
-        std::string Name; // Name of component leak
+        //std::string Name; // Name of component leak
         Real64 ELR;       // Value of effective leakage ratio
         Real64 FlowRate;  // Maximum airflow rate
         Real64 RefPres;   // Reference pressure difference
@@ -787,7 +789,7 @@ namespace AirflowNetwork {
     struct Duct : public AirflowElement // Duct component
     {
         // Members
-        std::string Name;         // Name of duct component
+        //std::string Name;         // Name of duct component
         Real64 L;                 // Duct length [m]
         Real64 hydraulicDiameter; // Hydraulic diameter [m]
         Real64 A;                 // Cross section area [m2]
@@ -833,7 +835,7 @@ namespace AirflowNetwork {
     struct Damper : public AirflowElement // Damper component
     {
         // Members
-        std::string Name; // Name of damper component
+        //std::string Name; // Name of damper component
         Real64 LTP;       // Value for laminar turbulent transition
         Real64 LamFlow;   // Laminar flow coefficient
         Real64 TurFlow;   // Turbulent flow coefficient
@@ -868,7 +870,7 @@ namespace AirflowNetwork {
     struct ConstantVolumeFan : public AirflowElement // Constant volume fan component
     {
         // Members
-        std::string Name;          // Name of detailed fan component
+        //std::string Name;          // Name of detailed fan component
         Real64 FlowRate;           // Air volume flow rate
         Real64 Ctrl;               // Control ratio
         int FanTypeNum;            // Fan type: Constant volume or ONOFF
@@ -904,7 +906,7 @@ namespace AirflowNetwork {
     struct DetailedFan : public AirflowElement // Detailed fan component
     {
         // Members
-        std::string Name;      // Name of constant volume fan component
+        //std::string Name;      // Name of constant volume fan component
         Real64 FlowCoef;       // Coefficient for linear initialization [kg/s at 1Pa]
         Real64 FlowExpo;       // Turbulent flow coefficient [dimensionless]
         Real64 RhoAir;         // Reference air density
@@ -938,7 +940,7 @@ namespace AirflowNetwork {
     struct DisSysCompCoilProp : public AirflowElement // Coil component
     {
         // Members
-        std::string Name;         // Name of coil component
+        //std::string Name;         // Name of coil component
         std::string EPlusType;    // EnergyPlus coil type
         Real64 L;                 // Air path length
         Real64 hydraulicDiameter; // Air path hydraulic diameter
@@ -967,7 +969,7 @@ namespace AirflowNetwork {
     struct DisSysCompHXProp : public AirflowElement // Coil component
     {
         // Members
-        std::string Name;         // Name of coil component
+        //std::string Name;         // Name of coil component
         std::string EPlusType;    // EnergyPlus coil type
         Real64 L;                 // Air path length
         Real64 hydraulicDiameter; // Air path hydraulic diameter
@@ -996,7 +998,7 @@ namespace AirflowNetwork {
     struct DisSysCompTermUnitProp : public AirflowElement // Terminal unit component
     {
         // Members
-        std::string Name;         // Name of coil component
+        //std::string Name;         // Name of coil component
         std::string EPlusType;    // EnergyPlus coil type
         Real64 L;                 // Air path length
         Real64 hydraulicDiameter; // Air path hydraulic diameter
@@ -1027,7 +1029,7 @@ namespace AirflowNetwork {
     struct ConstantPressureDrop : public AirflowElement // Constant pressure drop component
     {
         // Members
-        std::string Name; // Name of constant pressure drop component
+        //std::string Name; // Name of constant pressure drop component
         Real64 A;         // cross section area
         Real64 DP;        // Pressure difference across the component
 
@@ -1094,17 +1096,16 @@ namespace AirflowNetwork {
     struct AirflowNetworkCompProp // AirflowNetwork element data
     {
         // Members
-        std::string Name;          // Provide a unique element name
+        //std::string Name;          // Provide a unique element name
         //int CompTypeNum;           // Provide numeric equivalent for AirflowNetworkCompType
         int TypeNum;               // Component number under same component type
-        int CompNum;               // General component number
-        std::string EPlusName;     // Provide a unique element name
+        //int CompNum;               // General component number
+        int EPlusTypeNum;          // Provide EPlus component type
         std::string EPlusCompName; // Provide EPlus component name or Other
         std::string EPlusType;     // Provide EPlus type, such as terminal reheat, coil, etc. 9/30/03 or Other
-        int EPlusTypeNum;          // Provide EPlus component type
 
         // Default Constructor
-        AirflowNetworkCompProp() : TypeNum(0), CompNum(0), EPlusTypeNum(0)
+        AirflowNetworkCompProp() : TypeNum(0), EPlusTypeNum(0)
         {
         }
     };
@@ -1119,6 +1120,8 @@ namespace AirflowNetwork {
         bool VAVTermDamper;   // True if this component is a damper for a VAV terminal
         int LinkageViewFactorObjectNum;
         int AirLoopNum; // Airloop number
+        //std::string EPlusName;     // Provide a unique element name
+        int EPlusTypeNum; // Provide EPlus component type
 
         // Default Constructor
         AirflowNetworkLinkageProp()
@@ -1156,7 +1159,7 @@ namespace AirflowNetwork {
     struct OutdoorAirFan : public AirflowElement // OA fan component
     {
         // Members
-        std::string Name; // Name of exhaust fan component
+        //std::string Name; // Name of exhaust fan component
         int SchedPtr;     // Schedule pointer
         Real64 FlowCoef;  // Air Mass Flow Coefficient [kg/s at 1Pa]
         Real64 FlowExpo;  // Air Mass Flow exponent [dimensionless]

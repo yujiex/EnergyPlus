@@ -1114,7 +1114,7 @@ namespace AirflowNetwork {
             } else {
                 ShowFatalError(
                     "Open Factor is above the maximum input range for opening factors in AirflowNetwork:MultiZone:Component:DetailedOpening = " +
-                    Name);
+                    name);
             }
         }
 
@@ -1130,7 +1130,7 @@ namespace AirflowNetwork {
             } else {
                 ShowFatalError(
                     "Open Factor is above the maximum input range for opening factors in AirflowNetwork:MultiZone:Component:DetailedOpening = " +
-                    Name);
+                    name);
             }
         }
 
@@ -1150,7 +1150,7 @@ namespace AirflowNetwork {
             } else {
                 ShowFatalError(
                     "Open Factor is above the maximum input range for opening factors in AirflowNetwork:MultiZone:Component:DetailedOpening = " +
-                    Name);
+                    name);
             }
         }
 
@@ -1195,11 +1195,11 @@ namespace AirflowNetwork {
             if (ActLw == 0.0) {
                 ++WidthErrCount;
                 if (WidthErrCount < 2) {
-                    ShowWarningError("The actual width of the AirflowNetwork:MultiZone:Component:DetailedOpening of " + Name + " is 0.");
+                    ShowWarningError("The actual width of the AirflowNetwork:MultiZone:Component:DetailedOpening of " + name + " is 0.");
                     ShowContinueError("The actual width is set to 1.0E-6 m.");
                     ShowContinueErrorTimeStamp("Occurrence info:");
                 } else {
-                    ShowRecurringWarningErrorAtEnd("The actual width of the AirflowNetwork:MultiZone:Component:DetailedOpening of " + Name +
+                    ShowRecurringWarningErrorAtEnd("The actual width of the AirflowNetwork:MultiZone:Component:DetailedOpening of " + name +
                                                        " is 0 error continues.",
                                                    WidthErrIndex,
                                                    ActLw,
@@ -1210,11 +1210,11 @@ namespace AirflowNetwork {
             if (ActLh == 0.0) {
                 ++HeightErrCount;
                 if (HeightErrCount < 2) {
-                    ShowWarningError("The actual height of the AirflowNetwork:MultiZone:Component:DetailedOpening of " + Name + " is 0.");
+                    ShowWarningError("The actual height of the AirflowNetwork:MultiZone:Component:DetailedOpening of " + name + " is 0.");
                     ShowContinueError("The actual height is set to 1.0E-6 m.");
                     ShowContinueErrorTimeStamp("Occurrence info:");
                 } else {
-                    ShowRecurringWarningErrorAtEnd("The actual width of the AirflowNetwork:MultiZone:Component:DetailedOpening of " + Name +
+                    ShowRecurringWarningErrorAtEnd("The actual width of the AirflowNetwork:MultiZone:Component:DetailedOpening of " + name +
                                                        " is 0 error continues.",
                                                    HeightErrIndex,
                                                    ActLh,

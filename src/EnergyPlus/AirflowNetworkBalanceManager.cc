@@ -633,7 +633,7 @@ namespace AirflowNetworkBalanceManager {
                     }
                 }
                 // globalSolverObject.cracks[thisObjectName] = SurfaceCrack(coeff, expnt, refT, refP, refW);
-                MultizoneSurfaceCrackData(i).Name = thisObjectName; // Name of surface crack component
+                MultizoneSurfaceCrackData(i).name = thisObjectName; // Name of surface crack component
                 MultizoneSurfaceCrackData(i).FlowCoef = coeff;      // Air Mass Flow Coefficient
                 MultizoneSurfaceCrackData(i).FlowExpo = expnt;      // Air Mass Flow exponent
                 MultizoneSurfaceCrackData(i).StandardT = refT;
@@ -721,7 +721,7 @@ namespace AirflowNetworkBalanceManager {
                 // fanpair.first->second.InletNode = inletNode;
                 // fanpair.first->second.OutletNode = outletNode;
 
-                MultizoneCompExhaustFanData(i).Name = thisObjectName; // Name of zone exhaust fan component
+                MultizoneCompExhaustFanData(i).name = thisObjectName; // Name of zone exhaust fan component
                 MultizoneCompExhaustFanData(i).FlowCoef = coeff;      // flow coefficient
                 MultizoneCompExhaustFanData(i).FlowExpo = expnt;      // Flow exponent
 
@@ -793,7 +793,7 @@ namespace AirflowNetworkBalanceManager {
                     }
                 }
 
-                DisSysCompOutdoorAirData(i).Name = thisObjectName; // Name of zone exhaust fan component
+                DisSysCompOutdoorAirData(i).name = thisObjectName; // Name of zone exhaust fan component
                 DisSysCompOutdoorAirData(i).FlowCoef = coeff;      // flow coefficient
                 DisSysCompOutdoorAirData(i).FlowExpo = expnt;      // Flow exponent
 
@@ -863,7 +863,7 @@ namespace AirflowNetworkBalanceManager {
                     }
                 }
 
-                DisSysCompReliefAirData(i).Name = thisObjectName; // Name of zone exhaust fan component
+                DisSysCompReliefAirData(i).name = thisObjectName; // Name of zone exhaust fan component
                 DisSysCompReliefAirData(i).FlowCoef = coeff;      // flow coefficient
                 DisSysCompReliefAirData(i).FlowExpo = expnt;      // Flow exponent
                 DisSysCompReliefAirData(i).OAMixerNum = OAMixerNum;
@@ -1035,7 +1035,7 @@ namespace AirflowNetworkBalanceManager {
                     }
                 }
 
-                MultizoneCompDetOpeningData(i).Name = thisObjectName; // Name of large detailed opening component
+                MultizoneCompDetOpeningData(i).name = thisObjectName; // Name of large detailed opening component
                 MultizoneCompDetOpeningData(i).FlowCoef = coeff;      // Air Mass Flow Coefficient When Window or Door Is Closed
                 MultizoneCompDetOpeningData(i).FlowExpo = expnt;      // Air Mass Flow exponent When Window or Door Is Closed
                 MultizoneCompDetOpeningData(i).TypeName = LVOstring;  // Large vertical opening type
@@ -1178,7 +1178,7 @@ namespace AirflowNetworkBalanceManager {
                 Real64 diff{fields.at("minimum_density_difference_for_two_way_flow")};
                 Real64 dischargeCoeff{fields.at("discharge_coefficient")};
 
-                MultizoneCompSimpleOpeningData(i).Name = thisObjectName;       // Name of large simple opening component
+                MultizoneCompSimpleOpeningData(i).name = thisObjectName;       // Name of large simple opening component
                 MultizoneCompSimpleOpeningData(i).FlowCoef = coeff;            // Air Mass Flow Coefficient When Window or Door Is Closed
                 MultizoneCompSimpleOpeningData(i).FlowExpo = expnt;            // Air Mass Flow exponent When Window or Door Is Closed
                 MultizoneCompSimpleOpeningData(i).MinRhoDiff = diff;           // Minimum density difference for two-way flow
@@ -1221,7 +1221,7 @@ namespace AirflowNetworkBalanceManager {
                 }
                 Real64 dischargeCoeff{fields.at("discharge_coefficient")};
 
-                MultizoneCompHorOpeningData(i).Name = thisObjectName;       // Name of large simple opening component
+                MultizoneCompHorOpeningData(i).name = thisObjectName;       // Name of large simple opening component
                 MultizoneCompHorOpeningData(i).FlowCoef = coeff;            // Air Mass Flow Coefficient When Window or Door Is Closed
                 MultizoneCompHorOpeningData(i).FlowExpo = expnt;            // Air Mass Flow exponent When Window or Door Is Closed
                 MultizoneCompHorOpeningData(i).Slope = angle;               // Sloping plane angle
@@ -1267,7 +1267,7 @@ namespace AirflowNetworkBalanceManager {
                     expnt = fields.at("air_mass_flow_exponent");
                 }
 
-                MultizoneSurfaceELAData(i).Name = thisObjectName; // Name of surface effective leakage area component
+                MultizoneSurfaceELAData(i).name = thisObjectName; // Name of surface effective leakage area component
                 MultizoneSurfaceELAData(i).ELA = ela;             // Effective leakage area
                 MultizoneSurfaceELAData(i).DischCoeff = cd;       // Discharge coefficient
                 MultizoneSurfaceELAData(i).RefDeltaP = dp;        // Reference pressure difference
@@ -1307,7 +1307,7 @@ namespace AirflowNetworkBalanceManager {
                     expnt = fields.at("air_mass_flow_exponent");
                 }
 
-                DisSysCompLeakData(i).Name = thisObjectName; // Name of duct leak component
+                DisSysCompLeakData(i).name = thisObjectName; // Name of duct leak component
                 DisSysCompLeakData(i).FlowCoef = coeff;      // Air Mass Flow Coefficient
                 DisSysCompLeakData(i).FlowExpo = expnt;      // Air Mass Flow exponent
 
@@ -1345,7 +1345,7 @@ namespace AirflowNetworkBalanceManager {
                     expnt = fields.at("air_mass_flow_exponent");
                 }
 
-                DisSysCompELRData(i).Name = thisObjectName;          // Name of duct effective leakage ratio component
+                DisSysCompELRData(i).name = thisObjectName;          // Name of duct effective leakage ratio component
                 DisSysCompELRData(i).ELR = elr;                      // Value of effective leakage ratio
                 DisSysCompELRData(i).FlowRate = maxflow * StdRhoAir; // Maximum airflow rate
                 DisSysCompELRData(i).RefPres = dp;                   // Reference pressure difference
@@ -1405,7 +1405,7 @@ namespace AirflowNetworkBalanceManager {
                     hin = fields.at("inside_convection_coefficient");
                 }
 
-                DisSysCompDuctData(i).Name = thisObjectName;   // Name of duct effective leakage ratio component
+                DisSysCompDuctData(i).name = thisObjectName;   // Name of duct effective leakage ratio component
                 DisSysCompDuctData(i).L = L;                   // Duct length [m]
                 DisSysCompDuctData(i).hydraulicDiameter = D;   // Hydraulic diameter [m]
                 DisSysCompDuctData(i).A = A;                   // Cross section area [m2]
@@ -1472,7 +1472,7 @@ namespace AirflowNetworkBalanceManager {
                     HVACFan::fanObjs.emplace_back(new HVACFan::FanSystem(fan_name));
                     fanIndex = HVACFan::getFanObjectVectorIndex(fan_name);
                     if (fanIndex < 0) {
-                        ShowSevereError("...occurs in " + CurrentModuleObject + " = " + DisSysCompCVFData(i).Name);
+                        ShowSevereError("...occurs in " + CurrentModuleObject + " = " + DisSysCompCVFData(i).name);
                         success = false;
                     } else {
                         flowRate = HVACFan::fanObjs[fanIndex]->designAirVolFlowRate;
@@ -1494,7 +1494,7 @@ namespace AirflowNetworkBalanceManager {
                     GetFanIndex(fan_name, fanIndex, FanErrorFound);
 
                     if (FanErrorFound) {
-                        ShowSevereError("...occurs in " + CurrentModuleObject + " = " + DisSysCompCVFData(i).Name);
+                        ShowSevereError("...occurs in " + CurrentModuleObject + " = " + DisSysCompCVFData(i).name);
                         success = false;
                     }
 
@@ -1543,7 +1543,7 @@ namespace AirflowNetworkBalanceManager {
                     success = false;
                 }
 
-                DisSysCompCVFData(i).Name = fan_name; // Name of duct effective leakage ratio component
+                DisSysCompCVFData(i).name = fan_name; // Name of duct effective leakage ratio component
                 DisSysCompCVFData(i).Ctrl = 1.0;      // Control ratio
                 DisSysCompCVFData(i).FanIndex = fanIndex;
                 DisSysCompCVFData(i).FlowRate = flowRate;
@@ -1582,16 +1582,16 @@ namespace AirflowNetworkBalanceManager {
                 Real64 L{fields.at("air_path_length")};
                 Real64 D{fields.at("air_path_hydraulic_diameter")};
 
-                DisSysCompCoilData(i).Name = UtilityRoutines::MakeUPPERCase(coil_name); // Name of associated EPlus coil component
+                DisSysCompCoilData(i).name = UtilityRoutines::MakeUPPERCase(coil_name); // Name of associated EPlus coil component
                 DisSysCompCoilData(i).EPlusType = coil_type;                            // coil type
                 DisSysCompCoilData(i).L = L;                                            // Air path length
                 DisSysCompCoilData(i).hydraulicDiameter = D;                            // Air path hydraulic diameter
 
                 // Add the element to the lookup table, check for name overlaps
-                if (solver.elements.find(DisSysCompCoilData(i).Name) == solver.elements.end()) {
-                    solver.elements[DisSysCompCoilData(i).Name] = &DisSysCompCoilData(i); // Yet another workaround
+                if (solver.elements.find(DisSysCompCoilData(i).name) == solver.elements.end()) {
+                    solver.elements[DisSysCompCoilData(i).name] = &DisSysCompCoilData(i); // Yet another workaround
                 } else {
-                    ShowSevereError(RoutineName + "Duplicated airflow element names are found = " + DisSysCompCoilData(i).Name);
+                    ShowSevereError(RoutineName + "Duplicated airflow element names are found = " + DisSysCompCoilData(i).name);
                     // ShowContinueError("A unique component name is required in both objects " + CompName(1) + " and " + CompName(2));
                     success = false;
                 }
@@ -1618,17 +1618,17 @@ namespace AirflowNetworkBalanceManager {
                 Real64 L{fields.at("air_path_length")};
                 Real64 D{fields.at("air_path_hydraulic_diameter")};
 
-                DisSysCompHXData(i).Name = UtilityRoutines::MakeUPPERCase(hx_name); // Name of associated EPlus heat exchange component
+                DisSysCompHXData(i).name = UtilityRoutines::MakeUPPERCase(hx_name); // Name of associated EPlus heat exchange component
                 DisSysCompHXData(i).EPlusType = hx_type;                            // coil type
                 DisSysCompHXData(i).L = L;                                          // Air path length
                 DisSysCompHXData(i).hydraulicDiameter = D;                          // Air path hydraulic diameter
                 DisSysCompHXData(i).CoilParentExists = HVACHXAssistedCoolingCoil::VerifyHeatExchangerParent(hx_type, hx_name);
 
                 // Add the element to the lookup table, check for name overlaps
-                if (solver.elements.find(DisSysCompHXData(i).Name) == solver.elements.end()) {
-                    solver.elements[DisSysCompHXData(i).Name] = &DisSysCompHXData(i); // Yet another workaround
+                if (solver.elements.find(DisSysCompHXData(i).name) == solver.elements.end()) {
+                    solver.elements[DisSysCompHXData(i).name] = &DisSysCompHXData(i); // Yet another workaround
                 } else {
-                    ShowSevereError(RoutineName + "Duplicated airflow element names are found = " + DisSysCompHXData(i).Name);
+                    ShowSevereError(RoutineName + "Duplicated airflow element names are found = " + DisSysCompHXData(i).name);
                     // ShowContinueError("A unique component name is required in both objects " + CompName(1) + " and " + CompName(2));
                     success = false;
                 }
@@ -1655,16 +1655,16 @@ namespace AirflowNetworkBalanceManager {
                 Real64 L{fields.at("air_path_length")};
                 Real64 D{fields.at("air_path_hydraulic_diameter")};
 
-                DisSysCompTermUnitData(i).Name = UtilityRoutines::MakeUPPERCase(tu_name); // Name of associated EPlus coil component
+                DisSysCompTermUnitData(i).name = UtilityRoutines::MakeUPPERCase(tu_name); // Name of associated EPlus coil component
                 DisSysCompTermUnitData(i).EPlusType = tu_type;                            // Terminal unit type
                 DisSysCompTermUnitData(i).L = L;                                          // Air path length
                 DisSysCompTermUnitData(i).hydraulicDiameter = D;                          // Air path hydraulic diameter
 
                 // Add the element to the lookup table, check for name overlaps
-                if (solver.elements.find(DisSysCompTermUnitData(i).Name) == solver.elements.end()) {
-                    solver.elements[DisSysCompTermUnitData(i).Name] = &DisSysCompTermUnitData(i); // Yet another workaround
+                if (solver.elements.find(DisSysCompTermUnitData(i).name) == solver.elements.end()) {
+                    solver.elements[DisSysCompTermUnitData(i).name] = &DisSysCompTermUnitData(i); // Yet another workaround
                 } else {
-                    ShowSevereError(RoutineName + "Duplicated airflow element names are found = " + DisSysCompTermUnitData(i).Name);
+                    ShowSevereError(RoutineName + "Duplicated airflow element names are found = " + DisSysCompTermUnitData(i).name);
                     // ShowContinueError("A unique component name is required in both objects " + CompName(1) + " and " + CompName(2));
                     success = false;
                 }
@@ -1688,7 +1688,7 @@ namespace AirflowNetworkBalanceManager {
 
                 Real64 dp{fields.at("pressure_difference_across_the_component")};
 
-                DisSysCompCPDData(i).Name = thisObjectName; // Name of constant pressure drop component
+                DisSysCompCPDData(i).name = thisObjectName; // Name of constant pressure drop component
                 DisSysCompCPDData(i).A = 1.0;               // cross section area
                 DisSysCompCPDData(i).DP = dp;               // Pressure difference across the component
 
@@ -3053,7 +3053,7 @@ namespace AirflowNetworkBalanceManager {
             for (i = 1; i <= AirflowNetworkNumOfDetOpenings; ++i) {
                 found = false;
                 for (j = 1; j <= AirflowNetworkNumOfSurfaces; ++j) {
-                    if (MultizoneCompDetOpeningData(i).Name == MultizoneSurfaceData(j).OpeningName) {
+                    if (MultizoneCompDetOpeningData(i).name == MultizoneSurfaceData(j).OpeningName) {
                         //           MultizoneCompDetOpeningData(i)%Width = Surface(MultizoneSurfaceData(j)%SurfNum)%Width
                         //           MultizoneCompDetOpeningData(i)%Height = Surface(MultizoneSurfaceData(j)%SurfNum)%Height
                         found = true;
@@ -3073,12 +3073,15 @@ namespace AirflowNetworkBalanceManager {
         CurrentModuleObject = "AirflowNetwork:MultiZone:Surface";
         for (i = 1; i <= AirflowNetworkNumOfSurfaces; ++i) {
             if (MultizoneSurfaceData(i).SurfNum == 0) continue;
-            if (AirflowNetworkNumOfDetOpenings > 0)
-                j = UtilityRoutines::FindItemInList(MultizoneSurfaceData(i).OpeningName, MultizoneCompDetOpeningData);
-            if (j == 0 && AirflowNetworkNumOfSimOpenings > 0)
-                j = UtilityRoutines::FindItemInList(MultizoneSurfaceData(i).OpeningName, MultizoneCompSimpleOpeningData);
+            bool has_DOP_or_SOP{false};
+            // This is terrible, should not do it this way
+            auto afe = solver.elements.find(MultizoneSurfaceData(i).OpeningName);
+            if (afe != solver.elements.end()) {
+                auto type = afe->second->type();
+                has_DOP_or_SOP = (type == AirflowElement::Type::DOP) || (type == AirflowElement::Type::SOP);
+            }
             // Obtain schedule number and check surface shape
-            if (j > 0) {
+            if (has_DOP_or_SOP) {
                 if (Surface(MultizoneSurfaceData(i).SurfNum).Sides == 3) {
                     ShowWarningError(RoutineName + CurrentModuleObject + "=\"" + MultizoneSurfaceData(i).SurfName + "\".");
                     ShowContinueError(
@@ -3200,7 +3203,7 @@ namespace AirflowNetworkBalanceManager {
             for (i = 1; i <= AirflowNetworkNumOfSimOpenings; ++i) {
                 found = false;
                 for (j = 1; j <= AirflowNetworkNumOfSurfaces; ++j) {
-                    if (MultizoneCompSimpleOpeningData(i).Name == MultizoneSurfaceData(j).OpeningName) {
+                    if (MultizoneCompSimpleOpeningData(i).name == MultizoneSurfaceData(j).OpeningName) {
                         //           MultizoneCompSimpleOpeningData(i)%Width = Surface(MultizoneSurfaceData(j)%SurfNum)%Width
                         //           MultizoneCompSimpleOpeningData(i)%Height = Surface(MultizoneSurfaceData(j)%SurfNum)%Height
                         found = true;
@@ -3961,14 +3964,26 @@ namespace AirflowNetworkBalanceManager {
                 }
 
                 if (PressureControllerData(i).ControlTypeSet == PressureCtrlExhaust) {
-                    if (UtilityRoutines::FindItemInList(Alphas(4), MultizoneCompExhaustFanData) == 0) {
+                    // This is not great
+                    bool is_EXF{false};
+                    auto afe = solver.elements.find(Alphas(4));
+                    if (afe != solver.elements.end()) {
+                        is_EXF = afe->second->type() == AirflowElement::Type::EXF;
+                    }
+                    if (!is_EXF) {
                         ShowSevereError(RoutineName + CurrentModuleObject + " object, an invalid name is given:");
                         ShowContinueError(".. invalid " + cAlphaFields(4) + " = \"" + Alphas(4) + "\".");
                         ErrorsFound = true;
                     }
                 }
                 if (PressureControllerData(i).ControlTypeSet == PressureCtrlRelief) {
-                    if (UtilityRoutines::FindItemInList(Alphas(4), DisSysCompReliefAirData) == 0) {
+                    // This is not great
+                    bool is_REL{false};
+                    auto afe = solver.elements.find(Alphas(4));
+                    if (afe != solver.elements.end()) {
+                        is_REL = afe->second->type() == AirflowElement::Type::REL;
+                    }
+                    if (!is_REL) {
                         ShowSevereError(RoutineName + CurrentModuleObject + " object, an invalid name is given:");
                         ShowContinueError(".. invalid " + cAlphaFields(4) + " = \"" + Alphas(4) + "\".");
                         ErrorsFound = true;
@@ -4122,204 +4137,204 @@ namespace AirflowNetworkBalanceManager {
         AirflowNetworkCompData.allocate(AirflowNetworkNumOfComps);
 
         for (i = 1; i <= AirflowNetworkNumOfDetOpenings; ++i) { // Detailed opening component
-            AirflowNetworkCompData(i).Name = MultizoneCompDetOpeningData(i).Name;
+            // AirflowNetworkCompData(i).Name = MultizoneCompDetOpeningData(i).Name;
             AirflowNetworkCompData(i).TypeNum = i;
-            AirflowNetworkCompData(i).EPlusName = "";
+            // AirflowNetworkCompData(i).EPlusName = "";
             AirflowNetworkCompData(i).EPlusCompName = "";
             AirflowNetworkCompData(i).EPlusType = "";
-            AirflowNetworkCompData(i).CompNum = i;
+            // AirflowNetworkCompData(i).CompNum = i;
         }
 
         j = AirflowNetworkNumOfDetOpenings;
         for (i = 1 + j; i <= AirflowNetworkNumOfSimOpenings + j; ++i) { // Simple opening component
             n = i - j;
-            AirflowNetworkCompData(i).Name = MultizoneCompSimpleOpeningData(n).Name;
+            // AirflowNetworkCompData(i).Name = MultizoneCompSimpleOpeningData(n).Name;
             AirflowNetworkCompData(i).TypeNum = n;
-            AirflowNetworkCompData(i).EPlusName = "";
+            // AirflowNetworkCompData(i).EPlusName = "";
             AirflowNetworkCompData(i).EPlusCompName = "";
             AirflowNetworkCompData(i).EPlusType = "";
-            AirflowNetworkCompData(i).CompNum = i;
+            // AirflowNetworkCompData(i).CompNum = i;
         }
 
         j += AirflowNetworkNumOfSimOpenings;
         for (i = 1 + j; i <= AirflowNetworkNumOfSurCracks + j; ++i) { // Surface crack component
             n = i - j;
-            AirflowNetworkCompData(i).Name = MultizoneSurfaceCrackData(n).Name;
+            // AirflowNetworkCompData(i).Name = MultizoneSurfaceCrackData(n).Name;
             AirflowNetworkCompData(i).TypeNum = n;
-            AirflowNetworkCompData(i).EPlusName = "";
+            // AirflowNetworkCompData(i).EPlusName = "";
             AirflowNetworkCompData(i).EPlusCompName = "";
             AirflowNetworkCompData(i).EPlusType = "";
-            AirflowNetworkCompData(i).CompNum = i;
+            // AirflowNetworkCompData(i).CompNum = i;
         }
 
         j += AirflowNetworkNumOfSurCracks;
         for (i = 1 + j; i <= AirflowNetworkNumOfSurELA + j; ++i) { // Surface crack component
             n = i - j;
-            AirflowNetworkCompData(i).Name = MultizoneSurfaceELAData(n).Name;
+            // AirflowNetworkCompData(i).Name = MultizoneSurfaceELAData(n).Name;
             AirflowNetworkCompData(i).TypeNum = n;
-            AirflowNetworkCompData(i).EPlusName = "";
+            // AirflowNetworkCompData(i).EPlusName = "";
             AirflowNetworkCompData(i).EPlusCompName = "";
             AirflowNetworkCompData(i).EPlusType = "";
-            AirflowNetworkCompData(i).CompNum = i;
+            // AirflowNetworkCompData(i).CompNum = i;
         }
 
         j += AirflowNetworkNumOfSurELA;
         for (i = 1 + j; i <= AirflowNetworkNumOfExhFan + j; ++i) { // Zone exhaust fan component
             n = i - j;
-            AirflowNetworkCompData(i).Name = MultizoneCompExhaustFanData(n).Name;
+            // AirflowNetworkCompData(i).Name = MultizoneCompExhaustFanData(n).Name;
             AirflowNetworkCompData(i).TypeNum = n;
-            AirflowNetworkCompData(i).EPlusName = "";
+            // AirflowNetworkCompData(i).EPlusName = "";
             AirflowNetworkCompData(i).EPlusCompName = "";
             AirflowNetworkCompData(i).EPlusType = "";
-            AirflowNetworkCompData(i).CompNum = i;
+            // AirflowNetworkCompData(i).CompNum = i;
         }
 
         j += AirflowNetworkNumOfExhFan;
         for (i = 1 + j; i <= AirflowNetworkNumOfHorOpenings + j; ++i) { // Distribution system crack component
             n = i - j;
-            AirflowNetworkCompData(i).Name = MultizoneCompHorOpeningData(n).Name;
+            // AirflowNetworkCompData(i).Name = MultizoneCompHorOpeningData(n).Name;
             AirflowNetworkCompData(i).TypeNum = n;
-            AirflowNetworkCompData(i).EPlusName = "";
+            // AirflowNetworkCompData(i).EPlusName = "";
             AirflowNetworkCompData(i).EPlusCompName = "";
             AirflowNetworkCompData(i).EPlusType = "";
-            AirflowNetworkCompData(i).CompNum = i;
+            // AirflowNetworkCompData(i).CompNum = i;
         }
 
         j += AirflowNetworkNumOfHorOpenings;
         for (i = 1 + j; i <= DisSysNumOfLeaks + j; ++i) { // Distribution system crack component
             n = i - j;
-            AirflowNetworkCompData(i).Name = DisSysCompLeakData(n).Name;
+            // AirflowNetworkCompData(i).Name = DisSysCompLeakData(n).Name;
             AirflowNetworkCompData(i).TypeNum = n;
-            AirflowNetworkCompData(i).EPlusName = "";
+            // AirflowNetworkCompData(i).EPlusName = "";
             AirflowNetworkCompData(i).EPlusCompName = "";
             AirflowNetworkCompData(i).EPlusType = "";
-            AirflowNetworkCompData(i).CompNum = i;
+            // AirflowNetworkCompData(i).CompNum = i;
         }
 
         j += DisSysNumOfLeaks;
         for (i = 1 + j; i <= DisSysNumOfELRs + j; ++i) { // Distribution system effective leakage ratio component
             n = i - j;
-            AirflowNetworkCompData(i).Name = DisSysCompELRData(n).Name;
+            // AirflowNetworkCompData(i).Name = DisSysCompELRData(n).Name;
             AirflowNetworkCompData(i).TypeNum = n;
-            AirflowNetworkCompData(i).EPlusName = "";
+            // AirflowNetworkCompData(i).EPlusName = "";
             AirflowNetworkCompData(i).EPlusCompName = "";
             AirflowNetworkCompData(i).EPlusType = "";
-            AirflowNetworkCompData(i).CompNum = i;
+            // AirflowNetworkCompData(i).CompNum = i;
         }
 
         j += DisSysNumOfELRs;
         for (i = 1 + j; i <= DisSysNumOfDucts + j; ++i) { // Distribution system effective leakage ratio component
             n = i - j;
-            AirflowNetworkCompData(i).Name = DisSysCompDuctData(n).Name;
+            // AirflowNetworkCompData(i).Name = DisSysCompDuctData(n).Name;
             AirflowNetworkCompData(i).TypeNum = n;
-            AirflowNetworkCompData(i).EPlusName = "";
+            // AirflowNetworkCompData(i).EPlusName = "";
             AirflowNetworkCompData(i).EPlusCompName = "";
             AirflowNetworkCompData(i).EPlusType = "";
-            AirflowNetworkCompData(i).CompNum = i;
+            // AirflowNetworkCompData(i).CompNum = i;
         }
 
         j += DisSysNumOfDucts;
         for (i = 1 + j; i <= DisSysNumOfDampers + j; ++i) { // Distribution system effective leakage ratio component
             n = i - j;
-            AirflowNetworkCompData(i).Name = DisSysCompDamperData(n).Name;
+            // AirflowNetworkCompData(i).Name = DisSysCompDamperData(n).Name;
             AirflowNetworkCompData(i).TypeNum = n;
-            AirflowNetworkCompData(i).EPlusName = "";
+            // AirflowNetworkCompData(i).EPlusName = "";
             AirflowNetworkCompData(i).EPlusCompName = "";
             AirflowNetworkCompData(i).EPlusType = "";
-            AirflowNetworkCompData(i).CompNum = i;
+            // AirflowNetworkCompData(i).CompNum = i;
         }
 
         j += DisSysNumOfDampers;
         for (i = 1 + j; i <= DisSysNumOfCVFs + j; ++i) { // Distribution system constant volume fan component
             n = i - j;
-            AirflowNetworkCompData(i).Name = DisSysCompCVFData(n).Name;
+            // AirflowNetworkCompData(i).Name = DisSysCompCVFData(n).Name;
             AirflowNetworkCompData(i).TypeNum = n;
-            AirflowNetworkCompData(i).EPlusName = "";
+            // AirflowNetworkCompData(i).EPlusName = "";
             AirflowNetworkCompData(i).EPlusCompName = "";
             AirflowNetworkCompData(i).EPlusType = "";
-            AirflowNetworkCompData(i).CompNum = i;
+            // AirflowNetworkCompData(i).CompNum = i;
             AirflowNetworkCompData(i).EPlusTypeNum = EPlusTypeNum_FAN;
         }
 
         j += DisSysNumOfCVFs;
         for (i = 1 + j; i <= DisSysNumOfDetFans + j; ++i) { // Distribution system fan component
             n = i - j;
-            AirflowNetworkCompData(i).Name = DisSysCompDetFanData(n).Name;
+            // AirflowNetworkCompData(i).Name = DisSysCompDetFanData(n).Name;
             AirflowNetworkCompData(i).TypeNum = n;
-            AirflowNetworkCompData(i).EPlusName = "";
+            // AirflowNetworkCompData(i).EPlusName = "";
             AirflowNetworkCompData(i).EPlusCompName = "";
             AirflowNetworkCompData(i).EPlusType = "";
-            AirflowNetworkCompData(i).CompNum = i;
+            // AirflowNetworkCompData(i).CompNum = i;
             AirflowNetworkCompData(i).EPlusTypeNum = EPlusTypeNum_FAN;
         }
 
         j += DisSysNumOfDetFans;
         for (i = 1 + j; i <= DisSysNumOfCPDs + j; ++i) { // Distribution system constant pressure drop component
             n = i - j;
-            AirflowNetworkCompData(i).Name = DisSysCompCPDData(n).Name;
+            // AirflowNetworkCompData(i).Name = DisSysCompCPDData(n).Name;
             AirflowNetworkCompData(i).TypeNum = n;
-            AirflowNetworkCompData(i).EPlusName = "";
+            // AirflowNetworkCompData(i).EPlusName = "";
             AirflowNetworkCompData(i).EPlusCompName = "";
             AirflowNetworkCompData(i).EPlusType = "";
-            AirflowNetworkCompData(i).CompNum = i;
+            // AirflowNetworkCompData(i).CompNum = i;
         }
 
         j += DisSysNumOfCPDs;
         for (i = 1 + j; i <= DisSysNumOfCoils + j; ++i) { // Distribution system coil component
             n = i - j;
-            AirflowNetworkCompData(i).Name = DisSysCompCoilData(n).Name;
+            // AirflowNetworkCompData(i).Name = DisSysCompCoilData(n).Name;
             AirflowNetworkCompData(i).TypeNum = n;
-            AirflowNetworkCompData(i).EPlusName = "";
+            // AirflowNetworkCompData(i).EPlusName = "";
             AirflowNetworkCompData(i).EPlusCompName = "";
             AirflowNetworkCompData(i).EPlusType = "";
-            AirflowNetworkCompData(i).CompNum = i;
+            // AirflowNetworkCompData(i).CompNum = i;
             AirflowNetworkCompData(i).EPlusTypeNum = EPlusTypeNum_COI;
         }
 
         j += DisSysNumOfCoils;
         for (i = 1 + j; i <= DisSysNumOfTermUnits + j; ++i) { // Terminal unit component
             n = i - j;
-            AirflowNetworkCompData(i).Name = DisSysCompTermUnitData(n).Name;
+            // AirflowNetworkCompData(i).Name = DisSysCompTermUnitData(n).Name;
             AirflowNetworkCompData(i).TypeNum = n;
-            AirflowNetworkCompData(i).EPlusName = "";
+            // AirflowNetworkCompData(i).EPlusName = "";
             AirflowNetworkCompData(i).EPlusCompName = "";
             AirflowNetworkCompData(i).EPlusType = "";
-            AirflowNetworkCompData(i).CompNum = i;
+            // AirflowNetworkCompData(i).CompNum = i;
             AirflowNetworkCompData(i).EPlusTypeNum = EPlusTypeNum_RHT;
         }
 
         j += DisSysNumOfTermUnits;
         for (i = 1 + j; i <= DisSysNumOfHXs + j; ++i) { // Distribution system heat exchanger component
             n = i - j;
-            AirflowNetworkCompData(i).Name = DisSysCompHXData(n).Name;
+            // AirflowNetworkCompData(i).Name = DisSysCompHXData(n).Name;
             AirflowNetworkCompData(i).TypeNum = n;
-            AirflowNetworkCompData(i).EPlusName = "";
+            // AirflowNetworkCompData(i).EPlusName = "";
             AirflowNetworkCompData(i).EPlusCompName = "";
             AirflowNetworkCompData(i).EPlusType = "";
-            AirflowNetworkCompData(i).CompNum = i;
+            // AirflowNetworkCompData(i).CompNum = i;
             AirflowNetworkCompData(i).EPlusTypeNum = EPlusTypeNum_HEX;
         }
 
         j += DisSysNumOfHXs;
         for (i = 1 + j; i <= NumOfOAFans + j; ++i) { // OA fan component
             n = i - j;
-            AirflowNetworkCompData(i).Name = DisSysCompOutdoorAirData(n).Name;
+            // AirflowNetworkCompData(i).Name = DisSysCompOutdoorAirData(n).Name;
             AirflowNetworkCompData(i).TypeNum = n;
-            AirflowNetworkCompData(i).EPlusName = "";
+            // AirflowNetworkCompData(i).EPlusName = "";
             AirflowNetworkCompData(i).EPlusCompName = "";
             AirflowNetworkCompData(i).EPlusType = "";
-            AirflowNetworkCompData(i).CompNum = i;
+            // AirflowNetworkCompData(i).CompNum = i;
         }
 
         j += NumOfOAFans;
         for (i = 1 + j; i <= NumOfReliefFans + j; ++i) { // OA fan component
             n = i - j;
-            AirflowNetworkCompData(i).Name = DisSysCompReliefAirData(n).Name;
+            // AirflowNetworkCompData(i).Name = DisSysCompReliefAirData(n).Name;
             AirflowNetworkCompData(i).TypeNum = n;
-            AirflowNetworkCompData(i).EPlusName = "";
+            // AirflowNetworkCompData(i).EPlusName = "";
             AirflowNetworkCompData(i).EPlusCompName = "";
             AirflowNetworkCompData(i).EPlusType = "";
-            AirflowNetworkCompData(i).CompNum = i;
+            // AirflowNetworkCompData(i).CompNum = i;
         }
 
         // Assign linkage data
@@ -4397,7 +4412,7 @@ namespace AirflowNetworkBalanceManager {
                         ShowSevereError("An AirflowNetwork:Multizone:Surface object has an air-flow opening corresponding to");
                         ShowContinueError("window or door = " + MultizoneSurfaceData(count).SurfName + ", which is within");
                         ShowContinueError("10 deg of being horizontal. Airflows through horizontal openings are not allowed.");
-                        ShowContinueError("AirflowNetwork:Multizone:Component:SimpleOpening = " + AirflowNetworkCompData(i).Name);
+                        ShowContinueError("AirflowNetwork:Multizone:Component:SimpleOpening = " + AirflowNetworkLinkageData(count).element->name);
                         ErrorsFound = true;
                     }
                     if (!(SurfaceWindow(MultizoneSurfaceData(count).SurfNum).OriginalClass == SurfaceClass_Window ||
@@ -4442,7 +4457,7 @@ namespace AirflowNetworkBalanceManager {
                         ShowContinueError("window or door = " + MultizoneSurfaceData(count).SurfName + ", which is above");
                         ShowContinueError("10 deg of being horizontal. Airflows through non-horizontal openings are not modeled");
                         ShowContinueError("with the object of AirflowNetwork:Multizone:Component:HorizontalOpening = " +
-                                          AirflowNetworkCompData(i).Name);
+                                          AirflowNetworkLinkageData(count).element->name);
                     }
                     if (!(SurfaceWindow(MultizoneSurfaceData(count).SurfNum).OriginalClass == SurfaceClass_Window ||
                           SurfaceWindow(MultizoneSurfaceData(count).SurfNum).OriginalClass == SurfaceClass_GlassDoor ||
@@ -4734,13 +4749,13 @@ namespace AirflowNetworkBalanceManager {
                 }
                 ErrorsFound = true;
             }
-            //CompFound = false;
-            //for (i = 1; i <= AirflowNetworkNumOfComps; ++i) {
+            // CompFound = false;
+            // for (i = 1; i <= AirflowNetworkNumOfComps; ++i) {
             //    if (i == AirflowNetworkLinkageData(count).CompNum) {
             //        CompFound = true;
             //    }
             //}
-            //if (!CompFound) {
+            // if (!CompFound) {
             //    ShowSevereError(RoutineName + "Component = " + AirflowNetworkLinkageData(count).CompName +
             //                    " in AIRFLOWNETWORK:DISTRIBUTION:LINKAGE = " + AirflowNetworkLinkageData(count).Name +
             //                    " is not found in AirflowNetwork Component Data objects.");
@@ -4843,7 +4858,7 @@ namespace AirflowNetworkBalanceManager {
             for (i = 1; i <= DisSysNumOfHXs; ++i) {
                 count = 0;
                 for (j = 1; j <= AirflowNetworkNumOfLinks; ++j) {
-                    if (UtilityRoutines::SameString(AirflowNetworkLinkageData(j).CompName, DisSysCompHXData(i).Name)) {
+                    if (UtilityRoutines::SameString(AirflowNetworkLinkageData(j).CompName, DisSysCompHXData(i).name)) {
                         ++count;
                     }
                 }
@@ -4851,7 +4866,7 @@ namespace AirflowNetworkBalanceManager {
                 if (DisSysCompHXData(i).CoilParentExists && count != 2) {
                     ShowSevereError(RoutineName +
                                     "The inputs of component name field as a heat exchanger in AIRFLOWNETWORK:DISTRIBUTION:LINKAGE is not correct");
-                    ShowContinueError("The entered name of heat exchanger is " + DisSysCompHXData(i).Name +
+                    ShowContinueError("The entered name of heat exchanger is " + DisSysCompHXData(i).name +
                                       " in AirflowNetwork:Distribution:Component:HeatExchanger objects");
                     ShowContinueError("The correct appearance number is 2. The entered appearance number is " + RoundSigDigits(count));
                     ErrorsFound = true;
@@ -4859,7 +4874,7 @@ namespace AirflowNetworkBalanceManager {
                 if ((!DisSysCompHXData(i).CoilParentExists) && count != 1) {
                     ShowSevereError(RoutineName +
                                     "The inputs of component name field as a heat exchanger in AIRFLOWNETWORK:DISTRIBUTION:LINKAGE is not correct");
-                    ShowContinueError("The entered name of heat exchanger is " + DisSysCompHXData(i).Name +
+                    ShowContinueError("The entered name of heat exchanger is " + DisSysCompHXData(i).name +
                                       " in AirflowNetwork:Distribution:Component:HeatExchanger objects");
                     ShowContinueError("The correct appearance number is 1. The entered appearance number is " + RoundSigDigits(count));
                     ErrorsFound = true;
@@ -6913,9 +6928,9 @@ namespace AirflowNetworkBalanceManager {
         MV = 0.0;
 
         for (i = 1; i <= AirflowNetworkNumOfLinks; ++i) {
-            CompNum = AirflowNetworkLinkageData(i).CompNum;
+            // CompNum = AirflowNetworkLinkageData(i).CompNum;
             // CompTypeNum = AirflowNetworkCompData(CompNum).CompTypeNum;
-            CompName = AirflowNetworkCompData(CompNum).EPlusName;
+            // CompName = AirflowNetworkCompData(CompNum).EPlusName;
             CpAir = PsyCpAirFnW((AirflowNetworkNodeSimu(AirflowNetworkLinkageData(i).NodeNums[0]).WZ +
                                  AirflowNetworkNodeSimu(AirflowNetworkLinkageData(i).NodeNums[1]).WZ) /
                                 2.0);
@@ -7443,7 +7458,7 @@ namespace AirflowNetworkBalanceManager {
         MV = 0.0;
         for (i = 1; i <= AirflowNetworkNumOfLinks; ++i) {
             CompNum = AirflowNetworkLinkageData(i).CompNum;
-            CompName = AirflowNetworkCompData(CompNum).EPlusName;
+            // CompName = AirflowNetworkCompData(CompNum).EPlusName;
             // Calculate duct moisture diffusion loss
             bool is_DWC{false};
             bool is_TMU{false};
@@ -7535,7 +7550,7 @@ namespace AirflowNetworkBalanceManager {
                 }
             }
             if (is_COI) { // heating or cooling coil
-                TypeNum = AirflowNetworkCompData(CompNum).TypeNum;
+                //TypeNum = AirflowNetworkCompData(CompNum).TypeNum;
                 if (AirflowNetworkLinkSimu(i).FLOW > 0.0) { // flow direction is the same as input from node 1 to node 2
                     LF = AirflowNetworkLinkageData(i).NodeNums[0];
                     LT = AirflowNetworkLinkageData(i).NodeNums[1];
@@ -7770,8 +7785,8 @@ namespace AirflowNetworkBalanceManager {
         MA = 0.0;
         MV = 0.0;
         for (i = 1; i <= AirflowNetworkNumOfLinks; ++i) {
-            CompNum = AirflowNetworkLinkageData(i).CompNum;
-            CompName = AirflowNetworkCompData(CompNum).EPlusName;
+            // CompNum = AirflowNetworkLinkageData(i).CompNum;
+            // CompName = AirflowNetworkCompData(CompNum).EPlusName;
             // Calculate duct moisture diffusion loss
             bool is_DWC{false};
             bool is_TMU{false};
@@ -8005,7 +8020,7 @@ namespace AirflowNetworkBalanceManager {
         int LT;
         int CompNum;
         int CompTypeNum;
-        int TypeNum;
+        //int TypeNum;
         std::string CompName;
         Real64 DirSign;
         Real64 COZN;
@@ -8016,8 +8031,8 @@ namespace AirflowNetworkBalanceManager {
         MA = 0.0;
         MV = 0.0;
         for (i = 1; i <= AirflowNetworkNumOfLinks; ++i) {
-            CompNum = AirflowNetworkLinkageData(i).CompNum;
-            CompName = AirflowNetworkCompData(CompNum).EPlusName;
+            // CompNum = AirflowNetworkLinkageData(i).CompNum;
+            // CompName = AirflowNetworkCompData(CompNum).EPlusName;
             // Calculate duct moisture diffusion loss
             bool is_DWC{false};
             bool is_TMU{false};
@@ -8035,7 +8050,7 @@ namespace AirflowNetworkBalanceManager {
                 is_ELR = AirflowNetworkLinkageData(i).element->type() == AirflowElement::Type::ELR;
             }
             if (is_DWC && CompName == BlankString) { // Duct component only
-                TypeNum = AirflowNetworkCompData(CompNum).TypeNum;
+                //TypeNum = AirflowNetworkCompData(CompNum).TypeNum;
                 if (AirflowNetworkLinkSimu(i).FLOW > 0.0) { // flow direction is the same as input from node 1 to node 2
                     LF = AirflowNetworkLinkageData(i).NodeNums[0];
                     LT = AirflowNetworkLinkageData(i).NodeNums[1];
@@ -8049,7 +8064,7 @@ namespace AirflowNetworkBalanceManager {
                 MA((LT - 1) * AirflowNetworkNumOfNodes + LF) = -std::abs(AirflowNetworkLinkSimu(i).FLOW);
             }
             if (is_TMU) { // Reheat unit: SINGLE DUCT:CONST VOLUME:REHEAT
-                TypeNum = AirflowNetworkCompData(CompNum).TypeNum;
+                //TypeNum = AirflowNetworkCompData(CompNum).TypeNum;
                 if (AirflowNetworkLinkSimu(i).FLOW > 0.0) { // flow direction is the same as input from node 1 to node 2
                     LF = AirflowNetworkLinkageData(i).NodeNums[0];
                     LT = AirflowNetworkLinkageData(i).NodeNums[1];
@@ -8063,7 +8078,7 @@ namespace AirflowNetworkBalanceManager {
                 MA((LT - 1) * AirflowNetworkNumOfNodes + LF) = -std::abs(AirflowNetworkLinkSimu(i).FLOW);
             }
             if (is_COI) { // heating or cooling coil
-                TypeNum = AirflowNetworkCompData(CompNum).TypeNum;
+                //TypeNum = AirflowNetworkCompData(CompNum).TypeNum;
                 if (AirflowNetworkLinkSimu(i).FLOW > 0.0) { // flow direction is the same as input from node 1 to node 2
                     LF = AirflowNetworkLinkageData(i).NodeNums[0];
                     LT = AirflowNetworkLinkageData(i).NodeNums[1];
@@ -10106,115 +10121,115 @@ namespace AirflowNetworkBalanceManager {
                 auto const SELECT_CASE_var(UtilityRoutines::MakeUPPERCase(DisSysCompCoilData(i).EPlusType));
 
                 if (SELECT_CASE_var == "COIL:COOLING:DX") {
-                    ValidateComponent("Coil:Cooling:DX", DisSysCompCoilData(i).Name, IsNotOK, RoutineName + CurrentModuleObject);
+                    ValidateComponent("Coil:Cooling:DX", DisSysCompCoilData(i).name, IsNotOK, RoutineName + CurrentModuleObject);
                     if (IsNotOK) {
                         ErrorsFound = true;
                     } else {
                         // Replace the convenience function with in-place code
-                        std::string mycoil = DisSysCompCoilData(i).Name;
+                        std::string mycoil = DisSysCompCoilData(i).name;
                         auto it = std::find_if(
                             coilCoolingDXs.begin(), coilCoolingDXs.end(), [&mycoil](const CoilCoolingDX &coil) { return coil.name == mycoil; });
                         if (it != coilCoolingDXs.end()) {
                             // Set the airloop number on the CoilCoolingDX object, which is used to collect the runtime fraction
                             it->airLoopNum = DisSysCompCoilData(i).AirLoopNum;
                         } else {
-                            ShowSevereError("SetDXCoilAirLoopNumber: Could not find Coil \"Name=\"" + DisSysCompCoilData(i).Name + "\"");
+                            ShowSevereError("SetDXCoilAirLoopNumber: Could not find Coil \"Name=\"" + DisSysCompCoilData(i).name + "\"");
                         }
-                        // SetDXCoilAirLoopNumber(DisSysCompCoilData(i).Name, DisSysCompCoilData(i).AirLoopNum);
+                        // SetDXCoilAirLoopNumber(DisSysCompCoilData(i).name, DisSysCompCoilData(i).AirLoopNum);
                     }
                 } else if (SELECT_CASE_var == "COIL:COOLING:DX:SINGLESPEED") {
-                    ValidateComponent("Coil:Cooling:DX:SingleSpeed", DisSysCompCoilData(i).Name, IsNotOK, RoutineName + CurrentModuleObject);
+                    ValidateComponent("Coil:Cooling:DX:SingleSpeed", DisSysCompCoilData(i).name, IsNotOK, RoutineName + CurrentModuleObject);
                     if (IsNotOK) {
                         ErrorsFound = true;
                     } else {
-                        SetDXCoilAirLoopNumber(DisSysCompCoilData(i).Name, DisSysCompCoilData(i).AirLoopNum);
+                        SetDXCoilAirLoopNumber(DisSysCompCoilData(i).name, DisSysCompCoilData(i).AirLoopNum);
                     }
 
                 } else if (SELECT_CASE_var == "COIL:HEATING:DX:SINGLESPEED") {
-                    ValidateComponent("Coil:Heating:DX:SingleSpeed", DisSysCompCoilData(i).Name, IsNotOK, RoutineName + CurrentModuleObject);
+                    ValidateComponent("Coil:Heating:DX:SingleSpeed", DisSysCompCoilData(i).name, IsNotOK, RoutineName + CurrentModuleObject);
                     if (IsNotOK) {
                         ErrorsFound = true;
                     } else {
-                        SetDXCoilAirLoopNumber(DisSysCompCoilData(i).Name, DisSysCompCoilData(i).AirLoopNum);
+                        SetDXCoilAirLoopNumber(DisSysCompCoilData(i).name, DisSysCompCoilData(i).AirLoopNum);
                     }
 
                 } else if (SELECT_CASE_var == "COIL:HEATING:FUEL") {
-                    ValidateComponent("Coil:Heating:Fuel", DisSysCompCoilData(i).Name, IsNotOK, RoutineName + CurrentModuleObject);
+                    ValidateComponent("Coil:Heating:Fuel", DisSysCompCoilData(i).name, IsNotOK, RoutineName + CurrentModuleObject);
                     if (IsNotOK) {
                         ErrorsFound = true;
                     } else {
-                        SetHeatingCoilAirLoopNumber(DisSysCompCoilData(i).Name, DisSysCompCoilData(i).AirLoopNum, ErrorsFound);
+                        SetHeatingCoilAirLoopNumber(DisSysCompCoilData(i).name, DisSysCompCoilData(i).AirLoopNum, ErrorsFound);
                     }
 
                 } else if (SELECT_CASE_var == "COIL:HEATING:ELECTRIC") {
-                    ValidateComponent("Coil:Heating:Electric", DisSysCompCoilData(i).Name, IsNotOK, RoutineName + CurrentModuleObject);
+                    ValidateComponent("Coil:Heating:Electric", DisSysCompCoilData(i).name, IsNotOK, RoutineName + CurrentModuleObject);
                     if (IsNotOK) {
                         ErrorsFound = true;
                     } else {
-                        SetHeatingCoilAirLoopNumber(DisSysCompCoilData(i).Name, DisSysCompCoilData(i).AirLoopNum, ErrorsFound);
+                        SetHeatingCoilAirLoopNumber(DisSysCompCoilData(i).name, DisSysCompCoilData(i).AirLoopNum, ErrorsFound);
                     }
 
                 } else if (SELECT_CASE_var == "COIL:COOLING:WATER") {
-                    ValidateComponent("Coil:Cooling:Water", DisSysCompCoilData(i).Name, IsNotOK, RoutineName + CurrentModuleObject);
+                    ValidateComponent("Coil:Cooling:Water", DisSysCompCoilData(i).name, IsNotOK, RoutineName + CurrentModuleObject);
                     if (IsNotOK) {
                         ErrorsFound = true;
                     }
 
                 } else if (SELECT_CASE_var == "COIL:HEATING:WATER") {
-                    ValidateComponent("Coil:Heating:Water", DisSysCompCoilData(i).Name, IsNotOK, RoutineName + CurrentModuleObject);
+                    ValidateComponent("Coil:Heating:Water", DisSysCompCoilData(i).name, IsNotOK, RoutineName + CurrentModuleObject);
                     if (IsNotOK) {
                         ErrorsFound = true;
                     }
 
                 } else if (SELECT_CASE_var == "COIL:COOLING:WATER:DETAILEDGEOMETRY") {
-                    ValidateComponent("Coil:Cooling:Water:DetailedGeometry", DisSysCompCoilData(i).Name, IsNotOK, RoutineName + CurrentModuleObject);
+                    ValidateComponent("Coil:Cooling:Water:DetailedGeometry", DisSysCompCoilData(i).name, IsNotOK, RoutineName + CurrentModuleObject);
                     if (IsNotOK) {
                         ErrorsFound = true;
                     }
 
                 } else if (SELECT_CASE_var == "COIL:COOLING:DX:TWOSTAGEWITHHUMIDITYCONTROLMODE") {
                     ValidateComponent(
-                        "Coil:Cooling:DX:TwoStageWithHumidityControlMode", DisSysCompCoilData(i).Name, IsNotOK, RoutineName + CurrentModuleObject);
+                        "Coil:Cooling:DX:TwoStageWithHumidityControlMode", DisSysCompCoilData(i).name, IsNotOK, RoutineName + CurrentModuleObject);
                     if (IsNotOK) {
                         ErrorsFound = true;
                     } else {
-                        SetDXCoilAirLoopNumber(DisSysCompCoilData(i).Name, DisSysCompCoilData(i).AirLoopNum);
+                        SetDXCoilAirLoopNumber(DisSysCompCoilData(i).name, DisSysCompCoilData(i).AirLoopNum);
                     }
 
                 } else if (SELECT_CASE_var == "COIL:COOLING:DX:MULTISPEED") {
-                    ValidateComponent("Coil:Cooling:DX:MultiSpeed", DisSysCompCoilData(i).Name, IsNotOK, RoutineName + CurrentModuleObject);
+                    ValidateComponent("Coil:Cooling:DX:MultiSpeed", DisSysCompCoilData(i).name, IsNotOK, RoutineName + CurrentModuleObject);
                     ++MultiSpeedHPIndicator;
                     if (IsNotOK) {
                         ErrorsFound = true;
                     } else {
-                        SetDXCoilAirLoopNumber(DisSysCompCoilData(i).Name, DisSysCompCoilData(i).AirLoopNum);
+                        SetDXCoilAirLoopNumber(DisSysCompCoilData(i).name, DisSysCompCoilData(i).AirLoopNum);
                     }
 
                 } else if (SELECT_CASE_var == "COIL:HEATING:DX:MULTISPEED") {
-                    ValidateComponent("Coil:Heating:DX:MultiSpeed", DisSysCompCoilData(i).Name, IsNotOK, RoutineName + CurrentModuleObject);
+                    ValidateComponent("Coil:Heating:DX:MultiSpeed", DisSysCompCoilData(i).name, IsNotOK, RoutineName + CurrentModuleObject);
                     ++MultiSpeedHPIndicator;
                     if (IsNotOK) {
                         ErrorsFound = true;
                     } else {
-                        SetDXCoilAirLoopNumber(DisSysCompCoilData(i).Name, DisSysCompCoilData(i).AirLoopNum);
+                        SetDXCoilAirLoopNumber(DisSysCompCoilData(i).name, DisSysCompCoilData(i).AirLoopNum);
                     }
 
                 } else if (SELECT_CASE_var == "COIL:HEATING:DESUPERHEATER") {
-                    ValidateComponent("Coil:Heating:Desuperheater", DisSysCompCoilData(i).Name, IsNotOK, RoutineName + CurrentModuleObject);
+                    ValidateComponent("Coil:Heating:Desuperheater", DisSysCompCoilData(i).name, IsNotOK, RoutineName + CurrentModuleObject);
                     if (IsNotOK) {
                         ErrorsFound = true;
                     }
 
                 } else if (SELECT_CASE_var == "COIL:COOLING:DX:TWOSPEED") {
-                    ValidateComponent("Coil:Cooling:DX:TwoSpeed", DisSysCompCoilData(i).Name, IsNotOK, RoutineName + CurrentModuleObject);
+                    ValidateComponent("Coil:Cooling:DX:TwoSpeed", DisSysCompCoilData(i).name, IsNotOK, RoutineName + CurrentModuleObject);
                     if (IsNotOK) {
                         ErrorsFound = true;
                     } else {
-                        SetDXCoilAirLoopNumber(DisSysCompCoilData(i).Name, DisSysCompCoilData(i).AirLoopNum);
+                        SetDXCoilAirLoopNumber(DisSysCompCoilData(i).name, DisSysCompCoilData(i).AirLoopNum);
                     }
 
                 } else {
-                    ShowSevereError(RoutineName + CurrentModuleObject + " Invalid coil type = " + DisSysCompCoilData(i).Name);
+                    ShowSevereError(RoutineName + CurrentModuleObject + " Invalid coil type = " + DisSysCompCoilData(i).name);
                     ErrorsFound = true;
                 }
             }
@@ -10226,9 +10241,9 @@ namespace AirflowNetworkBalanceManager {
                 UtilityRoutines::SameString(DisSysCompTermUnitData(i).EPlusType, "AirTerminal:SingleDuct:VAV:Reheat")) {
                 LocalError = false;
                 if (UtilityRoutines::SameString(DisSysCompTermUnitData(i).EPlusType, "AirTerminal:SingleDuct:ConstantVolume:Reheat"))
-                    GetHVACSingleDuctSysIndex(DisSysCompTermUnitData(i).Name, n, LocalError, "AirflowNetwork:Distribution:Component:TerminalUnit");
+                    GetHVACSingleDuctSysIndex(DisSysCompTermUnitData(i).name, n, LocalError, "AirflowNetwork:Distribution:Component:TerminalUnit");
                 if (UtilityRoutines::SameString(DisSysCompTermUnitData(i).EPlusType, "AirTerminal:SingleDuct:VAV:Reheat"))
-                    GetHVACSingleDuctSysIndex(DisSysCompTermUnitData(i).Name,
+                    GetHVACSingleDuctSysIndex(DisSysCompTermUnitData(i).name,
                                               n,
                                               LocalError,
                                               "AirflowNetwork:Distribution:Component:TerminalUnit",
@@ -10241,7 +10256,7 @@ namespace AirflowNetworkBalanceManager {
                             if (DisSysCompCVFData(j).AirLoopNum == DisSysCompTermUnitData(i).AirLoopNum &&
                                 !UtilityRoutines::SameString(DisSysCompTermUnitData(i).EPlusType, "AirTerminal:SingleDuct:VAV:Reheat")) {
                                 ShowSevereError(RoutineName + CurrentModuleObject +
-                                                " Invalid terminal type for a VAV system = " + DisSysCompTermUnitData(i).Name);
+                                                " Invalid terminal type for a VAV system = " + DisSysCompTermUnitData(i).name);
                                 ShowContinueError("The input type = " + DisSysCompTermUnitData(i).EPlusType);
                                 ShowContinueError("A VAV system requires all terminal units with type = AirTerminal:SingleDuct:VAV:Reheat");
                                 ErrorsFound = true;
@@ -10251,7 +10266,7 @@ namespace AirflowNetworkBalanceManager {
                 }
             } else {
                 ShowSevereError(RoutineName + "AIRFLOWNETWORK:DISTRIBUTION:COMPONENT TERMINAL UNIT: Invalid Terminal unit type = " +
-                                DisSysCompTermUnitData(i).Name);
+                                DisSysCompTermUnitData(i).name);
                 ErrorsFound = true;
             }
         }
@@ -10263,20 +10278,20 @@ namespace AirflowNetworkBalanceManager {
                 auto const SELECT_CASE_var(UtilityRoutines::MakeUPPERCase(DisSysCompHXData(i).EPlusType));
 
                 if (SELECT_CASE_var == "HEATEXCHANGER:AIRTOAIR:FLATPLATE") {
-                    ValidateComponent("HeatExchanger:AirToAir:FlatPlate", DisSysCompHXData(i).Name, IsNotOK, RoutineName + CurrentModuleObject);
+                    ValidateComponent("HeatExchanger:AirToAir:FlatPlate", DisSysCompHXData(i).name, IsNotOK, RoutineName + CurrentModuleObject);
                     if (IsNotOK) {
                         ErrorsFound = true;
                     }
 
                 } else if (SELECT_CASE_var == "HEATEXCHANGER:AIRTOAIR:SENSIBLEANDLATENT") {
                     ValidateComponent(
-                        "HeatExchanger:AirToAir:SensibleAndLatent", DisSysCompHXData(i).Name, IsNotOK, RoutineName + CurrentModuleObject);
+                        "HeatExchanger:AirToAir:SensibleAndLatent", DisSysCompHXData(i).name, IsNotOK, RoutineName + CurrentModuleObject);
                     if (IsNotOK) {
                         ErrorsFound = true;
                     }
 
                 } else if (SELECT_CASE_var == "HEATEXCHANGER:DESICCANT:BALANCEDFLOW") {
-                    ValidateComponent("HeatExchanger:Desiccant:BalancedFlow", DisSysCompHXData(i).Name, IsNotOK, RoutineName + CurrentModuleObject);
+                    ValidateComponent("HeatExchanger:Desiccant:BalancedFlow", DisSysCompHXData(i).name, IsNotOK, RoutineName + CurrentModuleObject);
                     if (IsNotOK) {
                         ErrorsFound = true;
                     }
@@ -10453,7 +10468,7 @@ namespace AirflowNetworkBalanceManager {
                     break;
                 }
                 if (DisSysCompCVFData(i).FanModelFlag && DisSysCompCVFData(i).FanTypeNum == FanType_SimpleOnOff) {
-                    int fanIndex = HVACFan::getFanObjectVectorIndex(DisSysCompCVFData(i).Name);
+                    int fanIndex = HVACFan::getFanObjectVectorIndex(DisSysCompCVFData(i).name);
                     if (HVACFan::fanObjs[fanIndex]->AirPathFlag) {
                         DisSysCompCVFData(i).FanTypeNum = FanType_SimpleConstVolume;
                     } else {
@@ -10520,7 +10535,7 @@ namespace AirflowNetworkBalanceManager {
         bool FanModelConstFlag = false;
         for (i = 1; i <= DisSysNumOfCVFs; i++) {
             if (DisSysCompCVFData(i).FanModelFlag) {
-                int fanIndex = HVACFan::getFanObjectVectorIndex(DisSysCompCVFData(i).Name);
+                int fanIndex = HVACFan::getFanObjectVectorIndex(DisSysCompCVFData(i).name);
                 if (DisSysCompCVFData(i).FanTypeNum == FanType_SimpleOnOff && HVACFan::fanObjs[fanIndex]->AirPathFlag) {
                     DisSysCompCVFData(i).FanTypeNum = FanType_SimpleConstVolume;
                     SupplyFanType = FanType_SimpleConstVolume;
@@ -10723,14 +10738,14 @@ namespace AirflowNetworkBalanceManager {
                     }
                 }
                 if (MultizoneCompExhaustFanData(i).EPlusZoneNum == 0) {
-                    ShowSevereError(RoutineName + "Zone name in " + CurrentModuleObject + "  = " + MultizoneCompExhaustFanData(i).Name +
+                    ShowSevereError(RoutineName + "Zone name in " + CurrentModuleObject + "  = " + MultizoneCompExhaustFanData(i).name +
                                     " does not match the zone name in ZoneHVAC:EquipmentConnections");
                     ErrorsFound = true;
                 }
                 // Ensure a surface using zone exhaust fan to expose to the same zone
                 found = false;
                 for (j = 1; j <= AirflowNetworkNumOfSurfaces; ++j) {
-                    if (UtilityRoutines::SameString(MultizoneSurfaceData(j).OpeningName, MultizoneCompExhaustFanData(i).Name)) {
+                    if (UtilityRoutines::SameString(MultizoneSurfaceData(j).OpeningName, MultizoneCompExhaustFanData(i).name)) {
                         found = true;
                         if (Surface(MultizoneSurfaceData(j).SurfNum).ExtBoundCond != ExternalEnvironment &&
                             !(Surface(MultizoneSurfaceData(i).SurfNum).ExtBoundCond == OtherSideCoefNoCalcExt &&
@@ -10743,11 +10758,11 @@ namespace AirflowNetworkBalanceManager {
                     }
                 }
                 if (!found) {
-                    ShowSevereError(CurrentModuleObject + "  = " + MultizoneCompExhaustFanData(i).Name + " is defined and never used.");
+                    ShowSevereError(CurrentModuleObject + "  = " + MultizoneCompExhaustFanData(i).name + " is defined and never used.");
                     ErrorsFound = true;
                 } else {
                     if (MultizoneCompExhaustFanData(i).EPlusZoneNum != Surface(MultizoneSurfaceData(j).SurfNum).Zone) {
-                        ShowSevereError(RoutineName + "Zone name in " + CurrentModuleObject + "  = " + MultizoneCompExhaustFanData(i).Name +
+                        ShowSevereError(RoutineName + "Zone name in " + CurrentModuleObject + "  = " + MultizoneCompExhaustFanData(i).name +
                                         " does not match the zone name");
                         ShowContinueError("the surface is exposed to " + Surface(MultizoneSurfaceData(j).SurfNum).Name);
                         ErrorsFound = true;
@@ -10992,14 +11007,14 @@ namespace AirflowNetworkBalanceManager {
                         MZDZoneNum = UtilityRoutines::FindItemInList(
                             Surface(MultizoneSurfaceData(SrfNum).SurfNum).ZoneName, MultizoneZoneData, &MultizoneZoneProp::ZoneName);
                         if (MZDZoneNum == AFNZnNum) {
-                            DetOpenNum = UtilityRoutines::FindItemInList(MultizoneSurfaceData(SrfNum).OpeningName, MultizoneCompDetOpeningData);
-                            if (DetOpenNum > 0) {
-                                ++AFNNumOfExtOpenings;
-                                ++NumofExtSurfInZone(AFNZnNum);
-                            } else {
-                                SimOpenNum =
-                                    UtilityRoutines::FindItemInList(MultizoneSurfaceData(SrfNum).OpeningName, MultizoneCompSimpleOpeningData);
-                                if (SimOpenNum > 0) {
+                            // This is terrible, should not do it this way
+                            auto afe = solver.elements.find(MultizoneSurfaceData(SrfNum).OpeningName);
+                            if (afe != solver.elements.end()) {
+                                auto type = afe->second->type();
+                                if (type == AirflowElement::Type::DOP) {
+                                    ++AFNNumOfExtOpenings;
+                                    ++NumofExtSurfInZone(AFNZnNum);
+                                } else if (type == AirflowElement::Type::SOP) {
                                     ++AFNNumOfExtOpenings;
                                     ++NumofExtSurfInZone(AFNZnNum);
                                 }
@@ -11054,12 +11069,13 @@ namespace AirflowNetworkBalanceManager {
                 Surface(MultizoneSurfaceData(SrfNum).SurfNum).ZoneName, MultizoneZoneData, &MultizoneZoneProp::ZoneName);
             if (MultizoneZoneData(MZDZoneNum).SingleSidedCpType == "ADVANCED") {
                 if (Surface(MultizoneSurfaceData(SrfNum).SurfNum).ExtBoundCond == ExternalEnvironment) { // check if outdoor boundary condition
-                    DetOpenNum = UtilityRoutines::FindItemInList(MultizoneSurfaceData(SrfNum).OpeningName, MultizoneCompDetOpeningData);
-                    if (DetOpenNum > 0) {
-                        ++AFNNumOfExtOpenings;
-                    } else {
-                        SimOpenNum = UtilityRoutines::FindItemInList(MultizoneSurfaceData(SrfNum).OpeningName, MultizoneCompSimpleOpeningData);
-                        if (SimOpenNum > 0) {
+                    // This is terrible, should not do it this way
+                    auto afe = solver.elements.find(MultizoneSurfaceData(SrfNum).OpeningName);
+                    if (afe != solver.elements.end()) {
+                        auto type = afe->second->type();
+                        if (type == AirflowElement::Type::DOP) {
+                            ++AFNNumOfExtOpenings;
+                        } else if (type == AirflowElement::Type::SOP) {
                             ++AFNNumOfExtOpenings;
                         }
                     }
@@ -11072,11 +11088,16 @@ namespace AirflowNetworkBalanceManager {
         for (SrfNum = 1; SrfNum <= AirflowNetworkNumOfSurfaces; ++SrfNum) {
             if (Surface(MultizoneSurfaceData(SrfNum).SurfNum).ExtBoundCond == ExternalEnvironment) {
                 if (AirflowNetworkNumOfDetOpenings > 0) {
-                    DetOpenNum = UtilityRoutines::FindItemInList(MultizoneSurfaceData(SrfNum).OpeningName, MultizoneCompDetOpeningData);
                     MZDZoneNum = UtilityRoutines::FindItemInList(
                         Surface(MultizoneSurfaceData(SrfNum).SurfNum).ZoneName, MultizoneZoneData, &MultizoneZoneProp::ZoneName);
                     if (MultizoneZoneData(MZDZoneNum).SingleSidedCpType == "ADVANCED") {
-                        if (DetOpenNum > 0) {
+                        // This is terrible, should not do it this way
+                        bool is_DOP{false};
+                        auto afe = solver.elements.find(MultizoneSurfaceData(SrfNum).OpeningName);
+                        if (afe != solver.elements.end()) {
+                            is_DOP = afe->second->type() == AirflowElement::Type::DOP;
+                        }
+                        if (is_DOP) {
                             AFNExtSurfaces(ExtOpenNum).MSDNum = SrfNum;
                             AFNExtSurfaces(ExtOpenNum).SurfNum = MultizoneSurfaceData(SrfNum).SurfNum;
                             AFNExtSurfaces(ExtOpenNum).NodeHeight = Surface(AFNExtSurfaces(ExtOpenNum).SurfNum).Centroid.z;
@@ -11095,13 +11116,18 @@ namespace AirflowNetworkBalanceManager {
                                 MultizoneExternalNodeData(AFNExtSurfaces(ExtOpenNum).ExtNodeNum - AirflowNetworkNumOfZones).facadeNum;
                             AFNExtSurfaces(ExtOpenNum).curve =
                                 MultizoneExternalNodeData(AFNExtSurfaces(ExtOpenNum).ExtNodeNum - AirflowNetworkNumOfZones).curve;
-                            AFNExtSurfaces(ExtOpenNum).DischCoeff = MultizoneCompDetOpeningData(DetOpenNum).DischCoeff2;
+                            AFNExtSurfaces(ExtOpenNum).DischCoeff = static_cast<DetailedOpening*>(afe->second)->DischCoeff2;
                             ++ExtOpenNum;
                         }
                     }
                 } else if (AirflowNetworkNumOfSimOpenings > 0) {
-                    SimOpenNum = UtilityRoutines::FindItemInList(MultizoneSurfaceData(SrfNum).OpeningName, MultizoneCompSimpleOpeningData);
-                    if (SimOpenNum > 0) {
+                    // This is terrible, should not do it this way
+                    bool is_SOP{false};
+                    auto afe = solver.elements.find(MultizoneSurfaceData(SrfNum).OpeningName);
+                    if (afe != solver.elements.end()) {
+                        is_SOP = afe->second->type() == AirflowElement::Type::SOP;
+                    }
+                    if (is_SOP) {
                         AFNExtSurfaces(ExtOpenNum).MSDNum = SrfNum;
                         AFNExtSurfaces(ExtOpenNum).SurfNum = MultizoneSurfaceData(SrfNum).SurfNum;
                         AFNExtSurfaces(ExtOpenNum).SurfName = Surface(MultizoneSurfaceData(SrfNum).SurfNum).Name;
@@ -11117,7 +11143,7 @@ namespace AirflowNetworkBalanceManager {
                         AFNExtSurfaces(ExtOpenNum).ExtNodeNum = MultizoneSurfaceData(ExtOpenNum).NodeNums[1];
                         AFNExtSurfaces(ExtOpenNum).curve =
                             MultizoneExternalNodeData(AFNExtSurfaces(ExtOpenNum).ExtNodeNum - AirflowNetworkNumOfZones).curve;
-                        AFNExtSurfaces(ExtOpenNum).DischCoeff = MultizoneCompSimpleOpeningData(SimOpenNum).DischCoeff;
+                        AFNExtSurfaces(ExtOpenNum).DischCoeff = static_cast<SimpleOpening *>(afe->second)->DischCoeff;
                         ++ExtOpenNum;
                     }
                 }
@@ -11544,7 +11570,7 @@ namespace AirflowNetworkBalanceManager {
                             for (TUNum = 1; TUNum <= DisSysNumOfTermUnits; ++TUNum) {
                                 if (UtilityRoutines::SameString(DisSysCompTermUnitData(TUNum).EPlusType, "AirTerminal:SingleDuct:VAV:Reheat")) {
                                     LocalError = false;
-                                    GetHVACSingleDuctSysIndex(DisSysCompTermUnitData(TUNum).Name,
+                                    GetHVACSingleDuctSysIndex(DisSysCompTermUnitData(TUNum).name,
                                                               TermNum,
                                                               LocalError,
                                                               "AirflowNetwork:Distribution:Component:TerminalUnit",

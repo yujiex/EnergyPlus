@@ -2132,6 +2132,7 @@ namespace AirflowNetwork {
         ObjexxFCL::gio::write(UOUT);
     }
 
+    /*
     int AFEDOP(int const j,                           // Component number
                bool const EP_UNUSED(LFLAG),           // Initialization flag.If = 1, use laminar relationship
                Real64 const PDROP,                    // Total pressure drop across a component (P1 - P2) [Pa]
@@ -2653,6 +2654,7 @@ namespace AirflowNetwork {
         DF[1] = 0.0;
         return NF;
     }
+    */
 
     void PresProfile(int const il,                 // Linkage number
                      int const Pprof,              // Opening number

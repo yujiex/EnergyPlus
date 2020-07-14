@@ -184,6 +184,7 @@ INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/third_party/Windows-CalcEngine/src/Si
 INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/third_party/Windows-CalcEngine/src/SpectralAveraging/include)
 INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/third_party/Windows-CalcEngine/src/Tarcog/include)
 INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/third_party/Windows-CalcEngine/src/Viewer/include)
+INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/third_party/CoolProp)
 if( OPENGL_FOUND )
     INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/third_party/penumbra/include )
 endif()
@@ -233,6 +234,10 @@ ADD_SUBDIRECTORY(third_party/re2)
 set_target_properties(re2 PROPERTIES FOLDER ThirdParty/re2)
 ADD_SUBDIRECTORY(third_party/fmt-6.1.2 )
 set_target_properties(fmt PROPERTIES FOLDER ThirdParty/fmt)
+ADD_SUBDIRECTORY(third_party/CoolProp )
+#set_target_properties(CoolProp PROPERTIES FOLDER ThirdParty/CoolProp)
+
+set(COOLPROP_STATIC_LIBRARY true CACHE BOOL "Use CoolProp")
 
 ADD_SUBDIRECTORY(scripts/dev/generate_embeddable_epJSON_schema)
 set_target_properties(generate_embeddedable_epJSON_schema PROPERTIES FOLDER "Internal")

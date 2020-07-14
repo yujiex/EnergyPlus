@@ -715,7 +715,7 @@ endif()
 # first we will create a static library of EnergyPlus
 # this will be linked statically to create the DLL and also the unit tests
 add_library( energypluslib STATIC ${SRC} )
-target_link_libraries( energypluslib fmt::fmt objexx sqlite bcvtb epexpat epfmiimport re2 DElight libkiva btwxt Windows-CalcEngine airflownetworklib )
+target_link_libraries( energypluslib fmt::fmt objexx sqlite bcvtb epexpat epfmiimport re2 DElight libkiva btwxt Windows-CalcEngine airflownetworklib CoolProp)
 if (OPENGL_FOUND)
   target_link_libraries( energypluslib penumbra )
 endif()
@@ -941,4 +941,3 @@ if(UNIX AND NOT APPLE)
   COMMAND ${CMAKE_COMMAND} -E create_symlink energyplus EnergyPlus
   COMMAND ${CMAKE_COMMAND} -E rename EnergyPlus "${PROJECT_BINARY_DIR}/Products/EnergyPlus")
 endif()
-

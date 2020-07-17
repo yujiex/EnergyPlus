@@ -53,6 +53,7 @@
 #include <ObjexxFCL/Fmath.hh>
 
 // EnergyPlus Headers
+#include <CoolProp.h>
 #include <EnergyPlus/Boilers.hh>
 #include <EnergyPlus/BranchNodeConnections.hh>
 #include <EnergyPlus/CurveManager.hh>
@@ -354,6 +355,8 @@ namespace Boilers {
 
     void BoilerSpecs::SetupOutputVars()
     {
+        std::cout << "The NBP of water is: " << CoolProp::PropsSI("T","P",101325,"Q",0,"Water") << " K" << std::endl;
+
         SetupOutputVariable("Boiler Heating Rate", OutputProcessor::Unit::W, this->BoilerLoad, "System", "Average", this->Name);
         SetupOutputVariable("Boiler Heating Energy",
                             OutputProcessor::Unit::J,

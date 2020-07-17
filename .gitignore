@@ -59,3 +59,12 @@ cmake-build-*
 
 # py2app puts things inside dist/ and build/, build/ is already ignored, just add dist/
 dist
+
+# coolprop
+third_party/CoolProp/.version
+third_party/CoolProp/dev/all_fluids.json
+third_party/CoolProp/dev/all_fluids_verbose.json
+third_party/CoolProp/dev/all_incompressibles.json
+third_party/CoolProp/dev/all_incompressibles_verbose.json
+third_party/CoolProp/dev/hashes.json
+third_party/CoolProp/include/

@@ -161,6 +161,8 @@ set( CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/Products" )
 set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/Products" )
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/Products" )
 
+set(COOLPROP_STATIC_LIBRARY ON)
+
 include(cmake/ProjectMacros.cmake)
 include(cmake/CompilerFlags.cmake)
 
@@ -184,7 +186,7 @@ INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/third_party/Windows-CalcEngine/src/Si
 INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/third_party/Windows-CalcEngine/src/SpectralAveraging/include)
 INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/third_party/Windows-CalcEngine/src/Tarcog/include)
 INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/third_party/Windows-CalcEngine/src/Viewer/include)
-INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/third_party/CoolProp)
+INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/third_party/CoolProp/include)
 if( OPENGL_FOUND )
     INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/third_party/penumbra/include )
 endif()
@@ -235,9 +237,6 @@ set_target_properties(re2 PROPERTIES FOLDER ThirdParty/re2)
 ADD_SUBDIRECTORY(third_party/fmt-6.1.2 )
 set_target_properties(fmt PROPERTIES FOLDER ThirdParty/fmt)
 ADD_SUBDIRECTORY(third_party/CoolProp )
-#set_target_properties(CoolProp PROPERTIES FOLDER ThirdParty/CoolProp)
-
-set(COOLPROP_STATIC_LIBRARY true CACHE BOOL "Use CoolProp")
 
 ADD_SUBDIRECTORY(scripts/dev/generate_embeddable_epJSON_schema)
 set_target_properties(generate_embeddedable_epJSON_schema PROPERTIES FOLDER "Internal")

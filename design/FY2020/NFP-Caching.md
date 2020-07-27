@@ -64,3 +64,17 @@ CTFs need to preserve high precision, so this use case needs to be enabled.
 - Same data format between cache and reset-state?
 - Does the cache file eventually become the file needed to enable state resets?
 - We don't need to get too hung up on this, but there may be some overlap.
+
+### Testing
+
+**Some notes from Rick Strand**
+
+Precision needs to be preserved so that round off error doesn't cause problems. However, it's not currently know how what effect a given round off error will have on the results. To test this, tests need to be generated to test the following:
+
+- Lightweight constructions
+- Heavyweight constructions
+- Various combinations of insulation and mass
+- Constructions with up to 10 layers
+- Combinations of all of the above
+
+2D systems and more nodes will also require additional computation time. To thoroughly test this, it would be useful to extend the API to not only be able to access the CTF generation methods, but it would also be useful to access the methods consuming the CTFs. I haven't thought through all of the implications of this, but it would be useful to see the implications of the above test without needing to run a full simulation.

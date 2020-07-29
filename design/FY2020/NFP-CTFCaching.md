@@ -14,16 +14,16 @@ The computation time for computing CTF values increases non-linearly with the nu
 
 HPC users may also see benefits from a supported data caching method. HPC users make many millions of simulations annually using EnergyPlus, oftentimes varying only a handful of parameters. It's likely that some of the data computed during each simulation, (e.g. CTFs) could be distributed with the simulations prior to execution to help reduce simulation times. Even if the fraction of simulation time saved per simulation is small, the resulting total time to execute a batch of simulations could see meaningful reductions in runtime.
  
-Beyond the CTFs and HPC special use case, there likely exists other data and use cases which could benefit from methods for reusing calculation data. For example, the ground heat exchanger model already implements a basic data caching method, but perhapse there are other model data which could be stored or saved. However, this work will focus on testing whether saving CTF values can be done effectively. Saving other data will be treated separately.
+Beyond the CTFs and HPC special use case, there likely exists other data and use cases which could benefit from methods for reusing calculation data. For example, the ground heat exchanger model already implements a basic data caching method, but perhaps there are other model data which could be stored or saved. However, this work will focus on testing whether saving CTF values can be done effectively. Saving other data will be treated separately.
 
 ## Approach
 
 ### Cache file format
 
-The proposes implementation will not attempt to combine multiple data types. The CTF data will be stored in a file named "eplus.cache.ctfs.<ext>". File formatting will be largely determined by the selected file format (e.g. JSON, text, ect.). This will continue to be evaluated during development.
+The proposes implementation will not attempt to combine multiple data types. The CTF data will be stored in a file named "eplus.cache.ctfs.\<ext>". File formatting will be largely determined by the selected file format (e.g. JSON, text, etc.). This will continue to be evaluated during development.
 ### Testing
 
-Precision needs to be preserved so that round off error doesn't cause problems. However, it's not currently know how what effect a given round off error will have on the results. To test this, tests need to be generated to test the following:
+Precision needs to be preserved so that round off error doesn't cause problems. However, it's not currently known how what effect a given round off error will have on the results. To test this, tests need to be generated to test the following:
 
 - Lightweight constructions
 - Heavyweight constructions
@@ -35,7 +35,7 @@ Precision needs to be preserved so that round off error doesn't cause problems. 
 
 ### Next steps
 
-Begin developing tests as indicated above to determine whether caching can be effective, and under what situations it make sense.
+Begin developing tests as indicated above to determine whether caching can be effective, and under what situations it makes sense.
 
 ## Remaining questions
 

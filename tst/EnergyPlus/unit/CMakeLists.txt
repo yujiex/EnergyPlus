@@ -36,6 +36,7 @@ set( test_src
   Coils/CoilCoolingDXCurveFitOperatingMode.unit.cc
   Coils/CoilCoolingDXCurveFitSpeed.unit.cc
   CondenserLoopTowers.unit.cc
+  Construction.unit.cc
   ConstructionInternalSource.unit.cc
   ConvectionCoefficients.unit.cc
   CrossVentMgr.unit.cc

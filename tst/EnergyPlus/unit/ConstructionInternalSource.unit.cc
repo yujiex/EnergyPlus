@@ -45,20 +45,16 @@
 // OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-// EnergyPlus::AirflowNetworkSolver unit tests
-
 // Google test headers
 #include <gtest/gtest.h>
 
 // EnergyPlus Headers
 #include <EnergyPlus/Construction.hh>
-#include <EnergyPlus/DataHeatBalance.hh>
 #include <EnergyPlus/HeatBalanceManager.hh>
 
 #include "Fixtures/EnergyPlusFixture.hh"
 
 using namespace EnergyPlus;
-using namespace DataHeatBalance;
 using namespace HeatBalanceManager;
 
 TEST_F(EnergyPlusFixture, ConstructionInternalSource)

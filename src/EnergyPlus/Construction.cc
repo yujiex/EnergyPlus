@@ -111,7 +111,7 @@ namespace Construction {
         //  Calculation Code in BEST", BSO internal document,
         //  May/June 1996.
         // Strand, R.K. "Heat Source Transfer Functions and Their
-        //  Applicatoin to Low Temperature Radiant Heating System",
+        //  Application to Low Temperature Radiant Heating System",
         //  Ph.D. Dissertation, Department of Mechanical and
         //  Industrial Engineering, University of Illinois at
         //  Urbana-Champaign, 1995.
@@ -189,9 +189,9 @@ namespace Construction {
         Real64 dxtmp;                             // Intermediate calculation variable ( = 1/dx/cap)
         Real64 dyn;                               // Nodal spacing in the direction perpendicular to the main direction
         bool CTFConvrg;                           // Set after CTFs are calculated, based on whether there are too many CTF terms
-        Real64 SumXi;                              // Summation of all of the Xi terms (inside CTFs) for a construction
-        Real64 SumYi;                              // Summation of all of the Xi terms (cross CTFs) for a construction
-        Real64 SumZi;                              // Summation of all of the Xi terms (outside CTFs) for a construction
+        Real64 SumXi;                             // Summation of all of the Xi terms (inside CTFs) for a construction
+        Real64 SumYi;                             // Summation of all of the Xi terms (cross CTFs) for a construction
+        Real64 SumZi;                             // Summation of all of the Xi terms (outside CTFs) for a construction
 
         int ipts1;                      // Intermediate calculation for number of nodes per layer
 
@@ -864,17 +864,13 @@ namespace Construction {
                     // be computed in TransFuncCoeffs.
                     DisplayString("Calculating CTFs for \"" + this->Name + "\"");
 
-                    //          CALL DisplayNumberAndString(ConstrNum,'Matrix exponential for Construction #')
                     this->calculateExponentialMatrix(); // Compute exponential of AMat
 
-                    //          CALL DisplayNumberAndString(ConstrNum,'Invert Matrix for Construction #')
                     this->calculateInverseMatrix(); // Compute inverse of AMat
 
-                    //          CALL DisplayNumberAndString(ConstrNum,'Gamma calculation for Construction #')
                     this->calculateGammas();
                     // Compute "gamma"s from AMat, AExp, and AInv
 
-                    //          CALL DisplayNumberAndString(ConstrNum,'Compute CTFs for Construction #')
                     this->calculateFinalCoefficients(); // Compute CTFs
 
                     // Now check to see if the number of transfer functions
@@ -1985,7 +1981,7 @@ namespace Construction {
             }
         }
     }
-    
+
     bool ConstructionProps::isGlazingConstruction() const
     {
         // SUBROUTINE INFORMATION:

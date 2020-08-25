@@ -65,7 +65,8 @@ The "cross", "flux", "inside" and "outside" CTF coefficient values were then wri
 }
 ```
 
-Once the CTF values were written to a JSON file for each construction object, the time required to instantiate a new construction object, load the data from the JSON file, and insert the cached CTF values into the arrays on the construction object was determined. A summary of the calculated time, cached time, and other test data are provided in Table 2.
+Once the CTF values were written to a JSON file for each construction object, the time required to instantiate a new construction object, load the data from the JSON file, and insert the cached CTF values into the arrays on the construction object was determined. A summary of the calculated time, cached time, and other test data are provided in Table 2, which are the averaged results from
+ 5 runs.
 
 **TABLE 2: CTF Calculation and Cache Time Summary**
 
@@ -158,10 +159,6 @@ Table 3 shows a simple average summary of the timing tests. In some cases, it wo
 *Caveats*
   - These times represent the bare-minimum we could possibly be doing with respect to caching. The cached values are simply loaded back into the arrays based on construction name matching only. In practice, we should definitely be doing more regarding validation of data by making sure that the IDF construction and material object parameters match those in the cached CTF data. 
   - There may be (and likely are) additional data that needs to be computed to fully instantiate a new construction object beyond simply loading the CTF data values into the respective arrays. These have not yet been evaluated; however, they are not expected to fully negate caching gains.
-
-### Next steps
-
-Begin developing tests as indicated above to determine whether caching can be effective, and under what situations it makes sense.
 
 ## Remaining questions
 

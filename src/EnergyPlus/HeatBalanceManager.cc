@@ -5484,6 +5484,23 @@ namespace HeatBalanceManager {
         LoadZoneRptStdDev.allocate(NumOfTimeStepInHour * 24);
         // MassConservation.allocate( NumOfZones );
 
+        ZoneHeatIndex.dimension(NumOfZones, 0.0);
+        ZoneHumidex.dimension(NumOfZones, 0.0);
+        ZoneNumOcc.dimension(NumOfZones, 0);
+        ZoneHeatIndexHourBins.allocate(NumOfZones);
+        ZoneHumidexHourBins.allocate(NumOfZones);
+        ZoneHeatIndexOccuHourBins.allocate(NumOfZones);
+        ZoneHumidexOccuHourBins.allocate(NumOfZones);
+        ZoneCO2LevelHourBins.allocate(NumOfZones);
+        ZoneCO2LevelOccuHourBins.allocate(NumOfZones);
+        ZoneLightingLevelHourBins.allocate(NumOfZones);
+        ZoneLightingLevelOccuHourBins.allocate(NumOfZones);
+
+        ZoneOccPierceSET.dimension(NumOfZones, 0);
+        ZoneOccPierceSETLastStep.dimension(NumOfZones, 0);
+        ZoneLowSETHours.allocate(NumOfZones);
+        ZoneHighSETHours.allocate(NumOfZones);
+
         CountWarmupDayPoints = 0;
     }
 
@@ -5983,7 +6000,7 @@ namespace HeatBalanceManager {
         // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
         int SurfNum;
 
-        ioFiles.shade.ensure_open("OpenOutputFiles");
+        ioFiles.shade.ensure_open("OpenOutputFiles", ioFiles.outputControl.extshd);
         print(ioFiles.shade, "Surface Name,");
         for (SurfNum = 1; SurfNum <= TotSurfaces; ++SurfNum) {
             print(ioFiles.shade, "{},", Surface(SurfNum).Name);

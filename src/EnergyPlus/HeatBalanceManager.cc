@@ -83,6 +83,7 @@
 #include <EnergyPlus/DisplayRoutines.hh>
 #include <EnergyPlus/EMSManager.hh>
 #include <EnergyPlus/EconomicTariff.hh>
+#include <EnergyPlus/FileSystem.hh>
 #include <EnergyPlus/General.hh>
 #include <EnergyPlus/GlobalNames.hh>
 #include <EnergyPlus/HVACSizingSimulationManager.hh>
@@ -9250,12 +9251,141 @@ namespace HeatBalanceManager {
         if (ErrorsFound) ShowFatalError("Error in complex fenestration input.");
     }
 
+    void readJSONfile(std::string &filePath, nlohmann::json &     j) {
+        if (!FileSystem::fileExists(filePath)) {
+            // if the file doesn't exist, there are no data to read
+            return;
+        } else {
+            std::ifstream ifs(filePath);
+
+            // read json_in data
+            try {
+                ifs >> j;
+                ifs.close();
+            } catch (...) {
+                if (!j.empty()) {
+                    // file exists, is not empty, but failed for some other reason
+                    ShowWarningError(filePath + " contains invalid file format");
+                }
+                ifs.close();
+                return;
+            }
+        }
+    }
+
+    void jsonToArray(Array1D<Real64> &arr, nlohmann::json &j, std::string const &key)
+    {
+        int size = static_cast<int>(j[key].size());
+        arr.dimension({0, size - 1}, 0.0);
+        int idx = 0;
+        for (auto &v : j[key]) {
+            arr[idx] = v;
+            ++idx;
+        }
+    }
+
+    void arrayToJSON(Array1D<Real64> &arr, nlohmann::json &j, std::string const &key)
+    {
+        std::vector<Real64> vect;
+        for (auto v : arr) vect.push_back(v);
+        j[key] = vect;
+    }
+
+    void jsonToData(Real64 &data, nlohmann::json &j, std::string const &key) {data = j[key];}
+    void jsonToData(int &data, nlohmann::json &j, std::string const &key) {data = j[key];}
+    void jsonToData(std::string &data, nlohmann::json &j, std::string const &key) {data = j[key];}
+
+    void dataToJSON(Real64 &data, nlohmann::json &j, std::string const &key) {j[key] = data;}
+    void dataToJSON(int &data, nlohmann::json &j, std::string const &key) {j[key] = data;}
+    void dataToJSON(std::string &data, nlohmann::json &j, std::string const &key) {j[key] = data;}
+
     void InitConductionTransferFunctions(IOFiles &ioFiles)
     {
         bool ErrorsFound(false); // Flag for input error condition
         bool DoCTFErrorReport(false);
         for (auto & construction : dataConstruction.Construct) {
-            construction.calculateTransferFunction(ErrorsFound, DoCTFErrorReport);
+
+            bool useCaching = true;
+
+            if (useCaching) {
+
+                nlohmann::json j;
+                std::string fName = FileSystem::getAbsolutePath(FileSystem::getParentDirectoryPath(FileSystem::getProgramPath())) + "/" + construction.Name + ".json";
+
+                readJSONfile(fName, j);
+
+                // populate arrays
+                jsonToArray(construction.CTFCross, j,"ctf-cross");
+                jsonToArray(construction.CTFFlux, j,"ctf-flux");
+                jsonToArray(construction.CTFInside, j,"ctf-inside");
+                jsonToArray(construction.CTFOutside, j,"ctf-outside");
+                jsonToArray(construction.CTFSourceIn, j,"ctf-source-in");
+                jsonToArray(construction.CTFSourceOut, j,"ctf-source-out");
+                jsonToArray(construction.CTFTSourceIn, j,"ctft-source-in");
+                jsonToArray(construction.CTFTSourceOut, j,"ctft-source-out");
+                jsonToArray(construction.CTFTSourceQ, j,"ctft-source-q");
+                jsonToArray(construction.CTFTUserIn, j,"ctft-user-in");
+                jsonToArray(construction.CTFTUserOut, j,"ctft-user-out");
+                jsonToArray(construction.CTFTUserSource, j,"ctft-user-source");
+
+                std::vector<Real64> vectCTFCross = std::vector<Real64>(construction.CTFCross.begin(), construction.CTFCross.end());
+                std::vector<Real64> vectCTFFlux = std::vector<Real64>(construction.CTFFlux.begin(), construction.CTFFlux.end());
+                std::vector<Real64> vectCTFInside = std::vector<Real64>(construction.CTFInside.begin(), construction.CTFInside.end());
+                std::vector<Real64> vectCTFOutside = std::vector<Real64>(construction.CTFOutside.begin(), construction.CTFOutside.end());
+                std::vector<Real64> vectCTFSourceIn = std::vector<Real64>(construction.CTFSourceIn.begin(), construction.CTFSourceIn.end());
+                std::vector<Real64> vectCTFSourceOut = std::vector<Real64>(construction.CTFSourceOut.begin(), construction.CTFSourceOut.end());
+                std::vector<Real64> vectCTFTSourceIn = std::vector<Real64>(construction.CTFTSourceIn.begin(), construction.CTFTSourceIn.end());
+                std::vector<Real64> vectCTFTSourceOut = std::vector<Real64>(construction.CTFTSourceOut.begin(), construction.CTFTSourceOut.end());
+                std::vector<Real64> vectCTFTSourceQ = std::vector<Real64>(construction.CTFTSourceQ.begin(), construction.CTFTSourceQ.end());
+                std::vector<Real64> vectCTFTUserIn = std::vector<Real64>(construction.CTFTUserIn.begin(), construction.CTFTUserIn.end());
+                std::vector<Real64> vectCTFTUserOut = std::vector<Real64>(construction.CTFTUserOut.begin(), construction.CTFTUserOut.end());
+                std::vector<Real64> vectCTFTUserSource = std::vector<Real64>(construction.CTFTUserSource.begin(), construction.CTFTUserSource.end());
+
+                // populate other data
+                jsonToData(construction.NumHistories, j, "num-histories");
+                jsonToData(construction.NumCTFTerms, j, "num-ctf-terms");
+                jsonToData(construction.CTFTimeStep, j, "ctf-timestep");
+                jsonToData(construction.UValue, j, "u-value");
+                jsonToData(construction.SourceAfterLayer, j, "source-after-layer");
+                jsonToData(construction.TempAfterLayer, j, "temp-after-layer");
+                jsonToData(construction.SolutionDimensions, j, "solution-dimensions");
+
+                int deleteMe = 0;
+            } else {
+
+                construction.calculateTransferFunction(ErrorsFound, DoCTFErrorReport);
+
+                nlohmann::json j;
+
+                // populate arrays
+                arrayToJSON(construction.CTFCross, j,"ctf-cross");
+                arrayToJSON(construction.CTFFlux, j,"ctf-flux");
+                arrayToJSON(construction.CTFInside, j,"ctf-inside");
+                arrayToJSON(construction.CTFOutside, j,"ctf-outside");
+                arrayToJSON(construction.CTFSourceIn, j,"ctf-source-in");
+                arrayToJSON(construction.CTFSourceOut, j,"ctf-source-out");
+                arrayToJSON(construction.CTFTSourceIn, j,"ctft-source-in");
+                arrayToJSON(construction.CTFTSourceOut, j,"ctft-source-out");
+                arrayToJSON(construction.CTFTSourceQ, j,"ctft-source-q");
+                arrayToJSON(construction.CTFTUserIn, j,"ctft-user-in");
+                arrayToJSON(construction.CTFTUserOut, j,"ctft-user-out");
+                arrayToJSON(construction.CTFTUserSource, j,"ctft-user-source");
+
+                // populate other data
+                dataToJSON(construction.NumHistories, j, "num-histories");
+                dataToJSON(construction.NumCTFTerms, j, "num-ctf-terms");
+                dataToJSON(construction.CTFTimeStep, j, "ctf-timestep");
+                dataToJSON(construction.UValue, j, "u-value");
+                dataToJSON(construction.SourceAfterLayer, j, "source-after-layer");
+                dataToJSON(construction.TempAfterLayer, j, "temp-after-layer");
+                dataToJSON(construction.SolutionDimensions, j, "solution-dimensions");
+
+                // write file
+                std::string fName = construction.Name + ".json";
+                std::ofstream ofs(fName);
+                ofs << std::setw(2) << j;
+                ofs.close();
+            }
         }
 
         bool InitCTFDoReport;

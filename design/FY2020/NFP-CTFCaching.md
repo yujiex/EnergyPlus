@@ -22,7 +22,10 @@ Beyond the CTFs and HPC special use case, there likely exists other data and use
 ### Cache file format
 
 The proposes implementation will not attempt to combine multiple data types. The CTF data will be stored in a file named "eplus.cache.ctfs.\<ext>". File formatting will be largely determined by the selected file format (e.g. JSON, text, etc.). This will continue to be evaluated during development.
+
 ### Testing
+
+#### Timing Tests
 
 To test the effectiveness of caching, a set of test materials and constructions were developed. The test materials are shown in Table 1 where a "low" and "high" value were chosen for each of the respective material object input parameters: thickness, conductivity, density, and specific heat. Roughness and absorptance values were held constant since these values are not expected to have an effect on the CTF calculations.
 
@@ -156,9 +159,14 @@ Table 3 shows a simple average summary of the timing tests. In some cases, it wo
 |            7 |          12810.9 |               29.4 |        99.6 | 385.1x     |
 |           10 |          88167.0 |               31.9 |        99.9 | 2296.3x    |
 
-*Caveats*
+*Caveat*
   - These times represent the bare-minimum we could possibly be doing with respect to caching. The cached values are simply loaded back into the arrays based on construction name matching only. In practice, we should definitely be doing more regarding validation of data by making sure that the IDF construction and material object parameters match those in the cached CTF data. 
-  - There may be (and likely are) additional data that needs to be computed to fully instantiate a new construction object beyond simply loading the CTF data values into the respective arrays. These have not yet been evaluated; however, they are not expected to fully negate caching gains.
+
+#### Results Tests
+
+A plot comparing the zone temperature for the ```1ZoneUncontrolled.idf``` example file are shown in Figure 1. For this case, only the four CTF arrays and four other data from the construction object needed to be stored in the cache file. This will need to be evaluated further for radiant systems.
+
+![](1ZoneUncontrolled.png)
 
 ## Remaining questions
 

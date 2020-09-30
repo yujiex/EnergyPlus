@@ -72,7 +72,7 @@
 #include "Fixtures/EnergyPlusFixture.hh"
 
 using namespace EnergyPlus;
-using namespace AirflowNetworkBalanceManager;
+using namespace AirflowNetwork;
 using namespace DataSurfaces;
 using namespace DataHeatBalance;
 using namespace DataGlobals;
@@ -166,7 +166,7 @@ TEST_F(EnergyPlusFixture, AirflowNetworkSimulationControl_DefaultSolver)
 
     ASSERT_TRUE(process_idf(idf_objects));
 
-    GetAirflowNetworkInput(state);
+    AirflowNetwork::balanceManager.getInput(state);
 
     EXPECT_EQ(AirflowNetwork::AirflowNetworkSimuProp::Solver::SkylineLU, AirflowNetwork::AirflowNetworkSimu.solver);
 
@@ -262,7 +262,7 @@ TEST_F(EnergyPlusFixture, AirflowNetworkSimulationControl_SetSolver)
 
     ASSERT_TRUE(process_idf(idf_objects));
 
-    GetAirflowNetworkInput(state);
+    AirflowNetwork::balanceManager.getInput(state);
 
     EXPECT_EQ(AirflowNetwork::AirflowNetworkSimuProp::Solver::SkylineLU, AirflowNetwork::AirflowNetworkSimu.solver);
 

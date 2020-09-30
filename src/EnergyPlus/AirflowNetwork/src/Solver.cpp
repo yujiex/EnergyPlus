@@ -116,39 +116,9 @@ namespace AirflowNetwork {
 
     static std::string const BlankString;
 
-    // Common block AFEDAT
-    Array1D<Real64> AFECTL;
-    Array1D<Real64> AFLOW2;
-    Array1D<Real64> AFLOW;
-    Array1D<Real64> PS;
-    Array1D<Real64> PW;
-
     // Common block CONTRL
-    Real64 PB(0.0);
+    //Real64 PB(0.0);
     int LIST(0);
-
-    // Common block ZONL
-    // Array1D<Real64> RHOZ;
-    // Array1D<Real64> SQRTDZ;
-    // Array1D<Real64> VISCZ;
-    Array1D<Real64> SUMAF;
-    // Array1D<Real64> TZ; // Temperature [C]
-    // Array1D<Real64> WZ; // Humidity ratio [kg/kg]
-    Array1D<Real64> PZ; // Pressure [Pa]
-
-    // Other array variables
-    Array1D_int ID;
-    Array1D_int IK;
-    Array1D<Real64> AD;
-    Array1D<Real64> AU;
-
-#ifdef SKYLINE_MATRIX_REMOVE_ZERO_COLUMNS
-    Array1D_int newIK;     // noel
-    Array1D<Real64> newAU; // noel
-#endif
-
-    // REAL(r64), ALLOCATABLE, DIMENSION(:) :: AL
-    Array1D<Real64> SUMF;
 
     // Large opening variables
     Array1D<Real64> DpProf;   // Differential pressure profile for Large Openings [Pa]
@@ -517,7 +487,7 @@ namespace AirflowNetwork {
         // Initialize pressure for pressure control and for Initialization Type = LinearInitializationMethod
         if ((AirflowNetworkSimu.InitFlag == 0) || (PressureSetFlag > 0 && AirflowNetworkFanActivated)) {
             for (n = 1; n <= NetworkNumOfNodes; ++n) {
-                if (AirflowNetworkNodeData(n).NodeTypeNum == 0) PZ(n) = 0.0;
+                if (AirflowNetworkNodeData(n).unknown) PZ(n) = 0.0;
             }
         }
         // Compute zone air properties.
@@ -707,7 +677,7 @@ namespace AirflowNetwork {
             LFLAG = true;
             solver.filjac(state, NNZE, LFLAG);
             for (n = 1; n <= NetworkNumOfNodes; ++n) {
-                if (AirflowNetworkNodeData(n).NodeTypeNum == 0) PZ(n) = SUMF(n);
+                if (AirflowNetworkNodeData(n).unknown) PZ(n) = SUMF(n);
             }
             // Data dump.
 //            if (LIST >= 3) {
@@ -779,7 +749,7 @@ namespace AirflowNetwork {
                 if (ITER > 2 && ACC1 > 0.5 * ACC0) ACCEL = 1;
             }
             for (n = 1; n <= NetworkNumOfNodes; ++n) {
-                if (AirflowNetworkNodeData(n).NodeTypeNum == 1) continue;
+                if (!AirflowNetworkNodeData(n).unknown) continue;
                 CEF(n) = 1.0;
                 if (ACCEL == 1) {
                     C = CCF(n) / PCF(n);
@@ -896,7 +866,7 @@ namespace AirflowNetwork {
         for (n = 1; n <= NetworkNumOfNodes; ++n) {
             SUMF(n) = 0.0;
             SUMAF(n) = 0.0;
-            if (AirflowNetworkNodeData(n).NodeTypeNum == 1) {
+            if (!AirflowNetworkNodeData(n).unknown) {
                 AD(n) = 1.0;
             } else {
                 AD(n) = 0.0;
@@ -905,7 +875,7 @@ namespace AirflowNetwork {
         for (n = 1; n <= NNZE; ++n) {
             AU(n) = 0.0;
         }
-        //                              Set up the Jacobian matrix.
+        // Set up the Jacobian matrix.
         for (i = 1; i <= NetworkNumOfLinks; ++i) {
             if (AirflowNetworkLinkageData(i).element == nullptr) {
                 continue;
@@ -937,14 +907,14 @@ namespace AirflowNetwork {
             }
             //if (LIST >= 3) ObjexxFCL::gio::write(outputFile, Format_901) << " NRi:" << i << n << M << AirflowNetworkLinkSimu(i).DP << F[0] << DF[0];
             FLAG = 1;
-            if (AirflowNetworkNodeData(n).NodeTypeNum == 0) {
+            if (AirflowNetworkNodeData(n).unknown) {
                 ++FLAG;
                 X(1) = DF[0];
                 X(2) = -DF[0];
                 SUMF(n) += F[0];
                 SUMAF(n) += std::abs(F[0]);
             }
-            if (AirflowNetworkNodeData(m).NodeTypeNum == 0) {
+            if (AirflowNetworkNodeData(m).unknown) {
                 FLAG += 2;
                 X(4) = DF[0];
                 X(3) = -DF[0];
@@ -956,14 +926,14 @@ namespace AirflowNetwork {
             AFLOW2(i) = F[1];
             //if (LIST >= 3) ObjexxFCL::gio::write(outputFile, Format_901) << " NRj:" << i << n << m << AirflowNetworkLinkSimu(i).DP << F[1] << DF[1];
             FLAG = 1;
-            if (AirflowNetworkNodeData(n).NodeTypeNum == 0) {
+            if (AirflowNetworkNodeData(n).unknown) {
                 ++FLAG;
                 X(1) = DF[1];
                 X(2) = -DF[1];
                 SUMF(n) += F[1];
                 SUMAF(n) += std::abs(F[1]);
             }
-            if (AirflowNetworkNodeData(m).NodeTypeNum == 0) {
+            if (AirflowNetworkNodeData(m).unknown) {
                 FLAG += 2;
                 X(4) = DF[1];
                 X(3) = -DF[1];

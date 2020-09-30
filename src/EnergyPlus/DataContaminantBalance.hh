@@ -230,6 +230,7 @@ namespace DataContaminantBalance {
         // Members
         std::string Name;           // Name of the constant generic contaminant source and sink
         std::string ZoneName;       // Name of the zone
+        std::string contaminant;    // Name of contaminant (only used for AFN contaminant transport)
         int ActualZoneNum;          // Zone number
         Real64 GCGenerateRate;      // Generic contaminant design generation rate [m3/s]
         int GCGenerateRateSchedPtr; // Generic contaminant design generation rate schedule pointer

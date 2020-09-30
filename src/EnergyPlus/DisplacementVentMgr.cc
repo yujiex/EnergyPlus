@@ -748,8 +748,8 @@ namespace DisplacementVentMgr {
         SumMCpT =
             MCPTI(ZoneNum) + MCPTV(ZoneNum) + MCPTM(ZoneNum) + MCPTE(ZoneNum) + MCPTC(ZoneNum) + MDotCPOA(ZoneNum) * Zone(ZoneNum).OutDryBulbTemp;
         if (AirflowNetwork::SimulateAirflowNetwork == AirflowNetwork::AirflowNetworkControlMultizone) {
-            SumMCp = dataAirflowNetworkBalanceManager.exchangeData(ZoneNum).SumMCp + dataAirflowNetworkBalanceManager.exchangeData(ZoneNum).SumMMCp;
-            SumMCpT = dataAirflowNetworkBalanceManager.exchangeData(ZoneNum).SumMCpT + dataAirflowNetworkBalanceManager.exchangeData(ZoneNum).SumMMCpT;
+            SumMCp = AirflowNetwork::balanceManager.exchangeData(ZoneNum).SumMCp + AirflowNetwork::balanceManager.exchangeData(ZoneNum).SumMMCp;
+            SumMCpT = AirflowNetwork::balanceManager.exchangeData(ZoneNum).SumMCpT + AirflowNetwork::balanceManager.exchangeData(ZoneNum).SumMMCpT;
         }
 
         MCp_Total = SumMCp + SumSysMCp;

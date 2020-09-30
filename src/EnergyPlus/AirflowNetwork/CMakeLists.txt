@@ -5,7 +5,15 @@ project(AirflowNetwork)
 set( HDRS include/AirflowNetwork/Solver.hpp
           include/AirflowNetwork/Elements.hpp
           include/AirflowNetwork/Properties.hpp
+          #../third_party/airflownetwork/include/airflownetwork/filters.hpp
+          #../third_party/airflownetwork/include/airflownetwork/contaminants.hpp
+          #../third_party/airflownetwork/include/airflownetwork/transport.hpp
 )
+
+#include_directories( ../third_party/airflownetwork/include )
+#include/airflownetwork/filters.hpp
+#include/airflownetwork/contaminants.hpp
+#include/airflownetwork/transport.hpp
 
 set( SRCS src/Solver.cpp
           src/Elements.cpp

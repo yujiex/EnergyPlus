@@ -787,8 +787,8 @@ namespace CrossVentMgr {
             MCPTI(ZoneNum) + MCPTV(ZoneNum) + MCPTM(ZoneNum) + MCPTE(ZoneNum) + MCPTC(ZoneNum) + MDotCPOA(ZoneNum) * Zone(ZoneNum).OutDryBulbTemp;
 
         if (AirflowNetwork::SimulateAirflowNetwork == AirflowNetwork::AirflowNetworkControlMultizone) {
-            MCp_Total = dataAirflowNetworkBalanceManager.exchangeData(ZoneNum).SumMCp + dataAirflowNetworkBalanceManager.exchangeData(ZoneNum).SumMMCp;
-            MCpT_Total = dataAirflowNetworkBalanceManager.exchangeData(ZoneNum).SumMCpT + dataAirflowNetworkBalanceManager.exchangeData(ZoneNum).SumMMCpT;
+            MCp_Total = AirflowNetwork::balanceManager.exchangeData(ZoneNum).SumMCp + AirflowNetwork::balanceManager.exchangeData(ZoneNum).SumMMCp;
+            MCpT_Total = AirflowNetwork::balanceManager.exchangeData(ZoneNum).SumMCpT + AirflowNetwork::balanceManager.exchangeData(ZoneNum).SumMMCpT;
         }
 
         EvolveParaUCSDCV(ZoneNum);

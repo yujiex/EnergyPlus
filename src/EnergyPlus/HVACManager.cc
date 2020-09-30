@@ -253,7 +253,6 @@ namespace HVACManager {
         using ZoneTempPredictorCorrector::DetectOscillatingZoneTemp;
         using ZoneTempPredictorCorrector::ManageZoneAirUpdates;
 
-        using AirflowNetworkBalanceManager::ManageAirflowNetworkBalance;
         using DataContaminantBalance::Contaminant;
         using DataContaminantBalance::OutdoorCO2;
         using DataContaminantBalance::OutdoorGC;
@@ -335,7 +334,7 @@ namespace HVACManager {
         if (TriggerGetAFN) {
             TriggerGetAFN = false;
             DisplayString("Initializing HVAC");
-            ManageAirflowNetworkBalance(state); // first call only gets input and returns.
+            AirflowNetwork::balanceManager.ManageAirflowNetworkBalance(state); // first call only gets input and returns.
         }
 
         ZT = MAT;
@@ -393,7 +392,7 @@ namespace HVACManager {
         CalcAirFlowSimple(state);
         if (AirflowNetwork::SimulateAirflowNetwork > AirflowNetwork::AirflowNetworkControlSimple) {
             AirflowNetwork::RollBackFlag = false;
-            ManageAirflowNetworkBalance(state, false);
+            AirflowNetwork::balanceManager.ManageAirflowNetworkBalance(state, false);
         }
 
         SetHeatToReturnAirFlag(state);
@@ -452,7 +451,7 @@ namespace HVACManager {
                 CalcAirFlowSimple(state, SysTimestepLoop);
                 if (AirflowNetwork::SimulateAirflowNetwork > AirflowNetwork::AirflowNetworkControlSimple) {
                     AirflowNetwork::RollBackFlag = false;
-                    ManageAirflowNetworkBalance(state, false);
+                    AirflowNetwork::balanceManager.ManageAirflowNetworkBalance(state, false);
                 }
 
                 UpdateInternalGainValues(true, true);
@@ -1788,7 +1787,6 @@ namespace HVACManager {
         // na
 
         // Using/Aliasing
-        using AirflowNetworkBalanceManager::ManageAirflowNetworkBalance;
         using DataErrorTracking::AskForPlantCheckOnAbort;
         using DataPlant::FlowLocked;
         using DataPlant::FlowUnlocked;
@@ -1847,7 +1845,7 @@ namespace HVACManager {
             RepIterAir = 0;
             // Call AirflowNetwork simulation to calculate air flows and pressures
             if (AirflowNetwork::SimulateAirflowNetwork > AirflowNetwork::AirflowNetworkControlSimple) {
-                ManageAirflowNetworkBalance(state, FirstHVACIteration);
+                AirflowNetwork::balanceManager.ManageAirflowNetworkBalance(state, FirstHVACIteration);
             }
             ManageAirLoops(state, FirstHVACIteration, SimAirLoops, SimZoneEquipment);
             state.dataAirLoop->AirLoopInputsFilled = true; // all air loop inputs have been read in
@@ -1871,7 +1869,7 @@ namespace HVACManager {
                 // Call AirflowNetwork simulation to calculate air flows and pressures
                 ResimulateAirZone = false;
                 if (AirflowNetwork::SimulateAirflowNetwork > AirflowNetwork::AirflowNetworkControlSimple) {
-                    ManageAirflowNetworkBalance(state, FirstHVACIteration, IterAir, ResimulateAirZone);
+                    AirflowNetwork::balanceManager.ManageAirflowNetworkBalance(state, FirstHVACIteration, IterAir, ResimulateAirZone);
                 }
                 if (SimAirLoops) {
                     ManageAirLoops(state, FirstHVACIteration, SimAirLoops, SimZoneEquipment);
@@ -2408,7 +2406,7 @@ namespace HVACManager {
         using Psychrometrics::PsyHgAirFnWTdb;
         using Psychrometrics::PsyRhoAirFnPbTdbW;
 
-        using AirflowNetworkBalanceManager::ReportAirflowNetwork;
+        using AirflowNetwork::ReportAirflowNetwork;
         using DataZoneEquipment::ZoneEquipAvail;
 
         using DataZoneEquipment::CrossMixingReportFlag;

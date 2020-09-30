@@ -184,9 +184,7 @@ namespace AirflowNetwork {
     bool VAVSystem(false);              // This flag is used to represent a VAV system
     Real64 ExhaustFanMassFlowRate(0.0); // Exhaust fan flow rate used in PressureStat
     int PressureSetFlag(0);             // PressureSet flag
-    Real64 ReliefMassFlowRate(0.0);     // OA Mixer relief node flow rate used in PressureStat
-
-    // Object Data
+    Real64 ReliefMassFlowRate(0.0);     // OA Mixer relief node flow rate used in Pressu   // Object Data
     Array1D<AirflowNetworkNodeSimuData> AirflowNetworkNodeSimu;
     Array1D<AirflowNetworkLinkSimuData> AirflowNetworkLinkSimu;
     //Array1D<AirflowNetworkExchangeProp> AirflowNetworkExchangeData;
@@ -1685,7 +1683,7 @@ namespace AirflowNetwork {
         Real64 ActLh;
         Real64 ActLw;
         Real64 Lextra;
-        Real64 Axishght;
+        Real64 Axishght{ 0.0 };
         Real64 ActCD;
         Real64 Cs;
         Real64 expn;
@@ -1788,7 +1786,7 @@ namespace AirflowNetwork {
         Type = LVOType;
         if (Type == 1) {
             Lextra = LVOValue;
-            Axishght = 0.0;
+            //Axishght = 0.0;
         } else if (Type == 2) {
             Lextra = 0.0;
             Axishght = LVOValue;
@@ -2040,7 +2038,7 @@ namespace AirflowNetwork {
                         rholink = RhoProfT(Loc + i);
                     }
                     rholink /= NrInt;
-                    rholink = 1.2;
+                    rholink = 1.2; // This sets rholink to 1.2?
                 }
                 FvVeloc = (fma21 + fma12) * std::pow(2.0, expn) * sqrt_1_2 / (rholink * Cs);
             } else {

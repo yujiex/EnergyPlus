@@ -45,11 +45,12 @@
 // OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef ELEMENTS_HPP
-#define ELEMENTS_HPP
+#ifndef AIRFLOWNETWORK_ELEMENTS_HPP
+#define AIRFLOWNETWORK_ELEMENTS_HPP
 
 #include "AirflowNetwork/Solver.hpp"
 #include "AirflowNetwork/Properties.hpp"
+#include "airflownetwork/filters.hpp"
 
 namespace EnergyPlus {
 
@@ -245,6 +246,11 @@ namespace AirflowNetwork {
             SkylineLU,
             ConjugateGradient
         };
+        enum class TransportScheme
+        {
+            None,
+            ImplicitEuler
+        };
         // Members
         std::string AirflowNetworkSimuName; // Provide a unique object name
         std::string Control;                // AirflowNetwork control: MULTIZONE WITH DISTRIBUTION,
@@ -258,6 +264,7 @@ namespace AirflowNetwork {
         int MaxIteration;         // Maximum number of iteration, default 500
         int InitFlag;             // Initialization flag
         Solver solver;
+        TransportScheme transport;   // The transport scheme to be used
         Real64 RelTol;               // Relative airflow convergence
         Real64 AbsTol;               // Absolute airflow convergence
         Real64 ConvLimit;            // Convergence acceleration limit
@@ -276,8 +283,9 @@ namespace AirflowNetwork {
         // Default Constructor
         AirflowNetworkSimuProp()
             : Control("NoMultizoneOrDistribution"), WPCCntr("Input"), MaxIteration(500), InitFlag(0), solver(Solver::SkylineLU), RelTol(1.0e-5),
-              AbsTol(1.0e-5), ConvLimit(-0.5), MaxPressure(500.0), Azimuth(0.0), AspectRatio(1.0), DiffP(1.0e-4), ExtLargeOpeningErrCount(0),
-              ExtLargeOpeningErrIndex(0), OpenFactorErrCount(0), OpenFactorErrIndex(0), InitType("ZeroNodePressures"), TExtHeightDep(false)
+              transport(TransportScheme::None),AbsTol(1.0e-5), ConvLimit(-0.5), MaxPressure(500.0), Azimuth(0.0), AspectRatio(1.0),
+              DiffP(1.0e-4), ExtLargeOpeningErrCount(0), ExtLargeOpeningErrIndex(0), OpenFactorErrCount(0), OpenFactorErrIndex(0),
+              InitType("ZeroNodePressures"), TExtHeightDep(false)
         {
         }
 
@@ -792,17 +800,19 @@ namespace AirflowNetwork {
     struct AirflowNetworkLinkage // AirflowNetwork linkage data base class
     {
         // Members
-        std::string Name;                     // Provide a unique linkage name
-        std::array<std::string, 2> NodeNames; // Names of nodes (limited to 2)
-        std::array<Real64, 2> NodeHeights;    // Node heights
-        std::string CompName;                 // Name of element
-        int CompNum;                          // Element Number
-        std::array<int, 2> NodeNums;          // Node numbers
-        int LinkNum;                          // Linkage number
-        AirflowElement *element;              // Pointer to airflow element
+        std::string Name;                         // Provide a unique linkage name
+        std::array<std::string, 2> NodeNames;     // Names of nodes (limited to 2)
+        std::array<Real64, 2> NodeHeights;        // Node heights
+        std::string CompName;                     // Name of element
+        int CompNum;                              // Element Number
+        std::array<int, 2> NodeNums;              // Node numbers
+        int LinkNum;                              // Linkage number
+        AirflowElement *element;                  // Pointer to airflow element
+        airflownetwork::transport::Filter filter; // Filter object
+        int nf;
 
         // Default Constructor
-        AirflowNetworkLinkage() : NodeHeights{{0.0, 0.0}}, CompNum(0), NodeNums{{0, 0}}, LinkNum(0)
+        AirflowNetworkLinkage() : NodeHeights{{0.0, 0.0}}, CompNum(0), NodeNums{{0, 0}}, LinkNum(0), element(nullptr), nf(0)
         {
         }
 
@@ -1262,8 +1272,8 @@ namespace AirflowNetwork {
         std::string EPlusNode; // EnergyPlus node name
         Real64 NodeHeight;     // Node height [m]
         int NodeNum;           // Node number
-        int NodeTypeNum;       // Node type with integer number
-        // 0: Calculated, 1: Given pressure;
+        bool connected;
+        bool unknown;
         std::string EPlusZoneName; // EnergyPlus node name
         int EPlusZoneNum;          // E+ zone number
         int EPlusNodeNum;
@@ -1273,11 +1283,12 @@ namespace AirflowNetwork {
         int RAFNNodeNum; // RoomAir model node number
         int NumOfLinks;  // Number of links for RoomAir model
         int AirLoopNum;  // AirLoop number
+        int index;
 
         // Default Constructor
         AirflowNetworkNodeProp()
-            : NodeHeight(0.0), NodeNum(0), NodeTypeNum(0), EPlusZoneNum(0), EPlusNodeNum(0), ExtNodeNum(0), OutAirNodeNum(0), EPlusTypeNum(0),
-              RAFNNodeNum(0), NumOfLinks(0), AirLoopNum(0)
+            : NodeHeight(0.0), NodeNum(0), connected(true), unknown(true), EPlusZoneNum(0), EPlusNodeNum(0), ExtNodeNum(0),
+              OutAirNodeNum(0), EPlusTypeNum(0), RAFNNodeNum(0), NumOfLinks(0), AirLoopNum(0), index(0)
         {
         }
     };

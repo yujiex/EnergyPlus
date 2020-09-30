@@ -15,6 +15,9 @@ else()
   add_definitions("-DLINK_WITH_PYTHON=0")
 endif()
 
+include_directories(${PROJECT_SOURCE_DIR}/third_party/eigen)
+include_directories(${PROJECT_SOURCE_DIR}/third_party/airflownetwork/include)
+
 SET( SRC
   "${PROJECT_SOURCE_DIR}/third_party/milo/dtoa.h"
   "${PROJECT_SOURCE_DIR}/third_party/milo/itoa.h"

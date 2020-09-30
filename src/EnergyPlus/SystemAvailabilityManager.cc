@@ -4882,8 +4882,6 @@ namespace SystemAvailabilityManager {
 
         // Using/Aliasing
         using namespace DataAirLoop;
-        using AirflowNetworkBalanceManager::GetZoneInfilAirChangeRate;
-        using AirflowNetworkBalanceManager::ManageAirflowNetworkBalance;
         using CurveManager::CurveValue;
         using DataContaminantBalance::ZoneAirCO2;
         using DataContaminantBalance::ZoneCO2SetPoint;
@@ -5022,8 +5020,8 @@ namespace SystemAvailabilityManager {
                     }
 
                     if (HybridVentSysAvailMgrData(SysAvailNum).ANControlTypeSchedPtr > 0 && HybridVentModeOA) {
-                        ManageAirflowNetworkBalance(state, true);
-                        ACH = GetZoneInfilAirChangeRate(ZoneNum);
+                        AirflowNetwork::balanceManager.ManageAirflowNetworkBalance(state, true);
+                        ACH = AirflowNetwork::GetZoneInfilAirChangeRate(ZoneNum);
                     }
                     if (ACH > OASetPoint) {
                         HybridVentSysAvailMgrData(SysAvailNum).VentilationCtrl = HybridVentCtrl_Open;

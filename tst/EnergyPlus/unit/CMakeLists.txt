@@ -233,6 +233,8 @@ if(CMAKE_HOST_UNIX)
   endif()
 endif()
 
+include_directories( ../../../third_party/airflownetwork/include )
+
 # Executable name will be EnergyPlus_tests
 # Execute energyplus_tests --help for options using gtest runner
 # Execute energyplus_tests with no arguments to run all tests

@@ -55,22 +55,24 @@
 #include <EnergyPlus/api/EnergyPlusAPI.h>
 
 namespace EnergyPlus {
-    // Forward declarations
-    struct EnergyPlusData;
-    class OutputFiles;
+
+// Forward declarations
+class IOFiles;
+class InputFile;
+struct EnergyPlusData;
 
 namespace CommandLineInterface {
 
     // Process command line arguments
     int ENERGYPLUSLIB_API ProcessArgs(EnergyPlusData &state, int argc, const char *argv[]);
 
-    void ReadINIFile(int const UnitNumber,               // Unit number of the opened INI file
+    void ReadINIFile(InputFile &inputFile,               // Unit number of the opened INI file
                      std::string const &Heading,         // Heading for the parameters ('[heading]')
                      std::string const &KindofParameter, // Kind of parameter to be found (String)
                      std::string &DataOut                // Output from the retrieval
     );
 
-    int runReadVarsESO(OutputFiles &outputFiles);
+    int runReadVarsESO(IOFiles &ioFiles);
 
 } // namespace CommandLineInterface
 

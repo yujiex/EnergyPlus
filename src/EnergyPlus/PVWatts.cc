@@ -53,6 +53,7 @@
 
 // EnergyPlus Headers
 
+#include <EnergyPlus/Data/EnergyPlusData.hh>
 #include <EnergyPlus/DataEnvironment.hh>
 #include <EnergyPlus/DataGlobals.hh>
 #include <EnergyPlus/DataHVACGlobals.hh>
@@ -194,8 +195,8 @@ namespace PVWatts {
     void PVWattsGenerator::setupOutputVariables()
     {
         // Set up output variables
-        SetupOutputVariable("Generator Produced DC Electric Power", OutputProcessor::Unit::W, m_outputDCPower, "System", "Average", m_name);
-        SetupOutputVariable("Generator Produced DC Electric Energy",
+        SetupOutputVariable("Generator Produced DC Electricity Rate", OutputProcessor::Unit::W, m_outputDCPower, "System", "Average", m_name);
+        SetupOutputVariable("Generator Produced DC Electricity Energy",
                             OutputProcessor::Unit::J,
                             m_outputDCEnergy,
                             "System",
@@ -369,7 +370,7 @@ namespace PVWatts {
         m_planeOfArrayIrradiance = poa;
     }
 
-    void PVWattsGenerator::calc()
+    void PVWattsGenerator::calc(EnergyPlusData& state)
     {
         using DataGlobals::HourOfDay;
         using DataGlobals::SecInHour;
@@ -389,7 +390,7 @@ namespace PVWatts {
         // initialize_cell_temp
         m_tccalc->set_last_values(m_lastCellTemperature, m_lastPlaneOfArrayIrradiance);
 
-        Real64 albedo = WeatherManager::TodayAlbedo(TimeStep, HourOfDay);
+        Real64 albedo = state.dataWeatherManager->TodayAlbedo(TimeStep, HourOfDay);
         if (!(std::isfinite(albedo) && albedo > 0.0 && albedo < 1)) {
             albedo = 0.2;
         }
@@ -401,9 +402,9 @@ namespace PVWatts {
                                                     HourOfDay - 1,
                                                     (TimeStep - 0.5) * DataGlobals::MinutesPerTimeStep,
                                                     TimeStepZone,
-                                                    WeatherManager::WeatherFileLatitude,
-                                                    WeatherManager::WeatherFileLongitude,
-                                                    WeatherManager::WeatherFileTimeZone,
+                                                    state.dataWeatherManager->WeatherFileLatitude,
+                                                    state.dataWeatherManager->WeatherFileLongitude,
+                                                    state.dataWeatherManager->WeatherFileTimeZone,
                                                     DataEnvironment::BeamSolarRad,
                                                     DataEnvironment::DifSolarRad,
                                                     albedo);

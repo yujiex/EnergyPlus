@@ -52,11 +52,10 @@
 #include <EnergyPlus/EnergyPlus.hh>
 
 namespace EnergyPlus {
-    // Forward declarations
-    struct CostEstimateManagerData;
-    struct EnergyPlusData;
-    struct ZoneTempPredictorCorrectorData;
-    class OutputFiles;
+
+// Forward declarations
+class IOFiles;
+struct EnergyPlusData;
 
 namespace SimulationManager {
 
@@ -81,33 +80,33 @@ namespace SimulationManager {
 
     void ManageSimulation(EnergyPlusData &state);
 
-    void GetProjectData(EnergyPlusData &state, OutputFiles &outputFiles);
+    void GetProjectData(EnergyPlusData &state);
 
-    void writeIntialPerfLogValues(std::string const &currentOverrideModeValue);
+    void writeIntialPerfLogValues(IOFiles &ioFiles, std::string const &currentOverrideModeValue);
 
     std::string bool_to_string(bool logical);
 
-    void CheckForMisMatchedEnvironmentSpecifications();
+    void CheckForMisMatchedEnvironmentSpecifications(IOFiles &ioFiles);
 
     void CheckForRequestedReporting();
 
-    void OpenStreamFile(const std::string &fileName, int &unitNumber, std::ostream *&out_stream);
+    std::unique_ptr<std::ostream> OpenStreamFile(const std::string &fileName);
 
-    void OpenOutputFiles(OutputFiles &outputFiles);
+    void OpenOutputFiles(IOFiles &ioFiles);
 
-    void OpenOutputJsonFiles();
+    void OpenOutputJsonFiles(JsonOutputStreams &jsonOutputStreams);
 
-    void CloseOutputFiles(OutputFiles &outputFiles);
+    void CloseOutputFiles(IOFiles &ioFiles);
 
     void SetupSimulation(EnergyPlusData &state, bool &ErrorsFound);
 
-    void ReportNodeConnections(OutputFiles &outputFiles);
+    void ReportNodeConnections(IOFiles &ioFiles);
 
-    void ReportLoopConnections(OutputFiles &outputFiles);
+    void ReportLoopConnections(EnergyPlusData &state, IOFiles &ioFiles);
 
-    void ReportParentChildren(OutputFiles &outputFiles);
+    void ReportParentChildren(IOFiles &ioFiles);
 
-    void ReportCompSetMeterVariables(OutputFiles &outputFiles);
+    void ReportCompSetMeterVariables(IOFiles &ioFiles);
 
     void PostIPProcessing();
 
@@ -118,7 +117,8 @@ namespace SimulationManager {
 
 // EXTERNAL SUBROUTINES:
 
-void Resimulate(EnergyPlusData &state, bool &ResimExt, // Flag to resimulate the exterior energy use simulation
+void Resimulate(EnergyPlusData &state,
+                bool &ResimExt, // Flag to resimulate the exterior energy use simulation
                 bool &ResimHB,  // Flag to resimulate the heat balance simulation (including HVAC)
                 bool &ResimHVAC // Flag to resimulate the HVAC simulation
 );

@@ -52,10 +52,11 @@
 #include <EnergyPlus/EnergyPlus.hh>
 
 namespace EnergyPlus {
-    // Forward declarations
-    struct EnergyPlusData;
-    class OutputFiles;
-    
+
+// Forward declarations
+class IOFiles;
+struct EnergyPlusData;
+
 namespace HeatBalanceAirManager {
 
     // Data
@@ -91,7 +92,7 @@ namespace HeatBalanceAirManager {
     //*****************************************************************************************
     // This subroutine was moved from 'RoomAirManager' Module
 
-    void GetRoomAirModelParameters(OutputFiles &outputFiles, bool &errFlag); // True if errors found during this input routine
+    void GetRoomAirModelParameters(IOFiles &ioFiles, bool &errFlag); // True if errors found during this input routine
 
     // END of Get Input subroutines for the HBAir Module
     //******************************************************************************
@@ -102,6 +103,8 @@ namespace HeatBalanceAirManager {
     void InitAirHeatBalance();
 
     void InitSimpleMixingConvectiveHeatGains();
+
+    void initializeForExternalHVACManager(EnergyPlusData &state);
 
     // END Initialization Section of the Module
     //******************************************************************************

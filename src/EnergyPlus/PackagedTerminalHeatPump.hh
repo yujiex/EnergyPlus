@@ -58,8 +58,10 @@
 #include <EnergyPlus/VariableSpeedCoils.hh>
 
 namespace EnergyPlus {
-    // Forward declarations
-    struct EnergyPlusData;
+
+// Forward declarations
+class IOFiles;
+struct EnergyPlusData;
 
 namespace PackagedTerminalHeatPump {
 
@@ -524,7 +526,8 @@ namespace PackagedTerminalHeatPump {
                                     Real64 &PartLoadRatio          // coil part-load ratio
     );
 
-    void SetMinOATCompressor(int const FurnaceNum,                    // index to furnace
+    void SetMinOATCompressor(EnergyPlusData &state,
+                             int const FurnaceNum,                    // index to furnace
                              std::string const &FurnaceName,          // name of furnace
                              std::string const &cCurrentModuleObject, // type of furnace
                              int const CoolingCoilIndex,              // index of cooling coil

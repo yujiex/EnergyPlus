@@ -64,7 +64,7 @@ int get_debug_level(void){return debug_level;}
 
 //// This is very hacky, but pull the git revision from the file
 #include "gitrevision.h" // Contents are like "std::string gitrevision = "aa121435436ggregrea4t43t433";"
-#include "cpversion.h" // Contents are like "char version [] = "2.5";"
+//#include "cpversion.h" // Contents are like "char version [] = "2.5";"
 
 void set_warning_string(const std::string &warning){
     warning_string = warning;
@@ -964,7 +964,7 @@ void set_reference_stateD(const std::string &Ref, double T, double rhomolar, dou
 
 std::string get_global_param_string(const std::string &ParamName)
 {
-    if (!ParamName.compare("version")){ return version; }
+    if (!ParamName.compare("version")){ return "3.5"; }
     else if (!ParamName.compare("gitrevision")){
         return gitrevision;
     }

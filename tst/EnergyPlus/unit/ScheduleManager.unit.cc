@@ -781,7 +781,7 @@ TEST_F(EnergyPlusFixture, Schedule_GetCurrentScheduleValue_DST)
     DataGlobals::TimeStepZone = 0.25;
     DataGlobals::TimeStepZoneSec = DataGlobals::TimeStepZone * DataGlobals::SecInHour;
 
-    ScheduleManager::ProcessScheduleInput(state.outputFiles); // read schedules
+    ScheduleManager::ProcessScheduleInput(state.files); // read schedules
 
     DataEnvironment::Month = 5;
     DataEnvironment::DayOfMonth = 31;
@@ -830,7 +830,7 @@ TEST_F(EnergyPlusFixture, Schedule_GetCurrentScheduleValue_DST_SouthernHemispher
     DataGlobals::TimeStepZone = 0.25;
     DataGlobals::TimeStepZoneSec = DataGlobals::TimeStepZone * DataGlobals::SecInHour;
 
-    ScheduleManager::ProcessScheduleInput(state.outputFiles); // read schedules
+    ScheduleManager::ProcessScheduleInput(state.files); // read schedules
 
     DataEnvironment::Month = 12;
     DataEnvironment::DayOfMonth = 31;
@@ -886,8 +886,8 @@ TEST_F(EnergyPlusFixture, Schedule_GetCurrentScheduleValue_DST_RampUp_Leap) {
     // # 'FOR' => Number of additional day schedules
     // So we use 366 Week Schedules, all with one day (LeapYear)
     DataEnvironment::CurrentYearIsLeapYear = true;
-    WeatherManager::WFAllowsLeapYears = true;
-    WeatherManager::LeapYearAdd = 1;
+    state.dataWeatherManager->WFAllowsLeapYears = true;
+    state.dataWeatherManager->LeapYearAdd = 1;
 
     int nDays = 366;
     int NumOfTimeStepInHour = 4;
@@ -1067,8 +1067,8 @@ TEST_F(EnergyPlusFixture, Schedule_GetCurrentScheduleValue_DST_RampUp_NoLeap) {
     // # 'FOR' => Number of additional day schedules
     // So we use 366 Week Schedules, all with one day (LeapYear)
     DataEnvironment::CurrentYearIsLeapYear = false;
-    WeatherManager::WFAllowsLeapYears = false;
-    WeatherManager::LeapYearAdd = 0;
+    state.dataWeatherManager->WFAllowsLeapYears = false;
+    state.dataWeatherManager->LeapYearAdd = 0;
 
     // ScheduleManager always assume LeapYear really.
     int nDays = 365;

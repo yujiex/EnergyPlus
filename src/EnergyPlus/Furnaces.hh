@@ -58,8 +58,9 @@
 #include <EnergyPlus/VariableSpeedCoils.hh>
 
 namespace EnergyPlus {
-    // Forward declarations
-    struct EnergyPlusData;
+
+// Forward declarations
+struct EnergyPlusData;
 
 namespace Furnaces {
 
@@ -438,7 +439,8 @@ namespace Furnaces {
     // Beginning of Reporting subroutines for the Furnace Module
     // *****************************************************************************
 
-    void ReportFurnace(int const FurnaceNum, // Furnace Index Number
+    void ReportFurnace(EnergyPlusData &state,
+                       int const FurnaceNum, // Furnace Index Number
                        int const AirLoopNum  // index to air loop
     );
 
@@ -528,7 +530,8 @@ namespace Furnaces {
                                     Real64 &PartLoadRatio          // coil part-load ratio
     );
 
-    void SetMinOATCompressor(int const FurnaceNum,                    // index to furnace
+    void SetMinOATCompressor(EnergyPlusData &state,
+                             int const FurnaceNum,                    // index to furnace
                              std::string const &FurnaceName,          // name of furnace
                              std::string const &cCurrentModuleObject, // type of furnace
                              int const CoolingCoilIndex,              // index of cooling coil

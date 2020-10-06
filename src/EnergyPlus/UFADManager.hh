@@ -53,6 +53,9 @@
 
 namespace EnergyPlus {
 
+// Forward declarations
+struct EnergyPlusData;
+
 namespace UFADManager {
 
     // Data
@@ -76,7 +79,9 @@ namespace UFADManager {
 
     // Functions
 
-    void ManageUCSDUFModels(ConvectionCoefficientsData &dataConvectionCoefficients,
+    void clear_state();
+
+    void ManageUCSDUFModels(EnergyPlusData &state,
                             int const ZoneNum,      // index number for the specified zone
                             int const ZoneModelType // type of zone model; UCSDUFI = 6
     );
@@ -89,11 +94,11 @@ namespace UFADManager {
                     int const ZoneModelType // type of zone model; UCSDUFI = 6
     );
 
-    void HcUCSDUF(ConvectionCoefficientsData &dataConvectionCoefficients, int const ZoneNum, Real64 const FractionHeight);
+    void HcUCSDUF(EnergyPlusData &state, int const ZoneNum, Real64 const FractionHeight);
 
-    void CalcUCSDUI(ConvectionCoefficientsData &dataConvectionCoefficients, int const ZoneNum); // index number for the specified zone
+    void CalcUCSDUI(EnergyPlusData &state, int const ZoneNum); // index number for the specified zone
 
-    void CalcUCSDUE(ConvectionCoefficientsData &dataConvectionCoefficients, int const ZoneNum); // index number for the specified zone
+    void CalcUCSDUE(EnergyPlusData &state, int const ZoneNum); // index number for the specified zone
 
 } // namespace UFADManager
 

@@ -50,6 +50,7 @@
 #include <vector>
 
 // EnergyPlus Headers
+#include <EnergyPlus/Data/EnergyPlusData.hh>
 #include <EnergyPlus/EnergyPlus.hh>
 #include <EnergyPlus/GroundTemperatureModeling/BaseGroundTemperatureModel.hh>
 #include <EnergyPlus/GroundTemperatureModeling/FiniteDifferenceGroundTemperatureModel.hh>
@@ -142,13 +143,13 @@ namespace GroundTemperatureManager {
         } else if (objectType == objectType_FiniteDiffGroundTemp) {
             return FiniteDiffGroundTempsModel::FiniteDiffGTMFactory(state, objectType, objectName);
         } else if (objectType == objectType_SiteBuildingSurfaceGroundTemp) {
-            return SiteBuildingSurfaceGroundTemps::BuildingSurfaceGTMFactory(state.outputFiles, objectType, objectName);
+            return SiteBuildingSurfaceGroundTemps::BuildingSurfaceGTMFactory(state.files, objectType, objectName);
         } else if (objectType == objectType_SiteShallowGroundTemp) {
-            return SiteShallowGroundTemps::ShallowGTMFactory(state.outputFiles, objectType, objectName);
+            return SiteShallowGroundTemps::ShallowGTMFactory(state.files, objectType, objectName);
         } else if (objectType == objectType_SiteDeepGroundTemp) {
-            return SiteDeepGroundTemps::DeepGTMFactory(state.outputFiles, objectType, objectName);
+            return SiteDeepGroundTemps::DeepGTMFactory(state.files, objectType, objectName);
         } else if (objectType == objectType_SiteFCFactorMethodGroundTemp) {
-            return SiteFCFactorMethodGroundTemps::FCFactorGTMFactory(state.outputFiles, objectType, objectName);
+            return SiteFCFactorMethodGroundTemps::FCFactorGTMFactory(state, state.files, objectType, objectName);
         } else if (objectType == objectType_XingGroundTemp) {
             return XingGroundTempsModel::XingGTMFactory(objectType, objectName);
         } else {

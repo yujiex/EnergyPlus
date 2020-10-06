@@ -58,8 +58,9 @@
 #include <EnergyPlus/PlantComponent.hh>
 
 namespace EnergyPlus {
-    // Forward declarations
-    struct EnergyPlusData;
+
+// Forward declarations
+struct EnergyPlusData;
 
 namespace PondGroundHeatExchanger {
 
@@ -125,7 +126,7 @@ namespace PondGroundHeatExchanger {
 
         void getDesignCapacities(const PlantLocation &calledFromLocation, Real64 &MaxLoad, Real64 &MinLoad, Real64 &OptLoad) override;
 
-        void InitPondGroundHeatExchanger(BranchInputManagerData &dataBranchInputManager, bool FirstHVACIteration);
+        void InitPondGroundHeatExchanger(EnergyPlusData &state, bool FirstHVACIteration);
 
         void setupOutputVars();
 
@@ -149,6 +150,8 @@ namespace PondGroundHeatExchanger {
 
     // Object Data
     extern Array1D<PondGroundHeatExchangerData> PondGHE;
+
+    void clear_state();
 
     void GetPondGroundHeatExchanger();
 

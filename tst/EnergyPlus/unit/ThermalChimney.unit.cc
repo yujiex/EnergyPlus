@@ -61,9 +61,10 @@
 #include <EnergyPlus/DataIPShortCuts.hh>
 #include <EnergyPlus/DataSurfaces.hh>
 #include <EnergyPlus/HeatBalanceManager.hh>
+#include <EnergyPlus/IOFiles.hh>
 #include <EnergyPlus/InternalHeatGains.hh>
-#include <EnergyPlus/OutputFiles.hh>
 #include <EnergyPlus/OutputProcessor.hh>
+#include <EnergyPlus/Psychrometrics.hh>
 #include <EnergyPlus/ScheduleManager.hh>
 #include <EnergyPlus/SimulationManager.hh>
 #include <EnergyPlus/SurfaceGeometry.hh>
@@ -1094,24 +1095,24 @@ TEST_F(EnergyPlusFixture, ThermalChimney_EMSAirflow_Test)
 
     bool localErrorsFound = false;
     // Read objects
-    HeatBalanceManager::GetProjectControlData(state, state.outputFiles, localErrorsFound);
+    HeatBalanceManager::GetProjectControlData(state, localErrorsFound);
     EXPECT_FALSE(localErrorsFound);
     HeatBalanceManager::GetZoneData(localErrorsFound);
     EXPECT_FALSE(localErrorsFound);
     HeatBalanceManager::GetWindowGlassSpectralData(localErrorsFound);
     EXPECT_FALSE(localErrorsFound);
-    HeatBalanceManager::GetMaterialData(state.dataWindowEquivalentLayer, state.outputFiles, localErrorsFound);
+    HeatBalanceManager::GetMaterialData(state, state.files, localErrorsFound);
     EXPECT_FALSE(localErrorsFound);
-    HeatBalanceManager::GetConstructData(localErrorsFound);
+    HeatBalanceManager::GetConstructData(state.files, localErrorsFound);
     EXPECT_FALSE(localErrorsFound);
-    SurfaceGeometry::GetGeometryParameters(state.outputFiles, localErrorsFound);
+    SurfaceGeometry::GetGeometryParameters(state.files, localErrorsFound);
     EXPECT_FALSE(localErrorsFound);
 
     SurfaceGeometry::CosBldgRotAppGonly = 1.0;
     SurfaceGeometry::SinBldgRotAppGonly = 0.0;
-    SurfaceGeometry::GetSurfaceData(state.dataZoneTempPredictorCorrector, state.outputFiles, localErrorsFound);
+    SurfaceGeometry::GetSurfaceData(state, state.files, localErrorsFound);
     EXPECT_FALSE(localErrorsFound);
-    ScheduleManager::ProcessScheduleInput(OutputFiles::getSingleton());
+    ScheduleManager::ProcessScheduleInput(state.files);
     ScheduleManager::ScheduleInputProcessed = true;
 
     DataHeatBalance::Zone(2).HasWindow = true;
@@ -1133,6 +1134,8 @@ TEST_F(EnergyPlusFixture, ThermalChimney_EMSAirflow_Test)
     DataHeatBalFanSys::MAT = 23.0;
     DataHeatBalFanSys::ZoneAirHumRat = 0.01;
     DataEnvironment::OutBaroPress = 101325.0;
+    StdRhoAir = Psychrometrics::PsyRhoAirFnPbTdbW(DataEnvironment::OutBaroPress, 20.0, 0.0);
+
     DataHeatBalFanSys::MCPThermChim.allocate(DataGlobals::NumOfZones);
     DataHeatBalFanSys::ThermChimAMFL.allocate(DataGlobals::NumOfZones);
     DataHeatBalFanSys::MCPTThermChim.allocate(DataGlobals::NumOfZones);

@@ -1200,6 +1200,25 @@ namespace Construction {
         // precision variable is used as a more practical limit on the
         // exponentiation algorithm.
 
+        // [Claire] Here you need to re Calculate AMatRowNormMax for AMat1
+        // cf: J.E.SEEM 1987  Modeling of heat transfer in buildings
+        // Appendix A p127  4) Determine L from equation A.2 for (A*delta/2^k)
+        AMatRowNormMax = 0.0; // Start of Step 1 ...
+
+        for (i = 1; i <= this->rcmax; ++i) {
+
+            AMatRowNorm = 0.0;
+            for (j = 1; j <= this->rcmax; ++j) {
+                AMatRowNorm += std::abs(AMat1(j, i));
+            }
+
+            AMatRowNorm *= this->CTFTimeStep;
+
+            AMatRowNormMax = max(AMatRowNormMax, AMatRowNorm);
+        }
+
+        // end [Claire]
+
         CheckVal = min(3.0 * AMatRowNormMax + 6.0, 100.0);
         l = int(CheckVal);
 

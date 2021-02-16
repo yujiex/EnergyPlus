@@ -4,9 +4,11 @@ cmake_minimum_required(VERSION 3.5.1)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-if(NOT EXISTS ${PYTHON_EXECUTABLE})
-  # we are making *a Python 3.6 Interpreter* a required dependency, so find it here
+if(NOT EXISTS ${Python_EXECUTABLE})
+  # If running docs standalone, Python isn't found yet.
   find_package(PythonInterp 3.6 REQUIRED)
+  # we are making *a Python >= 3.6 Interpreter* a required dependency, so find it here
+  find_package(Python 3.6 COMPONENTS Interpreter REQUIRED)
 endif()
 
 option(DOCS_TESTING "Test the docs for issues" OFF)

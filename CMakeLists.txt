@@ -134,7 +134,12 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 # we are making *a Python 3.6 Interpreter* a required dependency, so find it here
-find_package(PythonInterp 3.6 REQUIRED)
+# If LINK_WITH_PYTHON, also request the Development (libs) at the same time, to ensure consistent version between interpreter and Development
+if(LINK_WITH_PYTHON)
+  find_package(Python 3.6 COMPONENTS Interpreter Development REQUIRED)
+else()
+  find_package(Python 3.6 COMPONENTS Interpreter REQUIRED)
+endif()
 
 if(BUILD_TESTING)
   option(ENABLE_REGRESSION_TESTING "Enable Regression Tests" OFF)
@@ -247,7 +252,7 @@ endif()
 add_subdirectory(idd)
 
 execute_process(
-  COMMAND ${PYTHON_EXECUTABLE} "${PROJECT_SOURCE_DIR}/scripts/dev/generate_epJSON_schema/generate_epJSON_schema.py" "${PROJECT_SOURCE_DIR}"
+  COMMAND ${Python_EXECUTABLE} "${PROJECT_SOURCE_DIR}/scripts/dev/generate_epJSON_schema/generate_epJSON_schema.py" "${PROJECT_SOURCE_DIR}"
   TIMEOUT 30
   RESULT_VARIABLE generate_epJSON_schema_result)
 if(${generate_epJSON_schema_result} MATCHES ".*timeout.*")

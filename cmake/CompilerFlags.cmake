@@ -80,7 +80,6 @@ elseif(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" O
     target_compile_options(project_warnings INTERFACE -Wno-maybe-uninitialized)
     target_compile_options(project_warnings INTERFACE -Wno-aggressive-loop-optimizations)
   elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-    target_compile_options(project_warnings INTERFACE -Wno-vexing-parse)
     target_compile_options(project_warnings INTERFACE -Wno-invalid-source-encoding)
   endif()
 

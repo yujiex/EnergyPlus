@@ -11,4 +11,7 @@ set(SRCS src/Solver.cpp src/Elements.cpp src/Properties.cpp)
 add_library(airflownetworklib STATIC ${SRCS} ${HDRS})
 
 target_include_directories(airflownetworklib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(airflownetworklib PUBLIC fmt::fmt)
+target_link_libraries(
+  airflownetworklib
+  PRIVATE fmt::fmt
+  PUBLIC objexx)

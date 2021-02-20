@@ -260,7 +260,7 @@ endif()
 
 if(CMAKE_HOST_UNIX)
   if(NOT APPLE)
-    list(APPEND test_dependencies dl)
+    list(APPEND test_dependencies dl Windows-CalcEngine)
   endif()
 endif()
 

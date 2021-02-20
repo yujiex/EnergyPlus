@@ -125,10 +125,6 @@ set_target_properties(re2 PROPERTIES FOLDER ThirdParty/re2)
 add_subdirectory(fmt-6.1.2)
 set_target_properties(fmt PROPERTIES FOLDER ThirdParty/fmt)
 
-# Kiva
-include(cmake/kiva.cmake)
-set_target_properties(libkiva PROPERTIES FOLDER ThirdParty/Kiva)
-
 if(NOT APPLE)
   add_subdirectory(FMUParser)
   set_target_properties(parser PROPERTIES FOLDER ThirdParty/FMI)
@@ -141,7 +137,6 @@ add_subdirectory(Windows-CalcEngine)
 set_target_properties(Windows-CalcEngine PROPERTIES FOLDER ThirdParty/Windows-CalcEngine)
 
 # Btwxt
-include_directories(${gtest_SOURCE_DIR}/include/ SYSTEM)
 set(BUILD_BTWXT_TESTING
     ${BUILD_TESTING}
     CACHE BOOL "" FORCE)
@@ -156,3 +151,37 @@ if(OPENGL_FOUND)
   set_target_properties(penumbra PROPERTIES FOLDER ThirdParty/Penumbra)
   set_target_properties(tess2 PROPERTIES FOLDER ThirdParty/Penumbra)
 endif()
+
+# Kiva
+# Add Kiva last so its headers don't leak into other third party projects
+include(cmake/kiva.cmake)
+set_target_properties(libkiva PROPERTIES FOLDER ThirdParty/Kiva)
+
+#target_include_directories(project_options INTERFACE ${PROJECT_SOURCE_DIR}/third_party)
+target_include_directories(btwxt INTERFACE btwxt/src)
+target_include_directories(re2 INTERFACE re2)
+#target_include_directories(doj INTERFACE doj)
+#target_include_directories(project_options INTERFACE nlohmann)
+#target_include_directories(project_options INTERFACE valijson)
+target_include_directories(objexx PUBLIC ObjexxFCL/src/)
+target_include_directories(sqlite SYSTEM INTERFACE SQLite/)
+target_include_directories(epexpat SYSTEM INTERFACE "Expat" "${PROJECT_SOURCE_DIR}/third_party/Expat/lib")
+#target_include_directories(project_options INTERFACE CLI/)
+#target_include_directories(Windows-CalcEngine PRIVATE Windows-CalcEngine/src/Chromogenics/include)
+target_include_directories(Windows-CalcEngine PUBLIC Windows-CalcEngine/src/Common/include)
+target_include_directories(Windows-CalcEngine PUBLIC Windows-CalcEngine/src/Gases/include)
+target_include_directories(Windows-CalcEngine PUBLIC Windows-CalcEngine/src/MultiLayerOptics/include)
+target_include_directories(Windows-CalcEngine PUBLIC Windows-CalcEngine/src/SingleLayerOptics/include)
+target_include_directories(Windows-CalcEngine PUBLIC Windows-CalcEngine/src/SpectralAveraging/include)
+target_include_directories(Windows-CalcEngine PUBLIC Windows-CalcEngine/src/Tarcog/include)
+target_include_directories(Windows-CalcEngine PRIVATE Windows-CalcEngine/src/Viewer/include)
+target_include_directories(ssc INTERFACE ssc)
+target_include_directories(ssc PRIVATE ObjexxFCL/src/)
+
+if(OPENGL_FOUND)
+  target_include_directories(penumbra INTERFACE penumbra/include)
+endif()
+target_include_directories(libkiva INTERFACE kiva-ep/src)
+target_include_directories(libkiva INTERFACE "${kiva_BINARY_DIR}/src/libkiva")
+target_include_directories(libkiva SYSTEM INTERFACE "${kiva_SOURCE_DIR}/vendor/boost-1.61.0/")
+target_include_directories(libkiva PUBLIC eigen/)

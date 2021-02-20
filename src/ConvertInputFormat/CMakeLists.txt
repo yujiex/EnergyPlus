@@ -15,6 +15,7 @@ if(OPENMP_FOUND)
 endif()
 
 target_link_libraries(ConvertInputFormat PRIVATE energyplusparser project_options project_warnings)
+target_include_directories(ConvertInputFormat PRIVATE ${CMAKE_SOURCE_DIR}/third_party/CLI)
 
 set_target_properties(ConvertInputFormat PROPERTIES VERSION ${ENERGYPLUS_VERSION})
 set_target_properties(ConvertInputFormat PROPERTIES FOLDER Auxiliary)

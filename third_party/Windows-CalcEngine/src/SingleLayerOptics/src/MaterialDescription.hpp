@@ -51,6 +51,7 @@ namespace SingleLayerOptics {
 	public:
 		CMaterial( const double minLambda, const double maxLambda );
 		explicit CMaterial( const FenestrationCommon::WavelengthRange t_Range );
+                virtual ~CMaterial() = default;
 
 		virtual void setSourceData( std::shared_ptr< FenestrationCommon::CSeries > t_SourceData );
 
@@ -90,7 +91,10 @@ namespace SingleLayerOptics {
 		virtual std::vector< double > calculateBandWavelengths() = 0;
 		bool m_WavelengthsCalculated;
 		std::vector< double > m_Wavelengths;
-
+		CMaterial &operator=(const CMaterial &) = default;
+		CMaterial &operator=(CMaterial &&) = default;
+		CMaterial(CMaterial &&) = default;
+		CMaterial(const CMaterial &) = default;
 	};
 
 	//////////////////////////////////////////////////////////////////////////////////////////

@@ -186,6 +186,8 @@ namespace LowTempRadiantSystem {
         {
         }
 
+        virtual ~RadiantSystemBaseData() = default;
+
         LowTempRadiantControlTypes processRadiantSystemControlInput(EnergyPlusData &state,
                                                                     std::string const& controlInput,
                                                                     std::string const& controlInputField,
@@ -213,6 +215,14 @@ namespace LowTempRadiantSystem {
         virtual void updateLowTemperatureRadiantSystem(EnergyPlusData &state) = 0;
 
         virtual void reportLowTemperatureRadiantSystem(EnergyPlusData &state) = 0;
+
+      protected:
+        RadiantSystemBaseData(const RadiantSystemBaseData &) = default;
+        RadiantSystemBaseData(RadiantSystemBaseData &&) = default;
+        RadiantSystemBaseData &operator=(const RadiantSystemBaseData &) = default;
+        RadiantSystemBaseData &operator=(RadiantSystemBaseData &&) = default;
+
+
 
     };
 

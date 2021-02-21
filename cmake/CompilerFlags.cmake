@@ -72,7 +72,6 @@ elseif(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" O
     target_compile_options(project_warnings INTERFACE -Wno-deprecated-copy)
   endif()
   target_compile_options(project_warnings INTERFACE -Wno-attributes) # Don't warn on attributes Clang doesn't know
-  target_compile_options(project_warnings INTERFACE -Wno-delete-non-virtual-dtor)
   target_compile_options(project_warnings INTERFACE -Wno-missing-braces)
   if(CMAKE_COMPILER_IS_GNUCXX) # g++
     target_compile_options(project_warnings INTERFACE -Wno-unused-but-set-parameter -Wno-unused-but-set-variable)

@@ -65,8 +65,7 @@ struct EnergyPlusData;
     public:
 
         // Default Constructor
-        HVACSystemData() {
-        }
+        HVACSystemData() = default;
 
         virtual void simulate(EnergyPlusData &state, std::string const &Name,
             bool const firstHVACIteration,
@@ -85,6 +84,13 @@ struct EnergyPlusData;
         virtual int getAirInNode(EnergyPlusData &state, std::string const &UnitarySysName, int const ZoneOAUnitNum, bool &errFlag) = 0;
         virtual int getAirOutNode(EnergyPlusData &state, std::string const &UnitarySysName, int const ZoneOAUnitNum, bool &errFlag) = 0;
 
+        virtual ~HVACSystemData() = default;
+
+    protected:
+        HVACSystemData(const HVACSystemData &) = default;
+        HVACSystemData(HVACSystemData &&) = default;
+        HVACSystemData &operator=(const HVACSystemData &) = default;
+        HVACSystemData &operator=(HVACSystemData &&) = default;
     };
 
 } // namespace EnergyPlus

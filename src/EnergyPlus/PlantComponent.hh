@@ -85,8 +85,13 @@ public:
     //virtual void oneTimeInit(EnergyPlusData &state) = 0;
     virtual void oneTimeInit([[maybe_unused]] EnergyPlusData &state) {};
 
-    ~PlantComponent() = default;
-};
+    virtual ~PlantComponent() = default;
+    PlantComponent() = default;
+    PlantComponent(const PlantComponent &) = default;
+    PlantComponent(PlantComponent &&) = default;
+    PlantComponent &operator=(const PlantComponent &) = default;
+    PlantComponent &operator=(PlantComponent &&) = default;
+ };
 
 } // namespace EnergyPlus
 

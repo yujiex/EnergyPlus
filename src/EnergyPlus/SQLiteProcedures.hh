@@ -105,6 +105,14 @@ protected:
     std::shared_ptr<std::ostream> m_errorStream;
     sqlite3 *m_connection;
     std::shared_ptr<sqlite3> m_db;
+
+    // this class is intended for inheritance, since all of these members are `protected`, so we will
+    // provide the virtual destructor and fullfill the rule of 5
+    virtual ~SQLiteProcedures() = default;
+    SQLiteProcedures(const SQLiteProcedures &) = default;
+    SQLiteProcedures(SQLiteProcedures &&) = default;
+    SQLiteProcedures &operator=(const SQLiteProcedures &) = default;
+    SQLiteProcedures &operator=(SQLiteProcedures &&) =  default;
 };
 
 class SQLite : SQLiteProcedures
@@ -142,7 +150,7 @@ public:
            bool writeTabularDataToSQLite = false);
 
     // Close database and free prepared statements
-    virtual ~SQLite();
+    ~SQLite() override;
 
     bool writeOutputToSQLite() const;
     bool writeTabularDataToSQLite() const;

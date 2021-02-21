@@ -52,6 +52,14 @@ namespace EnergyPlus {
 
 struct BaseGlobalStruct {
     virtual void clear_state() = 0;
+    virtual ~BaseGlobalStruct() = default;
+
+  protected:
+    BaseGlobalStruct() = default;
+    BaseGlobalStruct(const BaseGlobalStruct &) = default;
+    BaseGlobalStruct(BaseGlobalStruct &&) = default;
+    BaseGlobalStruct &operator=(const BaseGlobalStruct &) = default;
+    BaseGlobalStruct &operator=(BaseGlobalStruct &&) = default;
 };
 
 } // namespace EnergyPlus

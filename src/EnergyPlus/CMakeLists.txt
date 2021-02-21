@@ -765,10 +765,10 @@ add_dependencies(energyplusparser GenerateEmbeddedEpJSONSchema)
 target_link_libraries(energyplusparser PUBLIC objexx re2 fmt::fmt ${CMAKE_DL_LIBS})
 target_link_libraries(energyplusparser PRIVATE project_options project_fp_options project_warnings)
 
-target_include_directories(energyplusparser PRIVATE ${CMAKE_SOURCE_DIR}/third_party/valijson)
+target_include_directories(energyplusparser PRIVATE ${PROJECT_SOURCE_DIR}/third_party/valijson)
 # for nlohmann json
-target_include_directories(energyplusparser PUBLIC ${CMAKE_SOURCE_DIR}/third_party)
-target_include_directories(energyplusparser PRIVATE ${CMAKE_SOURCE_DIR}/third_party/nlohmann)
+target_include_directories(energyplusparser PUBLIC ${PROJECT_SOURCE_DIR}/third_party)
+target_include_directories(energyplusparser PRIVATE ${PROJECT_SOURCE_DIR}/third_party/nlohmann)
 
 if(WIN32)
   target_link_libraries(energyplusparser PUBLIC Shlwapi)
@@ -790,9 +790,9 @@ target_link_libraries(
           ssc)
 
 # for nlohmann json
-target_include_directories(energypluslib PUBLIC ${CMAKE_SOURCE_DIR}/third_party)
-target_include_directories(energypluslib PRIVATE ${CMAKE_SOURCE_DIR}/third_party/nlohmann)
-target_include_directories(energypluslib PRIVATE ${CMAKE_SOURCE_DIR}/third_party/valijson)
+target_include_directories(energypluslib PUBLIC ${PROJECT_SOURCE_DIR}/third_party)
+target_include_directories(energypluslib PRIVATE ${PROJECT_SOURCE_DIR}/third_party/nlohmann)
+target_include_directories(energypluslib PRIVATE ${PROJECT_SOURCE_DIR}/third_party/valijson)
 
 target_link_libraries(energypluslib PRIVATE project_options project_fp_options project_warnings)
 
@@ -851,7 +851,7 @@ else() # windows
 endif()
 target_link_libraries(energyplusapi PUBLIC energypluslib)
 target_link_libraries(energyplusapi PRIVATE project_options project_fp_options project_warnings)
-target_include_directories(energyplusapi PRIVATE ${CMAKE_SOURCE_DIR}/third_party/CLI)
+target_include_directories(energyplusapi PRIVATE ${PROJECT_SOURCE_DIR}/third_party/CLI)
 set_target_properties(energyplusapi PROPERTIES INSTALL_NAME_DIR "@executable_path")
 install(
   TARGETS energyplusapi

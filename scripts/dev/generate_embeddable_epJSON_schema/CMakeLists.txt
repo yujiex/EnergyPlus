@@ -5,4 +5,4 @@ target_link_libraries(generate_embeddedable_epJSON_schema PRIVATE project_option
 set_target_properties(generate_embeddedable_epJSON_schema PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/scripts")
 
 # for nlohmann json
-target_include_directories(generate_embeddedable_epJSON_schema PRIVATE ${CMAKE_SOURCE_DIR}/third_party)
+target_include_directories(generate_embeddedable_epJSON_schema PRIVATE ${PROJECT_SOURCE_DIR}/third_party)

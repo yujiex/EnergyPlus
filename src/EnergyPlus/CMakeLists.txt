@@ -780,13 +780,18 @@ add_library(energypluslib STATIC ${SRC})
 
 target_link_libraries(
   energypluslib
-  PUBLIC objexx fmt::fmt airflownetworklib btwxt libkiva re2
-  PRIVATE sqlite
-          bcvtb
-          epexpat
+  PUBLIC objexx
+         fmt::fmt
+         airflownetworklib
+         btwxt
+         re2
+         epexpat
+         sqlite
+  PRIVATE bcvtb
           epfmiimport
           DElight
           Windows-CalcEngine
+          libkiva
           ssc)
 
 # for nlohmann json
@@ -850,7 +855,7 @@ else() # windows
                             "${CMAKE_CURRENT_BINARY_DIR}/energyplusapi.rc")
 endif()
 target_link_libraries(energyplusapi PUBLIC energypluslib)
-target_link_libraries(energyplusapi PRIVATE project_options project_fp_options project_warnings)
+target_link_libraries(energyplusapi PRIVATE libkiva project_options project_fp_options project_warnings)
 target_include_directories(energyplusapi PRIVATE ${PROJECT_SOURCE_DIR}/third_party/CLI)
 set_target_properties(energyplusapi PROPERTIES INSTALL_NAME_DIR "@executable_path")
 install(

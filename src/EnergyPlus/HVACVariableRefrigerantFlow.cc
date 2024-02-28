@@ -11860,7 +11860,16 @@ void VRFCondenserEquipment::CalcVRFCondenser_FluidTCtrl(EnergyPlusData &state)
                                                      CurveValue(state, this->OUCoolingCAPFT(NumOfCompSpdInput), Tdischarge, this->EvaporatingTemp);
         Real64 CompEvaporatingPWRSpdMaxCurrentTsuc =
             this->RatedCompPower * CurveValue(state, this->OUCoolingPWRFT(NumOfCompSpdInput), Tdischarge, this->EvaporatingTemp);
+        if (CompEvaporatingCAPSpdMin > CompEvaporatingCAPSpdMaxCurrentTsuc) {
+            ShowSevereMessage(state, format("{} \"{}\":", cVRFTypes(VRF_HeatPump), this->Name));
+            ShowContinueError(state,
+                              format(" Evaporative Capacity at max speed is smaller than evaporative capacity at min speed, "
+                                     "{:.3T} < {:.3T}",
+                                     CompEvaporatingCAPSpdMaxCurrentTsuc,
+                                     CompEvaporatingCAPSpdMin));
+        }
         if ((Q_c_OU * C_cap_operation) > CompEvaporatingCAPSpdMaxCurrentTsuc + CompEvaporatingPWRSpdMaxCurrentTsuc) {
+            // this branch resolves the issue of supplemental heating coil turning on when compressor speed is not at the highest
             Q_c_OU = CompEvaporatingCAPSpdMaxCurrentTsuc;
             CompSpdActual = this->CompressorSpeed(NumOfCompSpdInput);
             Ncomp = CompEvaporatingPWRSpdMaxCurrentTsuc;
@@ -11869,6 +11878,7 @@ void VRFCondenserEquipment::CalcVRFCondenser_FluidTCtrl(EnergyPlusData &state)
             this->VRFOU_TeTc(
                 state, HXOpMode::EvapMode, Q_c_OU, SH_OU, m_air, OutdoorDryBulb, OutdoorHumRat, OutdoorPressure, Tfs, this->EvaporatingTemp);
         } else {
+            // CompEvaporatingCAPSpdMin < (Q_c_OU * C_cap_operation) <= CompEvaporatingCAPSpdMaxCurrentTsuc + CompEvaporatingPWRSpdMaxCurrentTsuc
             // Required heating load is greater than or equal to the min heating capacity
 
             // Iteration_Ncomp: Perform iterations to calculate Ncomp (Label20)
@@ -14564,7 +14574,7 @@ void VRFCondenserEquipment::VRFOU_CalcCompH(
     NumOfCompSpdInput = this->CompressorSpeed.size();
     CompEvaporatingPWRSpd.dimension(NumOfCompSpdInput);
     CompEvaporatingCAPSpd.dimension(NumOfCompSpdInput);
-    Q_evap_req = TU_load + Pipe_Q;
+    Q_evap_req = TU_load + Pipe_Q - Ncomp;
 
     TUListNum = this->ZoneTUListPtr;
     RefrigerantIndex = FindRefrigerant(state, this->RefrigerantName);
@@ -14593,7 +14603,7 @@ void VRFCondenserEquipment::VRFOU_CalcCompH(
         CompEvaporatingCAPSpd(CounterCompSpdTemp) =
             this->CoffEvapCap * this->RatedEvapCapacity * CurveValue(state, this->OUCoolingCAPFT(CounterCompSpdTemp), T_discharge, T_suction);
 
-        if ((Q_evap_req * C_cap_operation) <= CompEvaporatingCAPSpd(CounterCompSpdTemp) + CompEvaporatingPWRSpd(CounterCompSpdTemp)) {
+        if ((Q_evap_req * C_cap_operation) <= CompEvaporatingCAPSpd(CounterCompSpdTemp)) {
             // Compressor Capacity is greater than the required, finish Iteration DoName2
 
             if (CounterCompSpdTemp > 1) {
@@ -14601,11 +14611,9 @@ void VRFCondenserEquipment::VRFOU_CalcCompH(
                 CompSpdLB = CounterCompSpdTemp - 1;
                 CompSpdUB = CounterCompSpdTemp;
 
-                CompSpdActual = this->CompressorSpeed(CompSpdLB) +
-                                (this->CompressorSpeed(CompSpdUB) - this->CompressorSpeed(CompSpdLB)) /
-                                    (CompEvaporatingCAPSpd(CompSpdUB) + CompEvaporatingPWRSpd(CompSpdUB) -
-                                     (CompEvaporatingCAPSpd(CompSpdLB) + CompEvaporatingPWRSpd(CompSpdLB))) *
-                                    (Q_evap_req * C_cap_operation - (CompEvaporatingCAPSpd(CompSpdLB) + CompEvaporatingPWRSpd(CompSpdLB)));
+                CompSpdActual = this->CompressorSpeed(CompSpdLB) + (this->CompressorSpeed(CompSpdUB) - this->CompressorSpeed(CompSpdLB)) /
+                                                                       (CompEvaporatingCAPSpd(CompSpdUB) - CompEvaporatingCAPSpd(CompSpdLB)) *
+                                                                       (Q_evap_req * C_cap_operation - CompEvaporatingCAPSpd(CompSpdLB));
                 Modifi_SH = this->SH;
                 Ncomp = CompEvaporatingPWRSpd(CompSpdLB) + (CompEvaporatingPWRSpd(CompSpdUB) - CompEvaporatingPWRSpd(CompSpdLB)) /
                                                                (this->CompressorSpeed(CompSpdUB) - this->CompressorSpeed(CompSpdLB)) *

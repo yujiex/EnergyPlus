@@ -11897,8 +11897,7 @@ void VRFCondenserEquipment::CalcVRFCondenser_FluidTCtrl(EnergyPlusData &state)
                                   Pipe_Q_h,
                                   Q_c_OU,
                                   CompSpdActual,
-                                  Ncomp_new,
-                                  CyclingRatio);
+                                  Ncomp_new);
 
             if ((std::abs(Ncomp_new - Ncomp) > (Tolerance * Ncomp)) && (Counter < 30)) {
                 Ncomp = Ncomp_new;
@@ -14503,8 +14502,7 @@ void VRFCondenserEquipment::VRFOU_CalcCompH(
     Real64 Pipe_Q,             // Piping Loss Algorithm Parameter: Heat loss [W]
     Real64 &OUEvapHeatExtract, // Condenser heat release (cooling mode) [W]
     Real64 &CompSpdActual,     // Actual compressor running speed [rps]
-    Real64 &Ncomp,             // Compressor power [W]
-    Real64 &CyclingRatio       // Compressor cycling ratio
+    Real64 &Ncomp              // Compressor power [W]
 )
 {
 
@@ -14671,13 +14669,9 @@ void VRFCondenserEquipment::VRFOU_CalcCompH(
                     NumIteCcap = NumIteCcap + 1;
                     goto Label19;
                 }
-                if (CapDiff > (Tolerance * Cap_Eva0)) {
-                    NumIteCcap = 999;
-                    CyclingRatio = (TU_load + Pipe_Q) * C_cap_operation / Cap_Eva1;
-                }
+                if (CapDiff > (Tolerance * Cap_Eva0)) NumIteCcap = 999;
 
-                Ncomp = this->RatedCompPower * CurveValue(state, this->OUCoolingPWRFT(CounterCompSpdTemp), T_discharge, T_suction) * CyclingRatio;
-                OUEvapHeatExtract = CompEvaporatingCAPSpd(1) * CyclingRatio;
+                Ncomp = this->RatedCompPower * CurveValue(state, this->OUCoolingPWRFT(CounterCompSpdTemp), T_discharge, T_suction);
 
                 break; // EXIT DoName2
 

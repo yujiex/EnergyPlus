@@ -2557,6 +2557,7 @@ TEST_F(EnergyPlusFixture, VRF_FluidTCtrl_VRFOU_Compressor)
         //   specified speed. Note that it may be needed to manipulate the operational conditions to further adjust system capacity at low load
         //   conditions. The low load modification logics are different for cooling mode and heating mode.
 
+<<<<<<< HEAD
         // Inputs_condition
         Real64 TU_load = 6006;              // Indoor unit cooling load [W]
         Real64 T_suction = 8.86;            // Compressor suction temperature Te' [C]
@@ -2570,6 +2571,7 @@ TEST_F(EnergyPlusFixture, VRF_FluidTCtrl_VRFOU_Compressor)
         Real64 Ncomp = 1058;                // Compressor power [W]
         Real64 CompSpdActual;               // Actual compressor running speed [rps]
 
+        Real64 CyclingRatio = 1.0;
         // Run
         state->dataHVACVarRefFlow->VRF(VRFCond).VRFOU_CalcCompH(*state,
                                                                 TU_load,
@@ -2582,7 +2584,8 @@ TEST_F(EnergyPlusFixture, VRF_FluidTCtrl_VRFOU_Compressor)
                                                                 Pipe_Q,
                                                                 OUEvapHeatExtract,
                                                                 CompSpdActual,
-                                                                Ncomp);
+                                                                Ncomp,
+                                                                CyclingRatio);
 
         // Test
         EXPECT_NEAR(5110, OUEvapHeatExtract, 1);

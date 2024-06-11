@@ -11606,9 +11606,6 @@ void VRFCondenserEquipment::CalcVRFCondenser_FluidTCtrl(EnergyPlusData &state)
         if (Q_c_TU_PL > CompEvaporatingCAPSpdMax) {
             // Required load is beyond the max system capacity
 
-            Q_c_TU_PL = CompEvaporatingCAPSpdMax;
-            TU_CoolingLoad = CompEvaporatingCAPSpdMax;
-            this->TUCoolingLoad = TU_CoolingLoad;
             RefTSat = GetSatTemperatureRefrig(state, this->RefrigerantName, max(min(Pevap, RefPHigh), RefPLow), RefrigerantIndex, RoutineName);
             h_IU_evap_out = GetSupHeatEnthalpyRefrig(state,
                                                      this->RefrigerantName,
@@ -11756,9 +11753,9 @@ void VRFCondenserEquipment::CalcVRFCondenser_FluidTCtrl(EnergyPlusData &state)
         this->PipingCorrectionCooling = TU_CoolingLoad / (TU_CoolingLoad + Pipe_Q_c);
         state.dataHVACVarRefFlow->MaxCoolingCapacity(VRFCond) = this->CoolingCapacity; // for report, maximum evaporating capacity of the system
 
-        this->HeatingCapacity = 0.0;         // Include the piping loss
-        this->PipingCorrectionHeating = 1.0; // 1 means no piping loss
-        state.dataHVACVarRefFlow->MaxHeatingCapacity(VRFCond) = 0.0;
+        this->HeatingCapacity = 0.0;                                 // Include the piping loss
+        this->PipingCorrectionHeating = 1.0;                         // 1 means no piping loss
+        state.dataHVACVarRefFlow->MaxHeatingCapacity(VRFCond) = 0.0; // yujie: might be wrong here too, should be MaxCap = 1e+20
 
         this->OUCondHeatRate = Q_h_OU;
         this->OUEvapHeatRate = 0;
@@ -11978,7 +11975,7 @@ void VRFCondenserEquipment::CalcVRFCondenser_FluidTCtrl(EnergyPlusData &state)
 
         this->CoolingCapacity = 0.0; // Include the piping loss
         this->PipingCorrectionCooling = 0.0;
-        state.dataHVACVarRefFlow->MaxCoolingCapacity(VRFCond) = 0.0; // for report
+        state.dataHVACVarRefFlow->MaxCoolingCapacity(VRFCond) = 0.0; // for report . yujie: might be wrong here too, should be MaxCap = 1e+20
 
         this->OUCondHeatRate = 0;
         this->OUEvapHeatRate = Q_c_OU;

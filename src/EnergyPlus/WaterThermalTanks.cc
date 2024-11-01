@@ -3375,6 +3375,7 @@ bool getWaterHeaterStratifiedInput(EnergyPlusData &state)
                 break;
             }
         }
+        Tank.StorageTankModeDeadband = state.dataIPShortCut->rNumericArgs(46);
 
         if (specifiedNodes > Tank.Nodes) {
             ShowWarningError(
@@ -10387,7 +10388,7 @@ bool WaterThermalTankData::SourceHeatNeed(EnergyPlusData &state, Real64 const Ou
                 NeedsHeatOrCool = false;
             }
         } else if (this->SourceSideControlMode == SourceSideControl::StorageTank) {
-            if (OutletTemp < this->TankTempLimit) {
+            if (OutletTemp < this->TankTempLimit - this->StorageTankModeDeadband) {
                 NeedsHeatOrCool = true;
             } else {
                 NeedsHeatOrCool = false;

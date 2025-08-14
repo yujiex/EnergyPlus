@@ -76191,10 +76191,9 @@ HeatPump:AirToWater,
    N1 , \field Rated Inlet Air Temperature in Heating Mode
         \type real
         \units C
-        \minimum> 5
         \default 8
         \note inlet air dry-bulb temperature corresponding to rated heat pump performance
-        \note (capacity, COP, and SHR).
+        \note (capacity, COP).
    N2 , \field Rated Air Flow Rate in Heating Mode
         \type real
         \units m3/s
@@ -76202,14 +76201,13 @@ HeatPump:AirToWater,
         \autosizable
         \default autosize
         \note air flow rate corresponding to rated heat pump performance
-        \note (capacity, COP, and SHR).
+        \note (capacity, COP).
    N3 , \field Rated Leaving Water Temperature in Heating Mode
         \type real
         \units C
-        \minimum> 25
         \default 40
         \note outlet water temperature corresponding to rated heat pump performance
-        \note (heating capacity, COP, and SHR).
+        \note (heating capacity, COP).
    N4 , \field Rated Water Flow Rate in Heating Mode
         \type real
         \units m3/s
@@ -76218,7 +76216,7 @@ HeatPump:AirToWater,
         \autosizable
         \default autosize
         \note Condenser water flow rate corresponding to rated heat pump performance
-        \note (capacity, COP and SHR).
+        \note (capacity, COP).
    N5, \field Minimum Outdoor Air Temperature in Heating Mode
         \type real
         \units C
@@ -76244,10 +76242,9 @@ HeatPump:AirToWater,
    N9, \field Rated Inlet Air Temperature in Cooling Mode
         \type real
         \units C
-        \minimum> 5
         \default 30
         \note inlet air dry-bulb temperature corresponding to rated heat pump performance
-        \note (capacity, COP, and SHR).
+        \note (capacity, COP).
    N10, \field Rated Air Flow Rate in Cooling Mode
         \type real
         \units m3/s
@@ -76255,14 +76252,13 @@ HeatPump:AirToWater,
         \autosizable
         \default autosize
         \note air flow rate corresponding to rated heat pump performance
-        \note (capacity, COP, and SHR).
+        \note (capacity, COP).
    N11 , \field Rated Leaving Water Temperature in Cooling Mode
         \type real
         \units C
-        \minimum> 0
         \default 8
         \note inlet water temperature corresponding to rated performance
-        \note (heating capacity, COP, and SHR).
+        \note (heating capacity, COP).
    N12 , \field Rated Water Flow Rate in Cooling Mode
         \type real
         \units m3/s
@@ -76271,7 +76267,7 @@ HeatPump:AirToWater,
         \autosizable
         \default autosize
         \note Condenser water flow rate corresponding to rated heat pump performance
-        \note (capacity, COP, and SHR).
+        \note (capacity, COP).
    N13 , \field Minimum Outdoor Air Temperature in Cooling Mode
         \type real
         \units C
@@ -97923,7 +97919,6 @@ Table:IndependentVariable,
   N7,  \field Value 2
        \type real
   N8,N9,N10,N11,N12,N13,N14,N15,N16,N17,N18,N19,N20;
-
 Table:IndependentVariableList,
        \memo A sorted list of independent variables used by one or more Table:Lookup
        \memo objects.

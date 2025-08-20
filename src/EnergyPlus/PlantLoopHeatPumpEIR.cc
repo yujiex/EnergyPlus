@@ -503,7 +503,7 @@ void EIRPlantLoopHeatPump::calcAvailableCapacity(
     // add free cooling at some point, compressor is off during free cooling, temp limits restrict free cooling range
 
     Real64 capacityModifierFuncTemp = 1.0;
-    bool waterTempExceeded = false;
+    this->waterTempExceeded = false;
 
     // evaluate capacity modifier curve and determine load side heat transfer
     // any adjustment to outlet water temp set point requires some form of iteration
@@ -532,14 +532,14 @@ void EIRPlantLoopHeatPump::calcAvailableCapacity(
             Real64 minWaterTemp = Curve::CurveValue(state, this->minSupplyWaterTempCurveIndex, state.dataEnvrn->OutDryBulbTemp);
             if (loadSideOutletSetpointTemp < minWaterTemp) {
                 loadSideOutletSetpointTemp = originalLoadSideOutletSPTemp + (1.0 - partLoadRatio) * (minWaterTemp - originalLoadSideOutletSPTemp);
-                waterTempExceeded = true;
+                this->waterTempExceeded = true;
             }
         }
         if (this->maxSupplyWaterTempCurveIndex > 0) {
             Real64 maxWaterTemp = Curve::CurveValue(state, this->maxSupplyWaterTempCurveIndex, state.dataEnvrn->OutDryBulbTemp);
             if (loadSideOutletSetpointTemp > maxWaterTemp) {
                 loadSideOutletSetpointTemp = maxWaterTemp + (1.0 - partLoadRatio) * (originalLoadSideOutletSPTemp - maxWaterTemp);
-                waterTempExceeded = true;
+                this->waterTempExceeded = true;
             }
         }
         if (this->heatRecoveryHeatPump) {
@@ -557,7 +557,7 @@ void EIRPlantLoopHeatPump::calcAvailableCapacity(
                 partLoadRatio *= (this->maxSourceTempLimit - this->sourceSideInletTemp) / (tempSourceOutletTemp - this->sourceSideInletTemp);
             }
         }
-        if (!waterTempExceeded) {
+        if (!this->waterTempExceeded) {
             break;
         }
     }
@@ -3963,6 +3963,28 @@ void HeatPumpAirToWater::processInputForEIRPLHP(EnergyPlusData &state)
                 } else {
                     thisAWHP.maxSourceTempLimit = 100.0; // default value
                 }
+                auto minLeavingWaterTempCurveName = fields.find(format("minimum_leaving_water_temperature_curve_name_in_{}_mode", modeKeyWord));
+                if (minLeavingWaterTempCurveName != fields.end()) {
+                    thisAWHP.minSupplyWaterTempCurveIndex = Curve::GetCurveIndex(
+                        state, Util::makeUPPER(minLeavingWaterTempCurveName.value().get<std::string>()));
+                    if (thisAWHP.minSupplyWaterTempCurveIndex == 0) {
+                        ShowSevereError(state, format("Invalid curve name for HeatPump:AirToWater (name={}; entered curve name: {})",
+                                                      thisAWHP.name,
+                                                      minLeavingWaterTempCurveName.value().get<std::string>()));
+                        errorsFound = true;
+                    }
+                }
+                auto maxLeavingWaterTempCurveName = fields.find(format("maximum_leaving_water_temperature_curve_name_in_{}_mode", modeKeyWord));
+                if (maxLeavingWaterTempCurveName != fields.end()) {
+                    thisAWHP.maxSupplyWaterTempCurveIndex = Curve::GetCurveIndex(
+                        state, Util::makeUPPER(maxLeavingWaterTempCurveName.value().get<std::string>()));
+                    if (thisAWHP.maxSupplyWaterTempCurveIndex == 0) {
+                        ShowSevereError(state, format("Invalid curve name for HeatPump:AirToWater (name={}; entered curve name: {})",
+                                                      thisAWHP.name,
+                                                      maxLeavingWaterTempCurveName.value().get<std::string>()));
+                        errorsFound = true;
+                    }
+                }
                 thisAWHP.sizingFactor =
                     state.dataInputProcessing->inputProcessor->getRealFieldValue(fields, schemaProps, format("sizing_factor_for_{}", modeKeyWord));
                 std::string sourceSideInletNodeName = Util::makeUPPER(fields.at("air_inlet_node_name").get<std::string>());
@@ -4585,7 +4607,7 @@ void HeatPumpAirToWater::calcOpMode(EnergyPlus::EnergyPlusData &state, Real64 cu
                 this->operatingMode = min(this->compressorMultiplier, this->OperationModeEMSOverrideValue);
                 this->companionHeatPumpCoil->operatingMode = 0;
             }
-        } else if (this->operatingModeControlMethod == OperatingModeControlMethod::ScheduledModes){
+        } else if (this->operatingModeControlMethod == OperatingModeControlMethod::ScheduledModes) {
             auto numUnitsOn = static_cast<int>(this->operationModeControlSche->getCurrentVal());
             if (numUnitsOn > 0) {
                 this->operatingMode = min(this->compressorMultiplier, numUnitsOn);
@@ -4687,6 +4709,13 @@ void HeatPumpAirToWater::doPhysics(EnergyPlusData &state, Real64 currentLoad)
 
     Real64 availableCapacity;
     this->calcAvailableCapacity(state, currentLoad, this->capFuncTempCurveIndex[this->numSpeeds - 1], availableCapacity, partLoadRatio);
+    if (this->waterTempExceeded) { // turn off the equipment if water temp exceeded operation limits
+        this->loadSideMassFlowRate = 0.0;
+        this->sourceSideMassFlowRate = 0.0;
+        this->running = false;
+        this->resetReportingVariables();
+        return;
+    }
     Real64 availableCapacityBeforeMultiplier = availableCapacity / this->compressorMultiplier;
     this->setPartLoadAndCyclingRatio(state, partLoadRatio);
 

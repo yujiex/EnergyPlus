@@ -157,6 +157,8 @@
     , !-  Rated Water Flow Rate in Heating Mode
     , !-  Minimum Outdoor Air Temperature in Heating Mode
     , !-  Maximum Outdoor Air Temperature in Heating Mode
+    , !- Minimum Leaving Water Temperature Curve Name in Heating Mode
+    , !- Maximum Leaving Water Temperature Curve Name in Heating Mode
     , !- Minimum Part Load Ratio
     , !-  Sizing Factor for Heating
     25, !-  Rated Inlet Air Temperature in Cooling Mode
@@ -165,6 +167,8 @@
     autosize , !-  Rated Water Flow Rate in Cooling Mode
     18 , !-  Minimum Outdoor Air Temperature in Cooling Mode
     40, !-  Maximum Outdoor Air Temperature in Cooling Mode
+    , !- Minimum Leaving Water Temperature Curve Name in Cooling Mode
+    , !- Maximum Leaving Water Temperature Curve Name in Cooling Mode
     0.9, !-  Sizing Factor for Cooling
     Outdoor Air Inlet Node , !-  Air Inlet Node Name
     Outdoor Air Outlet Node, !-  Air Outlet Node Name
@@ -246,26 +250,6 @@
     , !-  Normalized Cooling Capacity Function of Temperature Curve Name in Booster Mode
     , !-  Cooling Energy Input Ratio Function of Temperature Curve Name in Booster Mode
     ; !-  Cooling Energy Input Ratio Function of PLR Curve Name in Booster Mode
-
-  HeatPump:PlantLoop:EIR:Heating,
-    Heating Coil,            !- Name
-    Heating Coil Load Loop Intermediate Node,  !- Load Side Inlet Node Name
-    Heating Coil Load Loop Supply Outlet Node,  !- Load Side Outlet Node Name
-    AirSource,               !- Condenser Type
-    Outdoor Air Inlet Node,  !- Source Side Inlet Node Name
-    Outdoor Air Outlet Node, !- Source Side Outlet Node Name
-    ,                        !- Heat Recovery Inlet Node Name
-    ,                        !- Heat Recovery Outlet Node Name      
-    ,            !- Companion Heat Pump Name
-    0.005,                   !- Load Side Reference Flow Rate {m3/s}
-    2,                       !- Source Side Reference Flow Rate {m3/s}
-    ,                        !- Heat Recovery Reference Flow Rate {m3/s}
-    80000,                   !- Reference Capacity {W}
-    3.5,                     !- Reference Coefficient of Performance {W/W}
-    ,                        !- Sizing Factor
-    CapCurveFuncTemp,        !- Capacity Modifier Function of Temperature Curve Name
-    EIRCurveFuncTemp,        !- Electric Input to Output Ratio Modifier Function of Temperature Curve Name
-    EIRCurveFuncPLR;         !- Electric Input to Output Ratio Modifier Function of Part Load Ratio Curve Name
 
   Curve:Biquadratic,
     CapCurveFuncTemp,        !- Name
@@ -401,26 +385,6 @@
     0,                       !- Design Minimum Flow Rate {m3/s}
     INTERMITTENT;            !- Pump Control Type
 
-  HeatPump:PlantLoop:EIR:Cooling,
-    Cooling Coil,            !- Name
-    Cooling Coil Load Loop Intermediate Node,  !- Load Side Inlet Node Name
-    Cooling Coil Load Loop Supply Outlet Node,  !- Load Side Outlet Node Name
-    AirSource,               !- Condenser Type
-    Outdoor Air Inlet Node,  !- Source Side Inlet Node Name
-    Outdoor Air Outlet Node, !- Source Side Outlet Node Name
-    ,                        !- Heat Recovery Inlet Node Name
-    ,                        !- Heat Recovery Outlet Node Name
-    ,            !- Companion Heat Pump Name
-    0.005,                   !- Load Side Reference Flow Rate {m3/s}
-    20,                      !- Source Side Reference Flow Rate {m3/s}
-    ,                        !- Heat Recovery Reference Flow Rate {m3/s}
-    400000,                  !- Reference Capacity {W}
-    3.5,                     !- Reference Coefficient of Performance {W/W}
-    ,                        !- Sizing Factor
-    CapCurveFuncTemp2,       !- Capacity Modifier Function of Temperature Curve Name
-    EIRCurveFuncTemp2,       !- Electric Input to Output Ratio Modifier Function of Temperature Curve Name
-    EIRCurveFuncPLR2;        !- Electric Input to Output Ratio Modifier Function of Part Load Ratio Curve Name
-
   Curve:Biquadratic,
     CapCurveFuncTemp2,       !- Name
     0.8,                     !- Coefficient1 Constant
@@ -528,7 +492,7 @@
     opModeAct_cooling,               !- Name
     test_AWHP,               !- Actuated Component Unique Name
     HeatPump:AirToWater:Cooling,     !- Actuated Component Type
-    Operation Mode;          !- Actuated Component Control Type
+    Operating Mode;          !- Actuated Component Control Type
 
   EnergyManagementSystem:OutputVariable,
     Operating Model Output Cooling,       !- Name

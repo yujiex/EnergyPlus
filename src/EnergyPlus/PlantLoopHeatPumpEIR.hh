@@ -148,6 +148,7 @@ namespace EIRPlantLoopHeatPumps {
         int maxSupplyWaterTempCurveIndex = 0;
         int heatRecoveryCapFTempCurveIndex = 0;
         int heatRecoveryEIRFTempCurveIndex = 0;
+        bool waterTempExceeded = false; // flag to indicate if water temperature exceeded the limits
 
         // flow rate terms
         Real64 loadSideDesignVolFlowRate = 0.0;

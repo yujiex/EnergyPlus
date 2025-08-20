@@ -76197,7 +76197,7 @@ HeatPump:AirToWater,
    N2 , \field Rated Air Flow Rate in Heating Mode
         \type real
         \units m3/s
-        \minimum> 0
+        \minimum> 0.0
         \autosizable
         \default autosize
         \note air flow rate corresponding to rated heat pump performance
@@ -76212,23 +76212,33 @@ HeatPump:AirToWater,
         \type real
         \units m3/s
         \ip-units gal/min
-        \minimum> 0
+        \minimum> 0.0
         \autosizable
         \default autosize
         \note Condenser water flow rate corresponding to rated heat pump performance
         \note (capacity, COP).
-   N5, \field Minimum Outdoor Air Temperature in Heating Mode
+   N5,  \field Minimum Outdoor Air Temperature in Heating Mode
         \type real
         \units C
         \default -100.0
         \note Enter the minimum outdoor temperature allowed for heating operation
         \note Heating is disabled below this temperature
-   N6, \field Maximum Outdoor Air Temperature in Heating Mode
+   N6,  \field Maximum Outdoor Air Temperature in Heating Mode
         \type real
         \units C
         \default 100
         \note Enter the maximum outdoor temperature allowed for heating operation
         \note Heating is disabled above this temperature
+   A7,  \field Minimum Leaving Water Temperature Curve Name in Heating Mode
+        \type object-list
+        \object-list UniVariateFunctions
+        \note quadratic curve = a + b*OAT is typical, other univariate curves may be used
+        \note OAT = Outdoor Dry-Bulb Temperature
+   A8,  \field Maximum Leaving Water Temperature Curve Name in Heating Mode
+        \type object-list
+        \object-list UniVariateFunctions
+        \note quadratic curve = a + b*OAT is typical, other univariate curves may be used
+        \note OAT = Outdoor Dry-Bulb Temperature
    N7,  \field Minimum Part Load Ratio
         \note Below this operating limit compressor cycling will occur
         \type real
@@ -76248,7 +76258,7 @@ HeatPump:AirToWater,
    N10, \field Rated Air Flow Rate in Cooling Mode
         \type real
         \units m3/s
-        \minimum> 0
+        \minimum> 0.0
         \autosizable
         \default autosize
         \note air flow rate corresponding to rated heat pump performance
@@ -76263,7 +76273,7 @@ HeatPump:AirToWater,
         \type real
         \units m3/s
         \ip-units gal/min
-        \minimum> 0
+        \minimum> 0.0
         \autosizable
         \default autosize
         \note Condenser water flow rate corresponding to rated heat pump performance
@@ -76280,36 +76290,46 @@ HeatPump:AirToWater,
         \default 100.0
         \note Enter the maximum outdoor temperature allowed for cooling operation
         \note Cooling is disabled above this temperature
+   A9,  \field Minimum Leaving Water Temperature Curve Name in Cooling Mode
+        \type object-list
+        \object-list UniVariateFunctions
+        \note quadratic curve = a + b*OAT is typical, other univariate curves may be used
+        \note OAT = Outdoor Dry-Bulb Temperature
+   A10, \field Maximum Leaving Water Temperature Curve Name in Cooling Mode
+        \type object-list
+        \object-list UniVariateFunctions
+        \note quadratic curve = a + b*OAT is typical, other univariate curves may be used
+        \note OAT = Outdoor Dry-Bulb Temperature
    N15, \field Sizing Factor for Cooling
         \note Multiplies the autosized capacity and flow rates
         \type real
         \minimum> 0.0
         \default 1.0
-   A7 , \field Air Inlet Node Name
+   A11, \field Air Inlet Node Name
         \required-field
         \type node
         \note The node from which the heat pump draws its inlet air.
-   A8 , \field Air Outlet Node Name
+   A12, \field Air Outlet Node Name
         \required-field
         \type node
         \note The node to which the heat pump sends its outlet air.
-   A9 , \field Hot Water Inlet Node Name
+   A13, \field Hot Water Inlet Node Name
         \type node
         \note The node connects to the hot water loop
-   A10, \field Hot Water Outlet Node Name
+   A14, \field Hot Water Outlet Node Name
         \type node
         \note The node connects to the hot water loop
-   A11, \field Chilled Water Inlet Node Name
+   A15, \field Chilled Water Inlet Node Name
         \type node
         \note The node connects to the chilled water loop
-   A12, \field Chilled Water Outlet Node Name
+   A16, \field Chilled Water Outlet Node Name
         \type node
         \note The node connects to the chilled water loop
    N16, \field Maximum Outdoor Dry Bulb Temperature For Defrost Operation
         \type real
         \default 10.0
         \note defrost operation will not be active above this outdoor temperature
-   A13, \field Heat Pump Defrost Control
+   A17, \field Heat Pump Defrost Control
         \type choice
         \key None
         \key Timed
@@ -76330,7 +76350,7 @@ HeatPump:AirToWater,
         \units W
         \note only applicable if resistive defrost strategy is specified
         \ip-units W
-   A14, \field Defrost Energy Input Ratio Function of Temperature Curve Name
+   A18, \field Defrost Energy Input Ratio Function of Temperature Curve Name
         \type object-list
         \object-list BivariateFunctions
         \note univariate curve = a + b*OAT is typical, other univariate curves may be used
@@ -76342,20 +76362,20 @@ HeatPump:AirToWater,
         \type integer
         \default 1
         \note intend to model modular compressors
-   A15, \field Control Type
+   A19, \field Control Type
         \type choice
         \key FixedSpeed
         \key VariableSpeed
         \default VariableSpeed
    N20, \field Crankcase Heater Capacity
         \type real
-        \minimum 0
-        \default 0
+        \minimum 0.0
+        \default 0.0
         \units W
         \note The compressor crankcase heater only operates when the dry-bulb temperature of air
         \note surrounding the compressor is below the Maximum Ambient Temperature for Crankcase
         \note Heater Operation and the heat pump is off. The ambient temperature uses the outdoor air temperature. 
-   A16, \field Crankcase Heater Capacity Function of Temperature Curve Name
+   A20, \field Crankcase Heater Capacity Function of Temperature Curve Name
         \note A Curve:* or Table:Lookup object encoding the relationship between
         \note the crankcase heater capacity and the outdoor air temperature. When this field is
         \note missing or empty, constant crankcase heater capacity will be assumed.
@@ -76363,8 +76383,8 @@ HeatPump:AirToWater,
         \object-list UnivariateFunctions
    N21, \field Maximum Ambient Temperature for Crankcase Heater Operation
         \type real
-        \minimum 0
-        \default 10
+        \minimum 0.0
+        \default 10.0
         \units C
         \note The compressor crankcase heater only operates when the dry-bulb temperature of air
         \note surrounding the compressor is below the Maximum Outdoor Temperature for Crankcase
@@ -76378,7 +76398,7 @@ HeatPump:AirToWater,
    N25, \field Rated Heating Capacity at Speed 1
         \type real
         \units W
-        \minimum> 0
+        \minimum> 0.0
         \autosizable
         \default autosize
    N26, \field Rated COP for Heating at Speed 1
@@ -76386,17 +76406,17 @@ HeatPump:AirToWater,
         \minimum> 0.0
         \units W/W
         \default 3.0
-   A18, \field Normalized Heating Capacity Function of Temperature Curve Name at Speed 1
+   A22, \field Normalized Heating Capacity Function of Temperature Curve Name at Speed 1
         \type object-list
         \object-list BivariateFunctions
         \note: CAPFT - Normalized Capacity Function of Temperature Curve Name,
         \note which is a biquadratic curve or a lookup table of air and water temperature.
-   A19, \field Heating Energy Input Ratio Function of Temperature Curve Name at Speed 1
+   A23, \field Heating Energy Input Ratio Function of Temperature Curve Name at Speed 1
         \type object-list
         \object-list BivariateFunctions
         \note EIRFT - Fuel Energy Input Ratio Function of Temperature Curve Name,
         \note which is a biquadratic curve or a lookup table of air and water temperature.
-   A20, \field Heating Energy Input Ratio Function of PLR Curve Name at Speed 1
+   A24, \field Heating Energy Input Ratio Function of PLR Curve Name at Speed 1
         \type object-list
         \object-list UnivariateFunctions
         \note EIRFPLR - Fuel Energy Input Ratio Function of Part Load Ratio(PLR) Curve Name,
@@ -76404,22 +76424,22 @@ HeatPump:AirToWater,
    N27, \field Rated Heating Capacity at Speed 2
         \type real
         \units W
-        \minimum> 0
+        \minimum> 0.0
    N28, \field Rated COP for Heating at Speed 2
         \type real
         \minimum> 0.0
         \units W/W
-   A21, \field Normalized Heating Capacity Function of Temperature Curve Name at Speed 2
+   A25, \field Normalized Heating Capacity Function of Temperature Curve Name at Speed 2
         \type object-list
         \object-list BivariateFunctions
         \note: CAPFT - Normalized Capacity Function of Temperature Curve Name,
         \note which is a biquadratic curve or a lookup table of air and water temperature.
-   A22, \field Heating Energy Input Ratio Function of Temperature Curve Name at Speed 2
+   A26, \field Heating Energy Input Ratio Function of Temperature Curve Name at Speed 2
         \type object-list
         \object-list BivariateFunctions
         \note EIRFT - Fuel Energy Input Ratio Function of Temperature Curve Name,
         \note which is a biquadratic curve or a lookup table of air and water temperature.
-   A23, \field Heating Energy Input Ratio Function of PLR Curve Name at Speed 2
+   A27, \field Heating Energy Input Ratio Function of PLR Curve Name at Speed 2
         \type object-list
         \object-list UnivariateFunctions
         \note EIRFPLR - Fuel Energy Input Ratio Function of Part Load Ratio(PLR) Curve Name,
@@ -76427,22 +76447,22 @@ HeatPump:AirToWater,
    N29, \field Rated Heating Capacity at Speed 3
         \type real
         \units W
-        \minimum> 0
+        \minimum> 0.0
    N30, \field Rated COP for Heating at Speed 3
         \type real
         \minimum> 0.0
         \units W/W
-   A24, \field Normalized Heating Capacity Function of Temperature Curve Name at Speed 3
+   A28, \field Normalized Heating Capacity Function of Temperature Curve Name at Speed 3
         \type object-list
         \object-list BivariateFunctions
         \note: CAPFT - Normalized Capacity Function of Temperature Curve Name,
         \note which is a biquadratic curve or a lookup table of air and water temperature.
-   A25, \field Heating Energy Input Ratio Function of Temperature Curve Name at Speed 3
+   A29, \field Heating Energy Input Ratio Function of Temperature Curve Name at Speed 3
         \type object-list
         \object-list BivariateFunctions
         \note EIRFT - Fuel Energy Input Ratio Function of Temperature Curve Name,
         \note which is a biquadratic curve or a lookup table of air and water temperature.
-   A26, \field Heating Energy Input Ratio Function of PLR Curve Name at Speed 3
+   A30, \field Heating Energy Input Ratio Function of PLR Curve Name at Speed 3
         \type object-list
         \object-list UnivariateFunctions
         \note EIRFPLR - Fuel Energy Input Ratio Function of Part Load Ratio(PLR) Curve Name,
@@ -76450,22 +76470,22 @@ HeatPump:AirToWater,
    N31, \field Rated Heating Capacity at Speed 4
         \type real
         \units W
-        \minimum> 0
+        \minimum> 0.0
    N32,\field Rated COP for Heating at Speed 4
         \type real
         \minimum> 0.0
         \units W/W
-   A27, \field Normalized Heating Capacity Function of Temperature Curve Name at Speed 4
+   A31, \field Normalized Heating Capacity Function of Temperature Curve Name at Speed 4
         \type object-list
         \object-list BivariateFunctions
         \note: CAPFT - Normalized Capacity Function of Temperature Curve Name,
         \note which is a biquadratic curve or a lookup table of air and water temperature.
-   A28, \field Heating Energy Input Ratio Function of Temperature Curve Name at Speed 4
+   A32, \field Heating Energy Input Ratio Function of Temperature Curve Name at Speed 4
         \type object-list
         \object-list BivariateFunctions
         \note EIRFT - Fuel Energy Input Ratio Function of Temperature Curve Name,
         \note which is a biquadratic curve or a lookup table of air and water temperature.
-   A29, \field Heating Energy Input Ratio Function of PLR Curve Name at Speed 4
+   A33, \field Heating Energy Input Ratio Function of PLR Curve Name at Speed 4
         \type object-list
         \object-list UnivariateFunctions
         \note EIRFPLR - Fuel Energy Input Ratio Function of Part Load Ratio(PLR) Curve Name,
@@ -76473,27 +76493,27 @@ HeatPump:AirToWater,
    N33, \field Rated Heating Capacity at Speed 5
         \type real
         \units W
-        \minimum> 0
+        \minimum> 0.0
    N34, \field Rated COP for Heating at Speed 5
         \type real
         \minimum> 0.0
         \units W/W
-   A30, \field Normalized Heating Capacity Function of Temperature Curve Name at Speed 5
+   A34, \field Normalized Heating Capacity Function of Temperature Curve Name at Speed 5
         \type object-list
         \object-list BivariateFunctions
         \note: CAPFT - Normalized Capacity Function of Temperature Curve Name,
         \note which is a biquadratic curve or a lookup table of air and water temperature.
-   A31, \field Heating Energy Input Ratio Function of Temperature Curve Name at Speed 5
+   A35, \field Heating Energy Input Ratio Function of Temperature Curve Name at Speed 5
         \type object-list
         \object-list BivariateFunctions
         \note EIRFT - Fuel Energy Input Ratio Function of Temperature Curve Name,
         \note which is a biquadratic curve or a lookup table of air and water temperature.
-   A32, \field Heating Energy Input Ratio Function of PLR Curve Name at Speed 5
+   A36, \field Heating Energy Input Ratio Function of PLR Curve Name at Speed 5
         \type object-list
         \object-list UnivariateFunctions
         \note EIRFPLR - Fuel Energy Input Ratio Function of Part Load Ratio(PLR) Curve Name,
         \note which is a cubic curve or a lookup table.
-   A33, \field Booster Mode On Heating
+   A37, \field Booster Mode On Heating
         \type choice
         \key Yes
         \key No
@@ -76501,23 +76521,23 @@ HeatPump:AirToWater,
    N35, \field Rated Heating Capacity in Booster Mode
         \type real
         \units W
-        \minimum> 0
+        \minimum> 0.0
    N36, \field Rated Heating COP in Booster Mode
         \type real
         \minimum> 0.0
         \units W/W
         \default 3.0
-   A34, \field Normalized Heating Capacity Function of Temperature Curve Name in Booster Mode
+   A38, \field Normalized Heating Capacity Function of Temperature Curve Name in Booster Mode
         \type object-list
         \object-list BivariateFunctions
         \note: CAPFT - Normalized Capacity Function of Temperature Curve Name,
         \note which is a biquadratic curve or a lookup table of air and water temperature.
-   A35, \field Heating Energy Input Ratio Function of Temperature Curve Name in Booster Mode
+   A39, \field Heating Energy Input Ratio Function of Temperature Curve Name in Booster Mode
         \type object-list
         \object-list BivariateFunctions
         \note EIRFT - Fuel Energy Input Ratio Function of Temperature Curve Name,
         \note which is a biquadratic curve or a lookup table of air and water temperature.
-   A36, \field Heating Energy Input Ratio Function of PLR Curve Name in Booster Mode
+   A40, \field Heating Energy Input Ratio Function of PLR Curve Name in Booster Mode
         \type object-list
         \object-list UnivariateFunctions
         \note EIRFPLR - Fuel Energy Input Ratio Function of Part Load Ratio(PLR) Curve Name,
@@ -76531,23 +76551,23 @@ HeatPump:AirToWater,
    N38, \field Rated Cooling Capacity at Speed 1
         \type real
         \units W
-        \minimum> 0
+        \minimum> 0.0
    N39, \field Rated COP for Cooling at Speed 1
         \type real
         \minimum> 0.0
         \units W/W
         \default 3.0
-   A37, \field Normalized Cooling Capacity Function of Temperature Curve Name at Speed 1
+   A41, \field Normalized Cooling Capacity Function of Temperature Curve Name at Speed 1
         \type object-list
         \object-list BivariateFunctions
         \note: CAPFT - Normalized Capacity Function of Temperature Curve Name,
         \note which is a biquadratic curve or a lookup table of air and water temperature.
-   A38, \field Cooling Energy Input Ratio Function of Temperature Curve Name at Speed 1
+   A42, \field Cooling Energy Input Ratio Function of Temperature Curve Name at Speed 1
         \type object-list
         \object-list BivariateFunctions
         \note EIRFT - Fuel Energy Input Ratio Function of Temperature Curve Name,
         \note which is a biquadratic curve or a lookup table of air and water temperature.
-   A39, \field Cooling Energy Input Ratio Function of PLR Curve Name at Speed 1
+   A43, \field Cooling Energy Input Ratio Function of PLR Curve Name at Speed 1
         \type object-list
         \object-list UnivariateFunctions
         \note EIRFPLR - Fuel Energy Input Ratio Function of Part Load Ratio(PLR) Curve Name,
@@ -76555,22 +76575,22 @@ HeatPump:AirToWater,
    N40, \field Rated Cooling Capacity at Speed 2
         \type real
         \units W
-        \minimum> 0
+        \minimum> 0.0
    N41, \field Rated COP for Cooling at Speed 2
         \type real
         \minimum> 0.0
         \units W/W
-   A40, \field Normalized Cooling Capacity Function of Temperature Curve Name at Speed 2
+   A44, \field Normalized Cooling Capacity Function of Temperature Curve Name at Speed 2
         \type object-list
         \object-list BivariateFunctions
         \note: CAPFT - Normalized Capacity Function of Temperature Curve Name,
         \note which is a biquadratic curve or a lookup table of air and water temperature.
-   A41, \field Cooling Energy Input Ratio Function of Temperature Curve Name at Speed 2
+   A45, \field Cooling Energy Input Ratio Function of Temperature Curve Name at Speed 2
         \type object-list
         \object-list BivariateFunctions
         \note EIRFT - Fuel Energy Input Ratio Function of Temperature Curve Name,
         \note which is a biquadratic curve or a lookup table of air and water temperature.
-   A42, \field Cooling Energy Input Ratio Function of PLR Curve Name at Speed 2
+   A46, \field Cooling Energy Input Ratio Function of PLR Curve Name at Speed 2
         \type object-list
         \object-list UnivariateFunctions
         \note EIRFPLR - Fuel Energy Input Ratio Function of Part Load Ratio(PLR) Curve Name,
@@ -76578,22 +76598,22 @@ HeatPump:AirToWater,
    N42, \field Rated Cooling Capacity at Speed 3
         \type real
         \units W
-        \minimum> 0
+        \minimum> 0.0
    N43, \field Rated COP for Cooling at Speed 3
         \type real
         \minimum> 0.0
         \units W/W
-   A43, \field Normalized Cooling Capacity Function of Temperature Curve Name at Speed 3
+   A47, \field Normalized Cooling Capacity Function of Temperature Curve Name at Speed 3
         \type object-list
         \object-list BivariateFunctions
         \note: CAPFT - Normalized Capacity Function of Temperature Curve Name,
         \note which is a biquadratic curve or a lookup table of air and water temperature.
-   A44, \field Cooling Energy Input Ratio Function of Temperature Curve Name at Speed 3
+   A48, \field Cooling Energy Input Ratio Function of Temperature Curve Name at Speed 3
         \type object-list
         \object-list BivariateFunctions
         \note EIRFT - Fuel Energy Input Ratio Function of Temperature Curve Name,
         \note which is a biquadratic curve or a lookup table of air and water temperature.
-   A45, \field Cooling Energy Input Ratio Function of PLR Curve Name at Speed 3
+   A49, \field Cooling Energy Input Ratio Function of PLR Curve Name at Speed 3
         \type object-list
         \object-list UnivariateFunctions
         \note EIRFPLR - Fuel Energy Input Ratio Function of Part Load Ratio(PLR) Curve Name,
@@ -76601,22 +76621,22 @@ HeatPump:AirToWater,
    N44, \field Rated Cooling Capacity at Speed 4
         \type real
         \units W
-        \minimum> 0
+        \minimum> 0.0
    N45, \field Rated COP for Cooling at Speed 4
         \type real
         \minimum> 0.0
         \units W/W
-   A46, \field Normalized Cooling Capacity Function of Temperature Curve Name at Speed 4
+   A50, \field Normalized Cooling Capacity Function of Temperature Curve Name at Speed 4
         \type object-list
         \object-list BivariateFunctions
         \note: CAPFT - Normalized Capacity Function of Temperature Curve Name,
         \note which is a biquadratic curve or a lookup table of air and water temperature.
-   A47, \field Cooling Energy Input Ratio Function of Temperature Curve Name at Speed 4
+   A51, \field Cooling Energy Input Ratio Function of Temperature Curve Name at Speed 4
         \type object-list
         \object-list BivariateFunctions
         \note EIRFT - Fuel Energy Input Ratio Function of Temperature Curve Name,
         \note which is a biquadratic curve or a lookup table of air and water temperature.
-   A48, \field Cooling Energy Input Ratio Function of PLR Curve Name at Speed 4
+   A52, \field Cooling Energy Input Ratio Function of PLR Curve Name at Speed 4
         \type object-list
         \object-list UnivariateFunctions
         \note EIRFPLR - Fuel Energy Input Ratio Function of Part Load Ratio(PLR) Curve Name,
@@ -76624,27 +76644,27 @@ HeatPump:AirToWater,
    N46, \field Rated Cooling Capacity at Speed 5
         \type real
         \units W
-        \minimum> 0
+        \minimum> 0.0
    N47, \field Rated COP for Cooling at Speed 5
         \type real
         \minimum> 0.0
         \units W/W
-   A49, \field Normalized Cooling Capacity Function of Temperature Curve Name at Speed 5
+   A53, \field Normalized Cooling Capacity Function of Temperature Curve Name at Speed 5
         \type object-list
         \object-list BivariateFunctions
         \note: CAPFT - Normalized Capacity Function of Temperature Curve Name,
         \note which is a biquadratic curve or a lookup table of air and water temperature.
-   A50, \field Cooling Energy Input Ratio Function of Temperature Curve Name at Speed 5
+   A54, \field Cooling Energy Input Ratio Function of Temperature Curve Name at Speed 5
         \type object-list
         \object-list BivariateFunctions
         \note EIRFT - Fuel Energy Input Ratio Function of Temperature Curve Name,
         \note which is a biquadratic curve or a lookup table of air and water temperature.
-   A51, \field Booster Mode On Cooling
+   A55, \field Booster Mode On Cooling
         \type choice
         \key Yes
         \key No
         \default No
-   A52, \field Cooling Energy Input Ratio Function of PLR Curve Name at Speed 5
+   A56, \field Cooling Energy Input Ratio Function of PLR Curve Name at Speed 5
         \type object-list
         \object-list UnivariateFunctions
         \note EIRFPLR - Fuel Energy Input Ratio Function of Part Load Ratio(PLR) Curve Name,
@@ -76652,23 +76672,23 @@ HeatPump:AirToWater,
    N48, \field Rated Cooling Capacity in Booster Mode
         \type real
         \units W
-        \minimum> 0
+        \minimum> 0.0
    N49, \field Rated Cooling COP in Booster Mode
         \type real
         \minimum> 0.0
         \units W/W
         \default 3.0
-   A53, \field Normalized Cooling Capacity Function of Temperature Curve Name in Booster Mode
+   A57, \field Normalized Cooling Capacity Function of Temperature Curve Name in Booster Mode
         \type object-list
         \object-list BivariateFunctions
         \note: CAPFT - Normalized Capacity Function of Temperature Curve Name,
         \note which is a biquadratic curve or a lookup table of air and water temperature.
-   A54, \field Cooling Energy Input Ratio Function of Temperature Curve Name in Booster Mode
+   A58, \field Cooling Energy Input Ratio Function of Temperature Curve Name in Booster Mode
         \type object-list
         \object-list BivariateFunctions
         \note EIRFT - Fuel Energy Input Ratio Function of Temperature Curve Name,
         \note which is a biquadratic curve or a lookup table of air and water temperature.
-   A55; \field Cooling Energy Input Ratio Function of PLR Curve Name in Booster Mode
+   A59; \field Cooling Energy Input Ratio Function of PLR Curve Name in Booster Mode
         \type object-list
         \object-list UnivariateFunctions
         \note EIRFPLR - Fuel Energy Input Ratio Function of Part Load Ratio(PLR) Curve Name,

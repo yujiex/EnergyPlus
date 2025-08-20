@@ -449,6 +449,8 @@ TEST_F(EnergyPlusFixture, HeatingSimulate_AirSource_AWHP)
                                                       "0.0001, !-  Rated Water Flow Rate in Heating Mode",
                                                       ", !-  Minimum Outdoor Air Temperature in Heating Mode",
                                                       ", !-  Maximum Outdoor Air Temperature in Heating Mode",
+                                                      ",    !- Minimum Leaving Water Temperature Curve Name in Heating Mode",
+                                                      ",    !- Maximum Leaving Water Temperature Curve Name in Heating Mode",
                                                       ",    !- Minimum Part Load Ratio",
                                                       "1.0, !-  Sizing Factor for Heating",
                                                       "25, !-  Rated Inlet Air Temperature in Cooling Mode",
@@ -457,6 +459,8 @@ TEST_F(EnergyPlusFixture, HeatingSimulate_AirSource_AWHP)
                                                       "0.005, !-  Rated Water Flow Rate in Cooling Mode",
                                                       ", !-  Minimum Outdoor Air Temperature in Cooling Mode",
                                                       ", !-  Maximum Outdoor Air Temperature in Cooling Mode",
+                                                      ",    !- Minimum Leaving Water Temperature Curve Name in Cooling Mode",
+                                                      ",    !- Maximum Leaving Water Temperature Curve Name in Cooling Mode",
                                                       "0.9, !-  Sizing Factor for Cooling",
                                                       "Outdoor Air Inlet Node , !-  Air Inlet Node Name",
                                                       "Outdoor Air Outlet Node, !-  Air Outlet Node Name",
@@ -696,6 +700,8 @@ TEST_F(EnergyPlusFixture, processInputForEIRPLHP_AWHP)
         "0.02 , !-  Rated Water Flow Rate in Heating Mode",
         "-20, !-  Minimum Outdoor Air Temperature in Heating Mode",
         "25, !-  Maximum Outdoor Air Temperature in Heating Mode",
+        "MinLWTvsOAT,    !- Minimum Leaving Water Temperature Curve Name in Heating Mode",
+        "MaxLWTvsOAT,    !- Maximum Leaving Water Temperature Curve Name in Heating Mode",
         ",    !- Minimum Part Load Ratio",
         "1.0, !-  Sizing Factor for Heating",
         "25, !-  Rated Inlet Air Temperature in Cooling Mode",
@@ -704,6 +710,8 @@ TEST_F(EnergyPlusFixture, processInputForEIRPLHP_AWHP)
         "0.05 , !-  Rated Water Flow Rate in Cooling Mode",
         "18 , !-  Minimum Outdoor Air Temperature in Cooling Mode",
         "40, !-  Maximum Outdoor Air Temperature in Cooling Mode",
+        "MinLWTvsOAT,    !- Minimum Leaving Water Temperature Curve Name in Cooling Mode",
+        "MaxLWTvsOAT,    !- Maximum Leaving Water Temperature Curve Name in Cooling Mode",
         "0.9, !-  Sizing Factor for Cooling",
         "Outdoor Air Inlet Node , !-  Air Inlet Node Name",
         "Outdoor Air Outlet Node, !-  Air Outlet Node Name",
@@ -799,6 +807,8 @@ TEST_F(EnergyPlusFixture, processInputForEIRPLHP_AWHP)
         ", !-  Rated Water Flow Rate in Heating Mode",
         ", !-  Minimum Outdoor Air Temperature in Heating Mode",
         ", !-  Maximum Outdoor Air Temperature in Heating Mode",
+        ",    !- Minimum Leaving Water Temperature Curve Name in Heating Mode",
+        ",    !- Maximum Leaving Water Temperature Curve Name in Heating Mode",
         ",    !- Minimum Part Load Ratio",
         ", !-  Sizing Factor for Heating",
         ", !-  Rated Inlet Air Temperature in Cooling Mode",
@@ -807,6 +817,8 @@ TEST_F(EnergyPlusFixture, processInputForEIRPLHP_AWHP)
         ", !-  Rated Water Flow Rate in Cooling Mode",
         ", !-  Minimum Outdoor Air Temperature in Cooling Mode",
         ", !-  Maximum Outdoor Air Temperature in Cooling Mode",
+        ",    !- Minimum Leaving Water Temperature Curve Name in Cooling Mode",
+        ",    !- Maximum Leaving Water Temperature Curve Name in Cooling Mode",
         ", !-  Sizing Factor for Cooling",
         "Outdoor Air Inlet Node , !-  Air Inlet Node Name",
         "Outdoor Air Outlet Node, !-  Air Outlet Node Name",
@@ -889,6 +901,30 @@ TEST_F(EnergyPlusFixture, processInputForEIRPLHP_AWHP)
         ", !-  Cooling Energy Input Ratio Function of Temperature Curve Name in Booster Mode",
         "; !-  Cooling Energy Input Ratio Function of PLR Curve Name in Booster Mode",
 
+        "Curve:Quadratic,",
+        "  MinLWTvsOAT,             !- Name",
+        "  0.0,                     !- Coefficient1 Constant",
+        "  1.0,                     !- Coefficient2 x",
+        "  0.0,                     !- Coefficient3 x**2",
+        "  -17.77778,               !- Minimum Value of x",
+        "  35.0,                    !- Maximum Value of x",
+        "  20.0,                    !- Minimum Curve Output",
+        "  35.0,                    !- Maximum Curve Output",
+        "  Temperature,             !- Input Unit Type for X",
+        "  Temperature;             !- Output Unit Type",
+      
+        "Curve:Quadratic,",
+        "  MaxLWTvsOAT,             !- Name",
+        "  53.1666666666667,        !- Coefficient1 Constant",
+        "  0.85,                    !- Coefficient2 x",
+        "  0.0,                     !- Coefficient3 x**2",
+        "  -17.777778,              !- Minimum Value of x",
+        "  35.0,                    !- Maximum Value of x",
+        "  20.0,                    !- Minimum Curve Output",
+        "  60.0,                    !- Maximum Curve Output",
+        "  Temperature,             !- Input Unit Type for X",
+        "  Temperature;             !- Output Unit Type",
+
         "Curve:Biquadratic,",
         "CapCurveFuncTemp,        !- Name",
         "1.0,                     !- Coefficient1 Constant",
@@ -949,6 +985,8 @@ TEST_F(EnergyPlusFixture, processInputForEIRPLHP_AWHP)
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].loadSideDesignVolFlowRate, 0.05);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].minSourceTempLimit, 18);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].maxSourceTempLimit, 40);
+    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].minSupplyWaterTempCurveIndex, 3);
+    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].maxSupplyWaterTempCurveIndex, 4);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].sizingFactor, 0.9);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].loadSideNodes.inlet, 1);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].loadSideNodes.outlet, 2);
@@ -985,6 +1023,8 @@ TEST_F(EnergyPlusFixture, processInputForEIRPLHP_AWHP)
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[1].loadSideDesignVolFlowRate, 0.02);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[1].minSourceTempLimit, -20);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[1].maxSourceTempLimit, 25);
+    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[1].minSupplyWaterTempCurveIndex, 3);
+    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[1].maxSupplyWaterTempCurveIndex, 4);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[1].sizingFactor, 1.0);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[1].loadSideNodes.inlet, 5);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[1].loadSideNodes.outlet, 6);
@@ -1037,6 +1077,8 @@ TEST_F(EnergyPlusFixture, processInputForEIRPLHP_AWHP)
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[2].loadSideDesignVolFlowRate, -99999);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[2].minSourceTempLimit, -100);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[2].maxSourceTempLimit, 100);
+    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[2].minSupplyWaterTempCurveIndex, 0);
+    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[2].maxSupplyWaterTempCurveIndex, 0);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[2].sizingFactor, 1.0);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[2].compressorMultiplier, 1);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[2].controlType, HeatPumpAirToWater::CompressorControlType::VariableSpeed);
@@ -1066,6 +1108,8 @@ TEST_F(EnergyPlusFixture, processInputForEIRPLHP_AWHP)
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[3].loadSideDesignVolFlowRate, -99999);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[3].minSourceTempLimit, -100);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[3].maxSourceTempLimit, 100);
+    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[2].minSupplyWaterTempCurveIndex, 0);
+    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[2].maxSupplyWaterTempCurveIndex, 0);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[3].sizingFactor, 1.0);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[3].maxOutdoorTemperatureDefrost, 10);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[3].defrostStrategy, DefrostControl::None);
@@ -4393,6 +4437,8 @@ TEST_F(EnergyPlusFixture, Test_DoPhysics_AWHP)
                           "0.005, !-  Rated Water Flow Rate in Heating Mode",
                           "-20, !-  Minimum Outdoor Air Temperature in Heating Mode",
                           "25, !-  Maximum Outdoor Air Temperature in Heating Mode",
+                          ",    !- Minimum Leaving Water Temperature Curve Name in Heating Mode",
+                          ",    !- Maximum Leaving Water Temperature Curve Name in Heating Mode",
                           ",    !- Minimum Part Load Ratio",
                           "1.0, !-  Sizing Factor for Heating",
                           "25, !-  Rated Inlet Air Temperature in Cooling Mode",
@@ -4401,6 +4447,8 @@ TEST_F(EnergyPlusFixture, Test_DoPhysics_AWHP)
                           "0.005, !-  Rated Water Flow Rate in Cooling Mode",
                           "18 , !-  Minimum Outdoor Air Temperature in Cooling Mode",
                           "40, !-  Maximum Outdoor Air Temperature in Cooling Mode",
+                          ",    !- Minimum Leaving Water Temperature Curve Name in Cooling Mode",
+                          ",    !- Maximum Leaving Water Temperature Curve Name in Cooling Mode",
                           "0.9, !-  Sizing Factor for Cooling",
                           "Outdoor Air Inlet Node , !-  Air Inlet Node Name",
                           "Outdoor Air Outlet Node, !-  Air Outlet Node Name",

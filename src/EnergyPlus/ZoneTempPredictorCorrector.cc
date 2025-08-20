@@ -680,6 +680,20 @@ void GetZoneAirSetPoints(EnergyPlusData &state)
             }
 
             int setptIdx = Util::FindItem(setpt.Name, s_ztpc->tempSetptScheds[(int)setptType]);
+            if (setptIdx <= 0) {
+                ShowSevereError(state,
+                                format("ZoneControl:Thermostat = {}, control name = {} was not found in ThermostatSetpoint object type = {}.",
+                                       tempZone.Name,
+                                       setpt.Name,
+                                       setptTypeNames[(int)setptType]));
+                ShowContinueError(state, "  In the input syntax for the ZoneControl:Thermostat, the user must enter valid pairs of control");
+                ShowContinueError(state, "  type and control name.  The ZoneControl:Thermostat control name shown above was either blank or");
+                ShowContinueError(state, "  was not found among the valid ThermostatSetpoint objects.  Either add a ThermostatSetpoint object");
+                ShowContinueError(state, "  and reference it in the ZoneControl:Thermostat object or simply reference a valid, existing");
+                ShowContinueError(state, "  ThermostatSetpoint object in the ZoneControl:Thermostat control name field.");
+                ErrorsFound = true;
+                continue;
+            }
 
             if (setptType == HVAC::SetptType::SingleHeat || setptType == HVAC::SetptType::SingleHeatCool ||
                 setptType == HVAC::SetptType::DualHeatCool) {

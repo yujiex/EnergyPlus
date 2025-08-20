@@ -289,6 +289,8 @@
     autosize, !-  Rated Water Flow Rate in Heating Mode
     -20, !-  Minimum Outdoor Air Temperature in Heating Mode
     25, !-  Maximum Outdoor Air Temperature in Heating Mode
+    MinHeatingSWTvsOAT,    !- Minimum Leaving Water Temperature Curve Name in Heating Mode
+    MaxHeatingSWTvsOAT,    !- Maximum Leaving Water Temperature Curve Name in Heating Mode
     ,    !- Minimum Part Load Ratio
     1.0, !-  Sizing Factor for Heating
     25, !-  Rated Inlet Air Temperature in Cooling Mode
@@ -297,6 +299,8 @@
     autosize , !-  Rated Water Flow Rate in Cooling Mode
     18 , !-  Minimum Outdoor Air Temperature in Cooling Mode
     40, !-  Maximum Outdoor Air Temperature in Cooling Mode
+    MinCoolingSWTvsOAT,    !- Minimum Leaving Water Temperature Curve Name in Cooling Mode
+    MaxCoolingSWTvsOAT,    !- Maximum Leaving Water Temperature Curve Name in Cooling Mode
     0.9, !-  Sizing Factor for Cooling
     Outdoor Air Inlet Node , !-  Air Inlet Node Name
     Outdoor Air Outlet Node, !-  Air Outlet Node Name
@@ -379,25 +383,53 @@
     , !-  Cooling Energy Input Ratio Function of Temperature Curve Name in Booster Mode
     ; !-  Cooling Energy Input Ratio Function of PLR Curve Name in Booster Mode
 
-  HeatPump:PlantLoop:EIR:Heating,
-    Heating Coil,            !- Name
-    Heating Coil Load Loop Intermediate Node,  !- Load Side Inlet Node Name
-    Heating Coil Load Loop Supply Outlet Node,  !- Load Side Outlet Node Name
-    AirSource,               !- Condenser Type
-    Outdoor Air Inlet Node,  !- Source Side Inlet Node Name
-    Outdoor Air Outlet Node, !- Source Side Outlet Node Name
-    ,                        !- Heat Recovery Inlet Node Name
-    ,                        !- Heat Recovery Outlet Node Name      
-    ,            !- Companion Heat Pump Name
-    0.005,                   !- Load Side Reference Flow Rate {m3/s}
-    2,                       !- Source Side Reference Flow Rate {m3/s}
-    ,                        !- Heat Recovery Reference Flow Rate {m3/s}
-    80000,                   !- Reference Capacity {W}
-    3.5,                     !- Reference Coefficient of Performance {W/W}
-    ,                        !- Sizing Factor
-    CapCurveFuncTemp,        !- Capacity Modifier Function of Temperature Curve Name
-    EIRCurveFuncTemp,        !- Electric Input to Output Ratio Modifier Function of Temperature Curve Name
-    EIRCurveFuncPLR;         !- Electric Input to Output Ratio Modifier Function of Part Load Ratio Curve Name
+  Curve:Quadratic,
+    MinHeatingSWTvsOAT,             !- Name
+    0.0,                     !- Coefficient1 Constant
+    1.0,                     !- Coefficient2 x
+    0.0,                     !- Coefficient3 x**2
+    -17.77778,               !- Minimum Value of x !- 0 F
+    35.0,                    !- Maximum Value of x !- 95 F
+    20.0,                    !- Minimum Curve Output
+    35.0,                    !- Maximum Curve Output
+    Temperature,             !- Input Unit Type for X
+    Temperature;             !- Output Unit Type
+
+  Curve:Quadratic,
+    MaxHeatingSWTvsOAT,             !- Name
+    100.0,                      !- Coefficient1 Constant
+    0.85,                    !- Coefficient2 x
+    0.0,                     !- Coefficient3 x**2
+    -17.777778,              !- Minimum Value of x !- 0 F
+    35.0,                    !- Maximum Value of x !- 95 F
+    20.0,                    !- Minimum Curve Output
+    150.0,                    !- Maximum Curve Output
+    Temperature,             !- Input Unit Type for X
+    Temperature;             !- Output Unit Type
+
+  Curve:Quadratic,
+    MinCoolingSWTvsOAT,             !- Name
+    -100.0,                     !- Coefficient1 Constant
+    0.0,                     !- Coefficient2 x
+    0.0,                     !- Coefficient3 x**2
+    -17.77778,               !- Minimum Value of x !- 0 F
+    35.0,                    !- Maximum Value of x !- 95 F
+    -100.0,                    !- Minimum Curve Output
+    35.0,                    !- Maximum Curve Output
+    Temperature,             !- Input Unit Type for X
+    Temperature;             !- Output Unit Type
+
+  Curve:Quadratic,
+    MaxCoolingSWTvsOAT,             !- Name
+    53.1666666666667,        !- Coefficient1 Constant
+    0.85,                    !- Coefficient2 x
+    0.0,                     !- Coefficient3 x**2
+    -17.777778,              !- Minimum Value of x !- 0 F
+    35.0,                    !- Maximum Value of x !- 95 F
+    20.0,                    !- Minimum Curve Output
+    60.0,                    !- Maximum Curve Output
+    Temperature,             !- Input Unit Type for X
+    Temperature;             !- Output Unit Type
 
   Curve:Biquadratic,
     CapCurveFuncTemp,        !- Name
@@ -554,26 +586,6 @@
     0,                       !- Coefficient 4 of the Part Load Performance Curve
     0,                       !- Design Minimum Flow Rate {m3/s}
     INTERMITTENT;            !- Pump Control Type
-
-  HeatPump:PlantLoop:EIR:Cooling,
-    Cooling Coil,            !- Name
-    Cooling Coil Load Loop Intermediate Node,  !- Load Side Inlet Node Name
-    Cooling Coil Load Loop Supply Outlet Node,  !- Load Side Outlet Node Name
-    AirSource,               !- Condenser Type
-    Outdoor Air Inlet Node,  !- Source Side Inlet Node Name
-    Outdoor Air Outlet Node, !- Source Side Outlet Node Name
-    ,                        !- Heat Recovery Inlet Node Name
-    ,                        !- Heat Recovery Outlet Node Name
-    ,            !- Companion Heat Pump Name
-    0.005,                   !- Load Side Reference Flow Rate {m3/s}
-    20,                      !- Source Side Reference Flow Rate {m3/s}
-    ,                        !- Heat Recovery Reference Flow Rate {m3/s}
-    400000,                  !- Reference Capacity {W}
-    3.5,                     !- Reference Coefficient of Performance {W/W}
-    ,                        !- Sizing Factor
-    CapCurveFuncTemp2,       !- Capacity Modifier Function of Temperature Curve Name
-    EIRCurveFuncTemp2,       !- Electric Input to Output Ratio Modifier Function of Temperature Curve Name
-    EIRCurveFuncPLR2;        !- Electric Input to Output Ratio Modifier Function of Part Load Ratio Curve Name
 
   Curve:Biquadratic,
     CapCurveFuncTemp2,       !- Name

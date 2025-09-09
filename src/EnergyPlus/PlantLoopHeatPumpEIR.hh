@@ -465,7 +465,7 @@ namespace EIRPlantLoopHeatPumps {
         OperatingModeControlOptionMultipleUnit operatingModeControlOptionMultipleUnit = OperatingModeControlOptionMultipleUnit::SingleMode;
         std::string operationModeControlScheName;
         Sched::Schedule *operationModeControlSche = nullptr; // availability schedule
-        int compressorMultiplier = 1;
+        int heatPumpMultiplier = 1;
         int numUnitUsed = 1;
         Real64 minOutdoorAirTempLimit = 0.0;
         Real64 maxOutdoorAirTempLimit = 0.0;
@@ -507,6 +507,7 @@ namespace EIRPlantLoopHeatPumps {
 
         // new output in AWHP
         Real64 CrankcaseHeaterPower = 0.0;
+        Real64 CrankcaseHeaterEnergy = 0.0;
         Real64 heatingCOP = 0.0;
         Real64 coolingCOP = 0.0;
         // this can be 0, 1, ..., number of HP unit (specified in Compressor Multiplier)
@@ -529,6 +530,7 @@ namespace EIRPlantLoopHeatPumps {
         void calcPowerUsage(EnergyPlusData &state, Real64 availableCapacityBeforeMultiplier);
         void calcOpMode(EnergyPlusData &state, Real64 currentLoad, OperatingModeControlOptionMultipleUnit modeCalcMethod);
         void reportEquipmentSummary(EnergyPlusData &state) override;
+        void report(EnergyPlusData &state) override;
         static void pairUpCompanionCoils(EnergyPlusData &state);
         void resetReportingVariables() override;
         Real64 calcCrankcaseHeaterPower(EnergyPlusData &state) const;

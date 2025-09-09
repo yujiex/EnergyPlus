@@ -3113,7 +3113,7 @@ The heating electricity use of the heat pump is calculated using the rated EIR,
 the EIR adjustment function, and the EIR part load ratio adjustment curve, as is
 shown in equation .
 
-\begin{equation}
+\begin{equation}\label{eq:heating_electricity_use}
 Electricity_{heating,k}=EIR_{heating,rated} \times EIRFT_{heating,k}(T_{amb}, T_{leaving}) \times EIRPLR_{heating,k}(PLR)       
 \end{equation}
 
@@ -3142,9 +3142,9 @@ water temperature. It is derived based on manufacturing data.
 
 The cooling electricity use of the heat pump is calculated using the rated EIR,
 the EIR adjustment function, and the EIR part load ratio adjustment curve, as is
-shown in equation .
+shown in equation \ref{eq:cooling_electricity_use}.
 
-\begin{equation}
+\begin{equation}\label{eq:cooling_electricity_use}
 Electricity_{cooling,k}=EIR_{cooling,rated} \times EIRFT_{cooling,k}(T_{amb}, T_{leaving}) \times EIRPLR_{cooling,k}(PLR)       
 \end{equation}
 
@@ -3168,7 +3168,7 @@ object, with three options: Timed, OnDemand, or TimedEmpirical.
 \begin{itemize}
   \item 
 when Timed or OnDemand is selected, defrost power is calculated as shown in
-equation  
+the following equation.
 \begin{equation}
 Power_{defrost} = EIRFT_{defrost}(Capacity_{heating,rated}/1.01667) \times fracDefrostTime  
 \end{equation}
@@ -3265,10 +3265,10 @@ The heating mode load-side (water) outlet temperature will be
 T_{out,load} = T_{in,load} + \frac{Q_{load}}{m_{load}C_{load}} 
 \end{equation}
 
-Where $_{in,load}$ is the load side inlet temperature. $m_{load}$ is the load
+Where $T_{in,load}$ is the load side inlet temperature. $m_{load}$ is the load
 side mass flow rate. $C_{load}$ is the load-side specific heat.
 
-Power is evaluated using equation . 
+Power is evaluated using equation \ref{eq:heating_electricity_use}. 
 
 In heating mode, source-side heat transfer will be
 
@@ -3336,7 +3336,7 @@ T_{out,load} = T_{in,load} - \frac{Q_{load}}{m_{load}C_{load}}
 Where $T_{in,load}$ is the load side inlet temperature. $m_{load}$ is the load side mass
 flow rate. $C_{load}$ is the load-side specific heat.
 
-Power is evaluated using equation . 
+Power is evaluated using equation \ref{eq:cooling_electricity_use}. 
 
 In cooling mode, source-side heat transfer will be
 

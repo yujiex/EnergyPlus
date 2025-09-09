@@ -277,7 +277,7 @@
     0.2, !-  Heat Pump Defrost Time Period Fraction
     150, !-  Resistive Defrost Heater Capacity
     , !-  Defrost Energy Input Ratio Function of Temperature Curve Name
-    2 , !- Compressor Multiplier
+    2 , !- Heat Pump Multiplier
     FixedSpeed , !- Control Type
     100 , !- Crankcase Heater Capacity
     CrankCaseHeaterPowerCurve, !- Crankcase Heater Capacity Function of Temperature Curve Name

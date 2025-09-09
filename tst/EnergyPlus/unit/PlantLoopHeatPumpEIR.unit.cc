@@ -787,12 +787,12 @@ TEST_F(EnergyPlusFixture, processInputForEIRPLHP_AWHP)
         ", !-  Normalized Cooling Capacity Function of Temperature Curve Name at Speed 5",
         ", !-  Cooling Energy Input Ratio Function of Temperature Curve Name at Speed 5",
         ", !-  Cooling Energy Input Ratio Function of PLR Curve Name at Speed 5",
-        ", !-  Booster Mode On Cooling",
-        ", !-  Rated Cooling Capacity in Booster Mode",
-        ", !-  Rated Cooling COP in Booster Mode",
-        ", !-  Normalized Cooling Capacity Function of Temperature Curve Name in Booster Mode",
-        ", !-  Cooling Energy Input Ratio Function of Temperature Curve Name in Booster Mode",
-        "; !-  Cooling Energy Input Ratio Function of PLR Curve Name in Booster Mode",
+        "Yes, !-  Booster Mode On Cooling",
+        "500, !-  Rated Cooling Capacity in Booster Mode",
+        "2.0, !-  Rated Cooling COP in Booster Mode",
+        "CapCurveFuncTemp, !-  Normalized Cooling Capacity Function of Temperature Curve Name in Booster Mode",
+        "EIRCurveFuncTemp, !-  Cooling Energy Input Ratio Function of Temperature Curve Name in Booster Mode",
+        "EIRCurveFuncPLR; !-  Cooling Energy Input Ratio Function of PLR Curve Name in Booster Mode",
 
         "HeatPump:AirToWater,",
         "test_AWHP_defaults, !- Name",
@@ -912,7 +912,7 @@ TEST_F(EnergyPlusFixture, processInputForEIRPLHP_AWHP)
         "  35.0,                    !- Maximum Curve Output",
         "  Temperature,             !- Input Unit Type for X",
         "  Temperature;             !- Output Unit Type",
-      
+
         "Curve:Quadratic,",
         "  MaxLWTvsOAT,             !- Name",
         "  53.1666666666667,        !- Coefficient1 Constant",
@@ -992,11 +992,11 @@ TEST_F(EnergyPlusFixture, processInputForEIRPLHP_AWHP)
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].loadSideNodes.outlet, 2);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].sourceSideNodes.inlet, 3);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].sourceSideNodes.outlet, 4);
-    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].compressorMultiplier, 1);
+    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].heatPumpMultiplier, 1);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].controlType, HeatPumpAirToWater::CompressorControlType::FixedSpeed);
-    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].boosterOn, false);
-    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].numSpeeds, 2);
-    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].referenceCapacity, 240);
+    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].boosterOn, true);
+    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].numSpeeds, 3);
+    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].referenceCapacity, 500);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].ratedCapacity[0], 120);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].ratedCOP[0], 4);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].capFuncTempCurveIndex[0], Curve::GetCurveIndex(*state, "CAPCURVEFUNCTEMP"));
@@ -1007,6 +1007,11 @@ TEST_F(EnergyPlusFixture, processInputForEIRPLHP_AWHP)
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].capFuncTempCurveIndex[1], Curve::GetCurveIndex(*state, "CAPCURVEFUNCTEMP"));
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].powerRatioFuncTempCurveIndex[1], Curve::GetCurveIndex(*state, "EIRCURVEFUNCTEMP"));
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].powerRatioFuncPLRCurveIndex[1], Curve::GetCurveIndex(*state, "EIRCURVEFUNCPLR"));
+    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].ratedCapacity[2], 500);
+    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].ratedCOP[2], 2.0);
+    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].capFuncTempCurveIndex[2], Curve::GetCurveIndex(*state, "CAPCURVEFUNCTEMP"));
+    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].powerRatioFuncTempCurveIndex[2], Curve::GetCurveIndex(*state, "EIRCURVEFUNCTEMP"));
+    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[0].powerRatioFuncPLRCurveIndex[2], Curve::GetCurveIndex(*state, "EIRCURVEFUNCPLR"));
     EXPECT_ENUM_EQ(state->dataHeatPumpAirToWater->heatPumps[0].operatingModeControlMethod, HeatPumpAirToWater::OperatingModeControlMethod::Load);
     EXPECT_ENUM_EQ(state->dataHeatPumpAirToWater->heatPumps[0].operatingModeControlOptionMultipleUnit,
                    HeatPumpAirToWater::OperatingModeControlOptionMultipleUnit::SingleMode);
@@ -1035,7 +1040,7 @@ TEST_F(EnergyPlusFixture, processInputForEIRPLHP_AWHP)
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[1].defrostTime, 0.2);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[1].defrostResistiveHeaterCap, 150);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[1].defrostEIRFTIndex, 0);
-    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[1].compressorMultiplier, 1);
+    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[1].heatPumpMultiplier, 1);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[1].controlType, HeatPumpAirToWater::CompressorControlType::FixedSpeed);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[1].CrankcaseHeaterCapacity, 100);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[1].CrankcaseHeaterCapacityCurveIndex, Curve::GetCurveIndex(*state, "EIRCURVEFUNCPLR"));
@@ -1075,12 +1080,12 @@ TEST_F(EnergyPlusFixture, processInputForEIRPLHP_AWHP)
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[2].sourceSideDesignVolFlowRate, -99999);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[2].ratedLeavingWaterTemperature, 40);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[2].loadSideDesignVolFlowRate, -99999);
-    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[2].minSourceTempLimit, -100);
+    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[2].minSourceTempLimit, -30);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[2].maxSourceTempLimit, 100);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[2].minSupplyWaterTempCurveIndex, 0);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[2].maxSupplyWaterTempCurveIndex, 0);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[2].sizingFactor, 1.0);
-    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[2].compressorMultiplier, 1);
+    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[2].heatPumpMultiplier, 1);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[2].controlType, HeatPumpAirToWater::CompressorControlType::VariableSpeed);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[2].boosterOn, false);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[2].boosterMultCap, 1.0);
@@ -1106,7 +1111,7 @@ TEST_F(EnergyPlusFixture, processInputForEIRPLHP_AWHP)
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[3].sourceSideDesignVolFlowRate, -99999);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[3].ratedLeavingWaterTemperature, 40);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[3].loadSideDesignVolFlowRate, -99999);
-    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[3].minSourceTempLimit, -100);
+    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[3].minSourceTempLimit, -30);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[3].maxSourceTempLimit, 100);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[2].minSupplyWaterTempCurveIndex, 0);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[2].maxSupplyWaterTempCurveIndex, 0);
@@ -1116,7 +1121,7 @@ TEST_F(EnergyPlusFixture, processInputForEIRPLHP_AWHP)
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[3].defrostTime, 0.0);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[3].defrostResistiveHeaterCap, 0.0);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[3].defrostEIRFTIndex, 0);
-    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[3].compressorMultiplier, 1.0);
+    EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[3].heatPumpMultiplier, 1.0);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[3].controlType, HeatPumpAirToWater::CompressorControlType::VariableSpeed);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[3].CrankcaseHeaterCapacity, 0.0);
     EXPECT_EQ(state->dataHeatPumpAirToWater->heatPumps[3].CrankcaseHeaterCapacityCurveIndex, 0);
@@ -1155,7 +1160,6 @@ TEST_F(EnergyPlusFixture, calcLoadSideHeatTransfer_AWHP)
     thisAWHP.loadSidePlantLoc.branchNum = 1;
     thisAWHP.loadSidePlantLoc.compNum = 1;
     PlantUtilities::SetPlantLocationLinks(*state, thisAWHP.loadSidePlantLoc);
-    bool errFlag = false;
     thisAWHP.loadSideNodes.outlet = 2;
     thisAWHP.loadSideNodes.inlet = 1;
     thisAWHP.loadSideMassFlowRate = 2;
@@ -1292,7 +1296,7 @@ TEST_F(EnergyPlusFixture, calcPowerUsage_AWHP)
     thisAWHP.capFuncTempCurveIndex[1] = Curve::GetCurveIndex(*state, "CAPCURVEFUNCTEMP");
     thisAWHP.powerRatioFuncTempCurveIndex[1] = Curve::GetCurveIndex(*state, "EIRCURVEFUNCTEMP");
     thisAWHP.powerRatioFuncPLRCurveIndex[1] = Curve::GetCurveIndex(*state, "EIRCURVEFUNCPLR");
-    thisAWHP.compressorMultiplier = 2;
+    thisAWHP.heatPumpMultiplier = 2;
     thisAWHP.cyclingRatio = 1.0;
     Real64 availableCapacityBeforeMultiplier = thisAWHP.ratedCapacity[1];
     // when COP = 1, power usage should equal heat transfer
@@ -1377,8 +1381,8 @@ TEST_F(EnergyPlusFixture, calcOpMode_AWHP)
     auto companionAWHP = HeatPumpAirToWater();
     thisAWHP.companionHeatPumpCoil = &companionAWHP;
     companionAWHP.companionHeatPumpCoil = &thisAWHP;
-    thisAWHP.compressorMultiplier = 6;
-    companionAWHP.compressorMultiplier = 6;
+    thisAWHP.heatPumpMultiplier = 6;
+    companionAWHP.heatPumpMultiplier = 6;
     thisAWHP.referenceCapacityOneUnit = 100;
     companionAWHP.referenceCapacityOneUnit = 150;
     thisAWHP.EIRHPType = EnergyPlus::DataPlant::PlantEquipmentType::HeatPumpAirToWaterCooling;
@@ -4628,7 +4632,6 @@ TEST_F(EnergyPlusFixture, Test_DoPhysics_AWHP)
     state->dataPlnt->PlantLoop(5).LoopSide(DataPlant::LoopSideLocation::Supply).Branch.allocate(1);
     state->dataPlnt->PlantLoop(5).LoopSide(DataPlant::LoopSideLocation::Supply).Branch(1).TotalComponents = 1;
     state->dataPlnt->PlantLoop(5).LoopSide(DataPlant::LoopSideLocation::Supply).Branch(1).Comp.allocate(1);
-    auto &AWHPHeatPlantLoadSideLoop = state->dataPlnt->PlantLoop(5);
     auto &AWHPHeatPlantLoadSideComp = state->dataPlnt->PlantLoop(5).LoopSide(DataPlant::LoopSideLocation::Supply).Branch(1).Comp(1);
     AWHPHeatPlantLoadSideComp.Type = DataPlant::PlantEquipmentType::HeatPumpAirToWaterHeating;
 
@@ -4643,7 +4646,6 @@ TEST_F(EnergyPlusFixture, Test_DoPhysics_AWHP)
     HeatPumpAirToWater *thisCoolingAWHP = &state->dataHeatPumpAirToWater->heatPumps[0];
     EIRPlantLoopHeatPump *thisCoolingPLHP = &state->dataEIRPlantLoopHeatPump->heatPumps[0];
     HeatPumpAirToWater *thisHeatingAWHP = &state->dataHeatPumpAirToWater->heatPumps[1];
-    EIRPlantLoopHeatPump *thisHeatingPLHP = &state->dataEIRPlantLoopHeatPump->heatPumps[1];
     thisCoolingAWHP->companionHeatPumpCoil = thisHeatingAWHP;
     thisHeatingAWHP->companionHeatPumpCoil = thisCoolingAWHP;
 

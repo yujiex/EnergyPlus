@@ -283,7 +283,7 @@ void EIRPlantLoopHeatPump::setOperatingFlowRatesWSHP(EnergyPlusData &state, bool
     }
 }
 
-void EIRPlantLoopHeatPump::setOperatingFlowRatesASHP(EnergyPlusData &state, bool FirstHVACIteration, Real64 const currentLoad)
+void EIRPlantLoopHeatPump::setOperatingFlowRatesASHP(EnergyPlusData &state, bool FirstHVACIteration, [[maybe_unused]] Real64 const currentLoad)
 {
     if (!this->running) {
         this->loadSideMassFlowRate = 0.0;
@@ -764,7 +764,8 @@ void EIRPlantLoopHeatPump::calcSourceSideHeatTransferWSHP(EnergyPlusData &state)
     Real64 const sourceMCp = this->sourceSideMassFlowRate * CpSrc;
     this->sourceSideOutletTemp = this->calcSourceOutletTemp(this->sourceSideInletTemp, this->sourceSideHeatTransfer / sourceMCp);
 
-    if (this->waterSource && abs(this->sourceSideOutletTemp - this->sourceSideInletTemp) > 100.0) { // whoaa out of range happenings on water loop
+    if (this->waterSource &&
+        std::abs(this->sourceSideOutletTemp - this->sourceSideInletTemp) > 100.0) { // whoaa out of range happenings on water loop
         //
         // TODO setup recurring error warning?
         // lets do something different than fatal the simulation
@@ -2753,7 +2754,7 @@ void HeatPumpAirToWater::oneTimeInit(EnergyPlusData &state)
         SetupOutputVariable(state,
                             "Heat Pump Crankcase Heater Electricity Energy",
                             Constant::Units::J,
-                            this->CrankcaseHeaterPower,
+                            this->CrankcaseHeaterEnergy,
                             OutputProcessor::TimeStepType::System,
                             OutputProcessor::StoreType::Sum,
                             this->name,
@@ -2833,6 +2834,14 @@ void EIRPlantLoopHeatPump::report(EnergyPlusData &state)
     }
 }
 
+void HeatPumpAirToWater::report(EnergyPlusData &state)
+{
+    EIRPlantLoopHeatPump::report(state);
+    Real64 const reportingInterval = state.dataHVACGlobal->TimeStepSysSec;
+    // crankcase heater energy reporting
+    this->CrankcaseHeaterEnergy = this->CrankcaseHeaterPower * reportingInterval;
+}
+
 // From here on, the Fuel Fired Heat Pump module EIRFuelFiredHeatPump
 // Enum string definitions
 static constexpr std::array<std::string_view, static_cast<int>(EIRFuelFiredHeatPump::OATempCurveVar::Num)> OATempCurveVarNamesUC = {"DRYBULB",
@@ -2843,8 +2852,6 @@ static constexpr std::array<std::string_view, static_cast<int>(EIRFuelFiredHeatP
 
 void EIRFuelFiredHeatPump::doPhysics(EnergyPlusData &state, Real64 currentLoad)
 {
-    Real64 const reportingInterval = state.dataHVACGlobal->TimeStepSysSec;
-
     // ideally the plant is going to ensure that we don't have a runflag=true when the load is invalid, but
     // I'm not sure we can count on that so we will do one check here to make sure we don't calculate things badly
     if ((this->EIRHPType == DataPlant::PlantEquipmentType::HeatPumpFuelFiredCooling && currentLoad >= 0.0) ||
@@ -2861,7 +2868,7 @@ void EIRFuelFiredHeatPump::doPhysics(EnergyPlusData &state, Real64 currentLoad)
     // if the component control is SERIESACTIVE we set the component flow to inlet flow so that flow resolver
     // will not shut down the branch
     auto &thisInletNode = state.dataLoopNodes->Node(this->loadSideNodes.inlet);
-    auto &thisOutletNode = state.dataLoopNodes->Node(this->loadSideNodes.outlet);
+    // auto &thisOutletNode = state.dataLoopNodes->Node(this->loadSideNodes.outlet);
     auto &thisSourceSideInletNode = state.dataLoopNodes->Node(this->sourceSideNodes.inlet); // OA Intake node
     auto &sim_component = DataPlant::CompData::getPlantComponent(state, this->loadSidePlantLoc);
     if ((this->EIRHPType == DataPlant::PlantEquipmentType::HeatPumpFuelFiredHeating && currentLoad <= 0.0)) {
@@ -3812,8 +3819,8 @@ void HeatPumpAirToWater::processInputForEIRPLHP(EnergyPlusData &state)
                 thisAWHP.airSource = true;
                 thisAWHP.waterSource = false;
                 ErrorObjectHeader eoh{routineName, "HeatPump:AirToWater", thisAWHP.name};
-                thisAWHP.compressorMultiplier =
-                    state.dataInputProcessing->inputProcessor->getRealFieldValue(fields, schemaProps, "compressor_multiplier");
+                thisAWHP.heatPumpMultiplier =
+                    state.dataInputProcessing->inputProcessor->getRealFieldValue(fields, schemaProps, "heat_pump_multiplier");
                 auto operatingModeControlMethod = fields.find("operating_mode_control_method");
                 if (operatingModeControlMethod != fields.end()) {
                     thisAWHP.operatingModeControlMethod = static_cast<HeatPumpAirToWater::OperatingModeControlMethod>(getEnumValue(
@@ -3919,16 +3926,8 @@ void HeatPumpAirToWater::processInputForEIRPLHP(EnergyPlusData &state)
                 } else {
                     thisAWHP.sourceSideDesignInletTemp = 8.0;
                 }
-                try {
-                    auto &tmpFlowRate = fields.at(format("rated_air_flow_rate_in_{}_mode", modeKeyWord));
-                    if (tmpFlowRate == "Autosize") {
-                        thisAWHP.sourceSideDesignVolFlowRate = DataSizing::AutoSize;
-                        thisAWHP.sourceSideDesignVolFlowRateWasAutoSized = true;
-                    } else {
-                        thisAWHP.sourceSideDesignVolFlowRate = tmpFlowRate.get<Real64>();
-                    }
-                } catch (const std::exception &e) {
-                    thisAWHP.sourceSideDesignVolFlowRate = DataSizing::AutoSize;
+                thisAWHP.sourceSideDesignVolFlowRate = state.dataInputProcessing->inputProcessor->getRealFieldValue(fields, schemaProps, format("rated_air_flow_rate_in_{}_mode", modeKeyWord));
+                if (thisAWHP.sourceSideDesignVolFlowRate == DataSizing::AutoSize) {
                     thisAWHP.sourceSideDesignVolFlowRateWasAutoSized = true;
                 }
                 auto ratedLeavingWaterTemperature = fields.find(format("rated_leaving_water_temperature_in_{}_mode", modeKeyWord));
@@ -3938,21 +3937,13 @@ void HeatPumpAirToWater::processInputForEIRPLHP(EnergyPlusData &state)
                 } else {
                     thisAWHP.ratedLeavingWaterTemperature = 40.0;
                 }
-                try {
-                    auto &tmpFlowRate = fields.at(format("rated_water_flow_rate_in_{}_mode", modeKeyWord));
-                    if (tmpFlowRate == "Autosize") {
-                        thisAWHP.loadSideDesignVolFlowRate = DataSizing::AutoSize;
-                        thisAWHP.loadSideDesignVolFlowRateWasAutoSized = true;
-                    } else {
-                        thisAWHP.loadSideDesignVolFlowRate = tmpFlowRate.get<Real64>();
-                    }
-                } catch (const std::exception &e) {
-                    thisAWHP.loadSideDesignVolFlowRate = DataSizing::AutoSize;
+                thisAWHP.loadSideDesignVolFlowRate = state.dataInputProcessing->inputProcessor->getRealFieldValue(fields, schemaProps, format("rated_water_flow_rate_in_{}_mode", modeKeyWord));
+                if (thisAWHP.loadSideDesignVolFlowRate == DataSizing::AutoSize) {
                     thisAWHP.loadSideDesignVolFlowRateWasAutoSized = true;
                 }
                 auto minSourceTempLimit = fields.find(format("minimum_outdoor_air_temperature_in_{}_mode", modeKeyWord));
                 if (minSourceTempLimit == fields.end()) {
-                    thisAWHP.minSourceTempLimit = -100.0; // default value
+                    thisAWHP.minSourceTempLimit = -30.0; // default value
                 } else {
                     thisAWHP.minSourceTempLimit = state.dataInputProcessing->inputProcessor->getRealFieldValue(
                         fields, schemaProps, format("minimum_outdoor_air_temperature_in_{}_mode", modeKeyWord));
@@ -3965,23 +3956,25 @@ void HeatPumpAirToWater::processInputForEIRPLHP(EnergyPlusData &state)
                 }
                 auto minLeavingWaterTempCurveName = fields.find(format("minimum_leaving_water_temperature_curve_name_in_{}_mode", modeKeyWord));
                 if (minLeavingWaterTempCurveName != fields.end()) {
-                    thisAWHP.minSupplyWaterTempCurveIndex = Curve::GetCurveIndex(
-                        state, Util::makeUPPER(minLeavingWaterTempCurveName.value().get<std::string>()));
+                    thisAWHP.minSupplyWaterTempCurveIndex =
+                        Curve::GetCurveIndex(state, Util::makeUPPER(minLeavingWaterTempCurveName.value().get<std::string>()));
                     if (thisAWHP.minSupplyWaterTempCurveIndex == 0) {
-                        ShowSevereError(state, format("Invalid curve name for HeatPump:AirToWater (name={}; entered curve name: {})",
-                                                      thisAWHP.name,
-                                                      minLeavingWaterTempCurveName.value().get<std::string>()));
+                        ShowSevereError(state,
+                                        format("Invalid curve name for HeatPump:AirToWater (name={}; entered curve name: {})",
+                                               thisAWHP.name,
+                                               minLeavingWaterTempCurveName.value().get<std::string>()));
                         errorsFound = true;
                     }
                 }
                 auto maxLeavingWaterTempCurveName = fields.find(format("maximum_leaving_water_temperature_curve_name_in_{}_mode", modeKeyWord));
                 if (maxLeavingWaterTempCurveName != fields.end()) {
-                    thisAWHP.maxSupplyWaterTempCurveIndex = Curve::GetCurveIndex(
-                        state, Util::makeUPPER(maxLeavingWaterTempCurveName.value().get<std::string>()));
+                    thisAWHP.maxSupplyWaterTempCurveIndex =
+                        Curve::GetCurveIndex(state, Util::makeUPPER(maxLeavingWaterTempCurveName.value().get<std::string>()));
                     if (thisAWHP.maxSupplyWaterTempCurveIndex == 0) {
-                        ShowSevereError(state, format("Invalid curve name for HeatPump:AirToWater (name={}; entered curve name: {})",
-                                                      thisAWHP.name,
-                                                      maxLeavingWaterTempCurveName.value().get<std::string>()));
+                        ShowSevereError(state,
+                                        format("Invalid curve name for HeatPump:AirToWater (name={}; entered curve name: {})",
+                                               thisAWHP.name,
+                                               maxLeavingWaterTempCurveName.value().get<std::string>()));
                         errorsFound = true;
                     }
                 }
@@ -4153,19 +4146,8 @@ void HeatPumpAirToWater::processInputForEIRPLHP(EnergyPlusData &state)
                     }
                     std::string const capFtName = Util::makeUPPER(fields.at(capFtFieldName).get<std::string>());
                     if (i == 0) {
-                        try {
-                            auto tmpRefCapacity = fields.at(format("rated_{}_capacity_at_speed_1", modeKeyWord));
-                            if (tmpRefCapacity == "Autosize") {
-                                thisAWHP.ratedCapacity[0] = DataSizing::AutoSize;
-                                thisAWHP.referenceCapacity = DataSizing::AutoSize;
-                                thisAWHP.referenceCapacityWasAutoSized = true;
-                            } else {
-                                thisAWHP.ratedCapacity[0] = tmpRefCapacity.get<Real64>();
-                                thisAWHP.referenceCapacity = tmpRefCapacity.get<Real64>();
-                            }
-                        } catch (const std::exception &e) { // no user input, defaults to autosize
-                            thisAWHP.ratedCapacity[0] = DataSizing::AutoSize;
-                            thisAWHP.referenceCapacity = DataSizing::AutoSize;
+                        thisAWHP.referenceCapacity = thisAWHP.ratedCapacity[0] = state.dataInputProcessing->inputProcessor->getRealFieldValue(fields, schemaProps, format("rated_{}_capacity_at_speed_1", modeKeyWord));
+                        if (thisAWHP.ratedCapacity[0] == DataSizing::AutoSize) {
                             thisAWHP.referenceCapacityWasAutoSized = true;
                         }
                     } else {
@@ -4271,7 +4253,7 @@ void HeatPumpAirToWater::processInputForEIRPLHP(EnergyPlusData &state)
                 }
 
                 thisAWHP.referenceCapacityOneUnit = thisAWHP.ratedCapacity[thisAWHP.numSpeeds - 1];
-                thisAWHP.referenceCapacity = thisAWHP.referenceCapacityOneUnit * thisAWHP.compressorMultiplier;
+                thisAWHP.referenceCapacity = thisAWHP.referenceCapacityOneUnit * thisAWHP.heatPumpMultiplier;
                 thisAWHP.referenceCOP = thisAWHP.ratedCOP[thisAWHP.numSpeeds - 1];
                 if (!errorsFound) {
                     state.dataHeatPumpAirToWater->heatPumps.push_back(thisAWHP);
@@ -4280,9 +4262,9 @@ void HeatPumpAirToWater::processInputForEIRPLHP(EnergyPlusData &state)
         }
     }
 }
-void EIRPlantLoopHeatPump::setUpEMS(EnergyPlusData &state)
+void EIRPlantLoopHeatPump::setUpEMS(EnergyPlusData &)
 {
-    // do nothing
+    // base implementation intentionally empty
 }
 
 void HeatPumpAirToWater::setUpEMS(EnergyPlusData &state)
@@ -4598,23 +4580,22 @@ void HeatPumpAirToWater::calcOpMode(EnergyPlus::EnergyPlusData &state, Real64 cu
         auto capacityModifierFuncTemp = Curve::CurveValue(state, curveIndex, this->loadSideOutletTemp, this->sourceSideInletTemp);
         auto availableCapacityOneUnit = this->referenceCapacityOneUnit * capacityModifierFuncTemp;
         auto &companionCoil = this->companionHeatPumpCoil;
-        auto companionCurveIndex = companionCoil->capFuncTempCurveIndex[this->numSpeeds - 1];
         auto companionCapacityModifierFuncTemp =
             Curve::CurveValue(state, curveIndex, companionCoil->loadSideOutletTemp, companionCoil->sourceSideInletTemp);
         auto companionAvailableCapacityOneUnit = companionCoil->referenceCapacityOneUnit * companionCapacityModifierFuncTemp;
         if (this->OperationModeEMSOverrideOn) {
             if (this->OperationModeEMSOverrideValue > 0) {
-                this->operatingMode = min(this->compressorMultiplier, this->OperationModeEMSOverrideValue);
+                this->operatingMode = min(this->heatPumpMultiplier, this->OperationModeEMSOverrideValue);
                 this->companionHeatPumpCoil->operatingMode = 0;
             }
         } else if (this->operatingModeControlMethod == OperatingModeControlMethod::ScheduledModes) {
             auto numUnitsOn = static_cast<int>(this->operationModeControlSche->getCurrentVal());
             if (numUnitsOn > 0) {
-                this->operatingMode = min(this->compressorMultiplier, numUnitsOn);
+                this->operatingMode = min(this->heatPumpMultiplier, numUnitsOn);
                 this->companionHeatPumpCoil->operatingMode = 0;
             } else {
                 this->operatingMode = 0;
-                this->companionHeatPumpCoil->operatingMode = min(this->companionHeatPumpCoil->compressorMultiplier, -numUnitsOn);
+                this->companionHeatPumpCoil->operatingMode = min(this->companionHeatPumpCoil->heatPumpMultiplier, -numUnitsOn);
             }
         } else {
             if (modeCalcMethod == OperatingModeControlOptionMultipleUnit::SingleMode) {
@@ -4651,26 +4632,26 @@ void HeatPumpAirToWater::calcOpMode(EnergyPlus::EnergyPlusData &state, Real64 cu
                 if (modeCalcMethod == OperatingModeControlOptionMultipleUnit::CoolingPriority) {
                     // prioritize satisfy cooling need
                     numCoolingUnit = int(ceil(coolingLoad / coolCapacity));
-                    numCoolingUnit = min(numCoolingUnit, this->compressorMultiplier);
+                    numCoolingUnit = min(numCoolingUnit, this->heatPumpMultiplier);
                     numHeatingUnitNeeded = int(ceil(heatingLoad / heatCapacity));
-                    numHeatingUnit = min(this->compressorMultiplier - numCoolingUnit, numHeatingUnitNeeded);
+                    numHeatingUnit = min(this->heatPumpMultiplier - numCoolingUnit, numHeatingUnitNeeded);
                 } else if (modeCalcMethod == OperatingModeControlOptionMultipleUnit::HeatingPriority) {
                     // prioritize satisfy heating need
                     numHeatingUnit = int(ceil(heatingLoad / heatCapacity));
-                    numHeatingUnit = min(numHeatingUnit, this->compressorMultiplier);
+                    numHeatingUnit = min(numHeatingUnit, this->heatPumpMultiplier);
                     numCoolingUnitNeeded = int(ceil(coolingLoad / coolCapacity));
-                    numCoolingUnit = min(this->compressorMultiplier - numHeatingUnit, numCoolingUnitNeeded);
+                    numCoolingUnit = min(this->heatPumpMultiplier - numHeatingUnit, numCoolingUnitNeeded);
                 } else if (modeCalcMethod == OperatingModeControlOptionMultipleUnit::Balanced) {
                     // balance the percent satisfied heating or cooling load
                     numCoolingUnitNeeded = int(ceil(coolingLoad / coolCapacity));
                     numHeatingUnitNeeded = int(ceil(heatingLoad / heatCapacity));
-                    if (numCoolingUnitNeeded + numHeatingUnitNeeded <= this->compressorMultiplier) {
+                    if (numCoolingUnitNeeded + numHeatingUnitNeeded <= this->heatPumpMultiplier) {
                         numCoolingUnit = numCoolingUnitNeeded;
                         numHeatingUnit = numHeatingUnitNeeded;
                     } else {
                         numCoolingUnit =
-                            numCoolingUnitNeeded - int(floor((numCoolingUnitNeeded + numHeatingUnitNeeded - this->compressorMultiplier) / 2));
-                        numHeatingUnit = this->compressorMultiplier - numCoolingUnit;
+                            numCoolingUnitNeeded - int(floor((numCoolingUnitNeeded + numHeatingUnitNeeded - this->heatPumpMultiplier) / 2));
+                        numHeatingUnit = this->heatPumpMultiplier - numCoolingUnit;
                     }
                 }
                 if (this->EIRHPType == DataPlant::PlantEquipmentType::HeatPumpAirToWaterHeating) {
@@ -4681,8 +4662,8 @@ void HeatPumpAirToWater::calcOpMode(EnergyPlus::EnergyPlusData &state, Real64 cu
                     this->companionHeatPumpCoil->operatingMode = numHeatingUnit;
                 }
             }
-            this->operatingMode = min(this->compressorMultiplier, this->operatingMode);
-            companionCoil->operatingMode = min(companionCoil->compressorMultiplier, companionCoil->operatingMode);
+            this->operatingMode = min(this->heatPumpMultiplier, this->operatingMode);
+            companionCoil->operatingMode = min(companionCoil->heatPumpMultiplier, companionCoil->operatingMode);
         }
     }
 }
@@ -4705,7 +4686,6 @@ void HeatPumpAirToWater::doPhysics(EnergyPlusData &state, Real64 currentLoad)
         return;
     }
     Real64 partLoadRatio = 0.0;
-    int speedLevel = 0;
 
     Real64 availableCapacity;
     this->calcAvailableCapacity(state, currentLoad, this->capFuncTempCurveIndex[this->numSpeeds - 1], availableCapacity, partLoadRatio);
@@ -4716,7 +4696,7 @@ void HeatPumpAirToWater::doPhysics(EnergyPlusData &state, Real64 currentLoad)
         this->resetReportingVariables();
         return;
     }
-    Real64 availableCapacityBeforeMultiplier = availableCapacity / this->compressorMultiplier;
+    Real64 availableCapacityBeforeMultiplier = availableCapacity / this->heatPumpMultiplier;
     this->setPartLoadAndCyclingRatio(state, partLoadRatio);
 
     // evaluate the actual current operating load side heat transfer rate

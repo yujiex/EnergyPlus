@@ -80,7 +80,8 @@
 #include <EnergyPlus/FluidCoolers.hh>
 #include <EnergyPlus/FluidProperties.hh>
 #include <EnergyPlus/FuelCellElectricGenerator.hh>
-#include <EnergyPlus/GroundHeatExchangers.hh>
+#include <EnergyPlus/GroundHeatExchangers/Slinky.hh>
+#include <EnergyPlus/GroundHeatExchangers/Vertical.hh>
 #include <EnergyPlus/HVACInterfaceManager.hh>
 #include <EnergyPlus/HVACVariableRefrigerantFlow.hh>
 #include <EnergyPlus/HeatPumpWaterToWaterCOOLING.hh>
@@ -304,7 +305,6 @@ void GetPlantLoopData(EnergyPlusData &state)
     int NumAlphas; // Number of elements in the alpha array
     int NumNums;   // Number of elements in the numeric array
     int IOStat;    // IO Status when calling get input subroutine
-    int NumFluids; // number of fluids in sim
     int PlantLoopNum;
     int CondLoopNum;
     Array1D_string Alpha(19); // dimension to num of alpha fields in input
@@ -753,7 +753,7 @@ void GetPlantLoopData(EnergyPlusData &state)
         SetupOutputVariable(state,
                             "Plant System Cycle On Off Status",
                             Constant::Units::None,
-                            (int &)state.dataAvail->PlantAvailMgr(LoopNum).availStatus,
+                            state.dataAvail->PlantAvailMgr(LoopNum).availStatus,
                             OutputProcessor::TimeStepType::System,
                             OutputProcessor::StoreType::Average,
                             state.dataPlnt->PlantLoop(LoopNum).Name);
@@ -3332,18 +3332,23 @@ void SizePlantLoop(EnergyPlusData &state,
                                              state.dataPlnt->PlantLoop(LoopNum).PlantSizNum > 0
                                                  ? state.dataSize->PlantSizData(state.dataPlnt->PlantLoop(LoopNum).PlantSizNum).ExitTemp
                                                  : -999.0);
+                Real64 flipSign = 1.0;
+                if (state.dataPlnt->PlantLoop(LoopNum).PlantSizNum > 0 &&
+                    state.dataSize->PlantSizData(state.dataPlnt->PlantLoop(LoopNum).PlantSizNum).LoopType == DataSizing::TypeOfPlantLoop::Cooling) {
+                    flipSign = -1.0;
+                }
                 BaseSizer::reportSizerOutput(state,
                                              "PlantLoop",
                                              state.dataPlnt->PlantLoop(LoopNum).Name,
                                              "Design Return Temperature [C]",
                                              state.dataPlnt->PlantLoop(LoopNum).PlantSizNum > 0
                                                  ? state.dataSize->PlantSizData(state.dataPlnt->PlantLoop(LoopNum).PlantSizNum).ExitTemp -
-                                                       state.dataSize->PlantSizData(state.dataPlnt->PlantLoop(LoopNum).PlantSizNum).DeltaT
+                                                       flipSign * state.dataSize->PlantSizData(state.dataPlnt->PlantLoop(LoopNum).PlantSizNum).DeltaT
                                                  : -999.0);
                 BaseSizer::reportSizerOutput(state,
                                              "PlantLoop",
                                              state.dataPlnt->PlantLoop(LoopNum).Name,
-                                             "Sizing option (Coincident/NonCoincident)",
+                                             "Sizing option (NonCoincident=1/Coincident=2/Combination=3)",
                                              state.dataPlnt->PlantLoop(LoopNum).PlantSizNum > 0
                                                  ? state.dataSize->PlantSizData(state.dataPlnt->PlantLoop(LoopNum).PlantSizNum).ConcurrenceOption
                                                  : -1);
@@ -3367,13 +3372,13 @@ void SizePlantLoop(EnergyPlusData &state,
                                              state.dataPlnt->PlantLoop(LoopNum).Name,
                                              "Design Return Temperature [C]",
                                              state.dataPlnt->PlantLoop(LoopNum).PlantSizNum > 0
-                                                 ? state.dataSize->PlantSizData(state.dataPlnt->PlantLoop(LoopNum).PlantSizNum).ExitTemp -
+                                                 ? state.dataSize->PlantSizData(state.dataPlnt->PlantLoop(LoopNum).PlantSizNum).ExitTemp +
                                                        state.dataSize->PlantSizData(state.dataPlnt->PlantLoop(LoopNum).PlantSizNum).DeltaT
                                                  : -999.0);
                 BaseSizer::reportSizerOutput(state,
                                              "CondenserLoop",
                                              state.dataPlnt->PlantLoop(LoopNum).Name,
-                                             "Sizing option (Coincident/NonCoincident)",
+                                             "Sizing option (NonCoincident=1/Coincident=2/Combination=3)",
                                              state.dataPlnt->PlantLoop(LoopNum).PlantSizNum
                                                  ? state.dataSize->PlantSizData(state.dataPlnt->PlantLoop(LoopNum).PlantSizNum).ConcurrenceOption
                                                  : -1);

@@ -76220,7 +76220,7 @@ HeatPump:AirToWater,
    N5,  \field Minimum Outdoor Air Temperature in Heating Mode
         \type real
         \units C
-        \default -100.0
+        \default -30.0
         \note Enter the minimum outdoor temperature allowed for heating operation
         \note Heating is disabled below this temperature
    N6,  \field Maximum Outdoor Air Temperature in Heating Mode
@@ -76281,7 +76281,7 @@ HeatPump:AirToWater,
    N13 , \field Minimum Outdoor Air Temperature in Cooling Mode
         \type real
         \units C
-        \default -100.0
+        \default -30.0
         \note Enter the minimum outdoor temperature allowed for cooling operation
         \note Cooling is disabled below this temperature
    N14, \field Maximum Outdoor Air Temperature in Cooling Mode
@@ -76358,10 +76358,10 @@ HeatPump:AirToWater,
         \note OAT = outdoor air dry-bulb temperature (C)
         \note WB = wet-bulb temperature (C) of air entering the indoor coil
         \note only required if Timed or OnDemand defrost strategy is specified
-   N19, \field Compressor Multiplier
+   N19, \field Heat Pump Multiplier
         \type integer
         \default 1
-        \note intend to model modular compressors
+        \note intend to model modular heat pumps 
    A19, \field Control Type
         \type choice
         \key FixedSpeed
@@ -76552,6 +76552,8 @@ HeatPump:AirToWater,
         \type real
         \units W
         \minimum> 0.0
+        \autosizable
+        \default autosize
    N39, \field Rated COP for Cooling at Speed 1
         \type real
         \minimum> 0.0
@@ -76659,16 +76661,16 @@ HeatPump:AirToWater,
         \object-list BivariateFunctions
         \note EIRFT - Fuel Energy Input Ratio Function of Temperature Curve Name,
         \note which is a biquadratic curve or a lookup table of air and water temperature.
-   A55, \field Booster Mode On Cooling
-        \type choice
-        \key Yes
-        \key No
-        \default No
-   A56, \field Cooling Energy Input Ratio Function of PLR Curve Name at Speed 5
+   A55, \field Cooling Energy Input Ratio Function of PLR Curve Name at Speed 5
         \type object-list
         \object-list UnivariateFunctions
         \note EIRFPLR - Fuel Energy Input Ratio Function of Part Load Ratio(PLR) Curve Name,
         \note which is a cubic curve or a lookup table.
+   A56, \field Booster Mode On Cooling
+        \type choice
+        \key Yes
+        \key No
+        \default No
    N48, \field Rated Cooling Capacity in Booster Mode
         \type real
         \units W

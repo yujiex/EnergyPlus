@@ -6450,15 +6450,11 @@ defrost control strategy is set to Timed.
 This optional alpha field specifies the name of a bivariate curve or table that
 defines the defrost energy based on outdoor air moisture content. This curve is
 used only when Timed or OnDemand defrost control is selected.
-\paragraph{Field: Defrost Capacity Ratio Function of Temperature Curve Name}
-(fixme: is this implemented?) This optional alpha field specifies the name of a
-bivariate curve or table that defines the defrost capacity ratio based on
-outdoor air temperature and water temperature.
-\paragraph{Field: Compressor Multiplier} This field specifies the number of
-compressors in the heat pump. The value must be an integer greater than or equal
-to 1. The default value is 1.0, which means only one compressor is used. It is
-used to model modular compressors where multiple heat pump units are connected
-in parallel to provide larger heating/cooling capacity.
+\paragraph{Field: Heat Pump Multiplier} This field specifies the number of heat 
+pumps being modeled. The value must be an integer greater than or equal to 1. 
+The default value is 1.0, which means only one heat pump is used. This input 
+field is used to model modular heat pumps where multiple heat pump units are 
+connected in parallel to provide larger heating/cooling capacity.
 \paragraph{Field: Control Type} This field is the compressor control type for
 the heat pump. There are two options:
 
@@ -6733,10 +6729,10 @@ source side mass flow rate of the heat pump in heating mode.
 \paragraph{Heat Pump Total Heating Rate {[}W{]}} The total heating rate of the
 heat pump in W in heating mode.
 \paragraph{Heat Pump Number Of Heating Unit On {[}{]}} 
-This output represents the number of compressor units that are currently operating
+This output represents the number of heat pump units that are currently operating
 in heating mode. If you have a multi-unit (multi-module) air-to-water heat pump, 
 operatingMode indicates how many of those units are ON to meet the current heating load.
-It can range from 0 up to the maximum number of available compressors. For single-unit heat pumps,
+It can range from 0 up to the maximum number of available heat pumps. For single-unit heat pumps,
 this value will be either 0 (off) or 1 (on).
 \paragraph{Heat Pump Speed Level in Heating Mode {[}C{]}} The speed level of the
 heat pump in heating mode. It is the current speed level of the compressor. For
@@ -6804,10 +6800,10 @@ source side mass flow rate of the heat pump in cooling mode.
 \paragraph{Heat Pump Total Cooling Rate {[}W{]}} The total cooling rate of the
 heat pump in W in cooling mode.
 \paragraph{Heat Pump Number Of Cooling Unit On {[}{]}} 
-This output represents the number of compressor units that are currently operating
+This output represents the number of heat pump units that are currently operating
 in cooling mode. If you have a multi-unit (multi-module) air-to-water heat pump,
 operatingMode indicates how many of those units are ON to meet the current cooling load.
-It can range from 0 up to the maximum number of available compressors. For single-unit heat pumps,
+It can range from 0 up to the maximum number of available heat pumps. For single-unit heat pumps,
 this value will be either 0 (off) or 1 (on).
 \paragraph{Heat Pump Speed Level in Cooling Mode {[}C{]}} The speed level of the
 heat pump in cooling mode. It is the current speed level of the compressor. For

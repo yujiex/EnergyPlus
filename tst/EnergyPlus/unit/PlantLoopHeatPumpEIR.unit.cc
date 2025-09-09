@@ -1482,6 +1482,30 @@ TEST_F(EnergyPlusFixture, calcOpMode_AWHP)
     EXPECT_EQ(thisAWHP.operatingMode, 0);
     EXPECT_EQ(companionAWHP.operatingMode, 6);
 
+    currentLoad = 0;
+    companionPLHPPlantLoadSideComp.MyLoad = 400;
+    thisAWHP.calcOpMode(*state, currentLoad, HeatPumpAirToWater::OperatingModeControlOptionMultipleUnit::Balanced);
+    EXPECT_EQ(thisAWHP.operatingMode, 0);
+    EXPECT_EQ(companionAWHP.operatingMode, 3);
+
+    currentLoad = 0;
+    companionPLHPPlantLoadSideComp.MyLoad = 4000;
+    thisAWHP.calcOpMode(*state, currentLoad, HeatPumpAirToWater::OperatingModeControlOptionMultipleUnit::Balanced);
+    EXPECT_EQ(thisAWHP.operatingMode, 0);
+    EXPECT_EQ(companionAWHP.operatingMode, 6);
+
+    currentLoad = -400;
+    companionPLHPPlantLoadSideComp.MyLoad = 0;
+    thisAWHP.calcOpMode(*state, currentLoad, HeatPumpAirToWater::OperatingModeControlOptionMultipleUnit::Balanced);
+    EXPECT_EQ(thisAWHP.operatingMode, 4);
+    EXPECT_EQ(companionAWHP.operatingMode, 0);
+
+    currentLoad = -4000;
+    companionPLHPPlantLoadSideComp.MyLoad = 0;
+    thisAWHP.calcOpMode(*state, currentLoad, HeatPumpAirToWater::OperatingModeControlOptionMultipleUnit::Balanced);
+    EXPECT_EQ(thisAWHP.operatingMode, 6);
+    EXPECT_EQ(companionAWHP.operatingMode, 0);
+
     currentLoad = -300;
     companionPLHPPlantLoadSideComp.MyLoad = 400;
     thisAWHP.calcOpMode(*state, currentLoad, HeatPumpAirToWater::OperatingModeControlOptionMultipleUnit::Balanced);
@@ -1491,8 +1515,8 @@ TEST_F(EnergyPlusFixture, calcOpMode_AWHP)
     currentLoad = -500;
     companionPLHPPlantLoadSideComp.MyLoad = 300;
     thisAWHP.calcOpMode(*state, currentLoad, HeatPumpAirToWater::OperatingModeControlOptionMultipleUnit::Balanced);
-    EXPECT_EQ(thisAWHP.operatingMode, 5);
-    EXPECT_EQ(companionAWHP.operatingMode, 1);
+    EXPECT_EQ(thisAWHP.operatingMode, 4);
+    EXPECT_EQ(companionAWHP.operatingMode, 2);
 
     currentLoad = -1000;
     companionPLHPPlantLoadSideComp.MyLoad = 1500;

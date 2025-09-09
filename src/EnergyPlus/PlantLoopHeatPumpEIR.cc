@@ -4649,9 +4649,58 @@ void HeatPumpAirToWater::calcOpMode(EnergyPlus::EnergyPlusData &state, Real64 cu
                         numCoolingUnit = numCoolingUnitNeeded;
                         numHeatingUnit = numHeatingUnitNeeded;
                     } else {
-                        numCoolingUnit =
-                            numCoolingUnitNeeded - int(floor((numCoolingUnitNeeded + numHeatingUnitNeeded - this->heatPumpMultiplier) / 2));
-                        numHeatingUnit = this->heatPumpMultiplier - numCoolingUnit;
+                        // Proportional allocation based on required units (load / per-unit capacity).
+                        // This aims to make the percent of heating and cooling satisfied similar.
+                        Real64 reqC = coolingLoad / coolCapacity; // >= 0
+                        Real64 reqH = heatingLoad / heatCapacity; // >= 0
+
+                        if (reqC + reqH <= 0.0) {
+                            // no demand
+                            numCoolingUnit = 0;
+                            numHeatingUnit = 0;
+                        } else {
+                            int M = this->heatPumpMultiplier;
+                            Real64 idealC = M * reqC / (reqC + reqH);
+                            Real64 idealH = M - idealC;
+
+                            int allocC = static_cast<int>(std::floor(idealC));
+                            int allocH = static_cast<int>(std::floor(idealH));
+                            int remaining = M - (allocC + allocH);
+
+                            Real64 fracC = idealC - allocC;
+                            Real64 fracH = idealH - allocH;
+
+                            // distribute remaining units by larger fractional part, but don't exceed needs
+                            while (remaining > 0) {
+                                if ((fracC >= fracH && allocC < numCoolingUnitNeeded) || (allocH >= numHeatingUnitNeeded)) {
+                                    ++allocC;
+                                    fracC = 0.0;
+                                } else {
+                                    ++allocH;
+                                    fracH = 0.0;
+                                }
+                                --remaining;
+                            }
+
+                            // if one side still exceeds its needed units, move spare to the other side
+                            if (allocC > numCoolingUnitNeeded) {
+                                int spare = allocC - numCoolingUnitNeeded;
+                                allocC = numCoolingUnitNeeded;
+                                allocH = std::min(numHeatingUnitNeeded, allocH + spare);
+                            }
+                            if (allocH > numHeatingUnitNeeded) {
+                                int spare = allocH - numHeatingUnitNeeded;
+                                allocH = numHeatingUnitNeeded;
+                                allocC = std::min(numCoolingUnitNeeded, allocC + spare);
+                            }
+
+                            // final safety clamp
+                            allocC = std::clamp(allocC, 0, M);
+                            allocH = std::clamp(allocH, 0, M - allocC);
+
+                            numCoolingUnit = allocC;
+                            numHeatingUnit = allocH;
+                        }
                     }
                 }
                 if (this->EIRHPType == DataPlant::PlantEquipmentType::HeatPumpAirToWaterHeating) {

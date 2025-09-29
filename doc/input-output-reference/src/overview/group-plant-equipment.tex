@@ -6639,7 +6639,7 @@ Mode} This field is the cooling energy input ratio function of part load ratio
 \item Heat Pump Source Side Mass Flow Rate in Heating Mode {[}kg/s{]}
 \item Heat Pump Total Heating Rate {[}W{]}
 \item Heat Pump Number Of Heating Unit On {[}{]}
-\item Heat Pump Speed Level in Heating Mode {[}C{]}
+\item Heat Pump Speed Level in Heating Mode {[}{]}
 \item Heat Pump Air Flow Rate in Heating Mode {[}m3/s{]}
 \item Heat Pump Inlet Air Temperature in Heating Mode {[}C{]}
 \item Heat Pump Outlet Air Temperature in Heating Mode {[}C{]}
@@ -6665,7 +6665,7 @@ Mode} This field is the cooling energy input ratio function of part load ratio
 \item Heat Pump Source Side Mass Flow Rate in Cooling Mode {[}kg/s{]}
 \item Heat Pump Total Cooling Rate {[}W{]}
 \item Heat Pump Number Of Cooling Unit On {[}{]}
-\item Heat Pump Speed Level in Cooling Mode {[}C{]}
+\item Heat Pump Speed Level in Cooling Mode {[}{]}
 \item Heat Pump Air Flow Rate in Cooling Mode {[}m3/s{]}
 \item Heat Pump Inlet Air Temperature in Cooling Mode {[}C{]}
 \item Heat Pump Outlet Air Temperature in Cooling Mode {[}C{]}
@@ -6734,10 +6734,11 @@ in heating mode. If you have a multi-unit (multi-module) air-to-water heat pump,
 operatingMode indicates how many of those units are ON to meet the current heating load.
 It can range from 0 up to the maximum number of available heat pumps. For single-unit heat pumps,
 this value will be either 0 (off) or 1 (on).
-\paragraph{Heat Pump Speed Level in Heating Mode {[}C{]}} The speed level of the
+\paragraph{Heat Pump Speed Level in Heating Mode {[}{]}} The speed level of the
 heat pump in heating mode. It is the current speed level of the compressor. For
 fixed-speed heat pumps, this value is integers. For variable-speed heat pumps,
-this value is a continuous non-negative value.
+this value is a continuous non-negative value. When the speed level is 0,
+the heat pump used for cooling is turned off.
 \paragraph{Heat Pump Air Flow Rate in Heating Mode {[}m3/s{]}}
 The air flow rate of the heat pump in heating mode in m3/s.
 \paragraph{Heat Pump Inlet Air Temperature in Heating Mode {[}C{]}}
@@ -6805,10 +6806,11 @@ in cooling mode. If you have a multi-unit (multi-module) air-to-water heat pump,
 operatingMode indicates how many of those units are ON to meet the current cooling load.
 It can range from 0 up to the maximum number of available heat pumps. For single-unit heat pumps,
 this value will be either 0 (off) or 1 (on).
-\paragraph{Heat Pump Speed Level in Cooling Mode {[}C{]}} The speed level of the
+\paragraph{Heat Pump Speed Level in Cooling Mode {[}{]}} The speed level of the
 heat pump in cooling mode. It is the current speed level of the compressor. For
 fixed-speed heat pumps, this value is integers. For variable-speed heat pumps,
-this value is a continuous non-negative value.
+this value is a continuous non-negative value. When the speed level is 0,
+the heat pump used for cooling is turned off.
 \paragraph{Heat Pump Air Flow Rate in Cooling Mode {[}m3/s{]}}
 The air flow rate of the heat pump in heating mode in m3/s.
 \paragraph{Heat Pump Inlet Air Temperature in Cooling Mode {[}C{]}}

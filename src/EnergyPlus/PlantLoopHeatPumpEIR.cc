@@ -719,6 +719,8 @@ void HeatPumpAirToWater::calcPowerUsage(EnergyPlusData &state, Real64 availableC
             this->eirFuncPLRModifierValue = (1 - interpRatio) * eirModifierFuncPLRLow + interpRatio * eirModifierFuncPLRHigh;
         }
     }
+    // make speed level start from 1. If there are 2 speeds, speed levels will be 1, 2.
+    this->speedLevel += 1;
 }
 
 void EIRPlantLoopHeatPump::calcPowerUsage(EnergyPlusData &state)
@@ -747,8 +749,8 @@ void EIRPlantLoopHeatPump::calcPowerUsage(EnergyPlusData &state)
 
     // compute power usage
     if (this->thermosiphonDisabled(state)) {
-        this->powerUsage = (this->loadSideHeatTransfer / this->referenceCOP) * eirModifierFuncPLR * eirModifierFuncTemp *
-                           this->defrostPowerMultiplier * this->cyclingRatio;
+        this->powerUsage =
+            (this->loadSideHeatTransfer / this->referenceCOP) * eirModifierFuncPLR * eirModifierFuncTemp * this->defrostPowerMultiplier;
     }
 }
 
@@ -4713,6 +4715,13 @@ void HeatPumpAirToWater::calcOpMode(EnergyPlus::EnergyPlusData &state, Real64 cu
             }
             this->operatingMode = min(this->heatPumpMultiplier, this->operatingMode);
             companionCoil->operatingMode = min(companionCoil->heatPumpMultiplier, companionCoil->operatingMode);
+            if (this->companionHeatPumpCoil->operatingMode == 0) {
+                this->companionHeatPumpCoil->loadSideHeatTransfer = 0.0;
+                this->companionHeatPumpCoil->sourceSideHeatTransfer = 0.0;
+                this->companionHeatPumpCoil->loadSideMassFlowRate = 0.0;
+                this->companionHeatPumpCoil->sourceSideMassFlowRate = 0.0;
+                this->companionHeatPumpCoil->speedLevel = 0.0;
+            }
         }
     }
 }
@@ -4730,6 +4739,7 @@ void HeatPumpAirToWater::doPhysics(EnergyPlusData &state, Real64 currentLoad)
     if (this->operatingMode == 0) {
         this->loadSideMassFlowRate = 0.0;
         this->sourceSideMassFlowRate = 0.0;
+        this->speedLevel = 0.0;
         this->running = false;
         this->resetReportingVariables();
         return;

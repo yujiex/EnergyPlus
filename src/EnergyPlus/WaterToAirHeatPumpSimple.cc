@@ -2888,18 +2888,17 @@ namespace WaterToAirHeatPumpSimple {
         // Save component design water volumetric flow rate.
         // Use 1/2 flow since both cooling and heating coil will save flow yet only 1 will operate at a time
         if (simpleWatertoAirHP.RatedWaterVolFlowRate > 0.0) {
-            if (simpleWatertoAirHP.WAHPType == WatertoAirHP::Heating) {
-                PlantUtilities::RegisterPlantCompDesignFlow(
-                    state, simpleWatertoAirHP.WaterInletNodeNum, 0.5 * simpleWatertoAirHP.RatedWaterVolFlowRate);
-                if (simpleWatertoAirHP.CompanionCoolingCoilNum > 0) {
-                    auto &companionCoolingCoil(state.dataWaterToAirHeatPumpSimple->SimpleWatertoAirHP(simpleWatertoAirHP.CompanionCoolingCoilNum));
+            if (simpleWatertoAirHP.CompanionCoolingCoilNum > 0) {
+                auto &companionCoolingCoil(state.dataWaterToAirHeatPumpSimple->SimpleWatertoAirHP(simpleWatertoAirHP.CompanionCoolingCoilNum));
+                if (companionCoolingCoil.RatedWaterVolFlowRate > simpleWatertoAirHP.RatedWaterVolFlowRate) {
+                    simpleWatertoAirHP.RatedWaterVolFlowRate = companionCoolingCoil.RatedWaterVolFlowRate;
+                } else {
+                    companionCoolingCoil.RatedWaterVolFlowRate = simpleWatertoAirHP.RatedWaterVolFlowRate;
                     PlantUtilities::RegisterPlantCompDesignFlow(
                         state, companionCoolingCoil.WaterInletNodeNum, 0.5 * simpleWatertoAirHP.RatedWaterVolFlowRate);
                 }
-            } else if (simpleWatertoAirHP.WAHPType == WatertoAirHP::Cooling) {
-                PlantUtilities::RegisterPlantCompDesignFlow(
-                    state, simpleWatertoAirHP.WaterInletNodeNum, 0.5 * simpleWatertoAirHP.RatedWaterVolFlowRate);
             }
+            PlantUtilities::RegisterPlantCompDesignFlow(state, simpleWatertoAirHP.WaterInletNodeNum, 0.5 * simpleWatertoAirHP.RatedWaterVolFlowRate);
         }
     }
 

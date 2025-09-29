@@ -1302,28 +1302,28 @@ TEST_F(EnergyPlusFixture, calcPowerUsage_AWHP)
     // when COP = 1, power usage should equal heat transfer
     thisAWHP.loadSideHeatTransfer = 500;
     thisAWHP.calcPowerUsage(*state, availableCapacityBeforeMultiplier);
-    EXPECT_EQ(thisAWHP.speedLevel, 0);
+    EXPECT_EQ(thisAWHP.speedLevel, 1);
     EXPECT_EQ(thisAWHP.powerUsage, 500);
     EXPECT_EQ(thisAWHP.cyclingRatio, 500.0 / 600.0);
     EXPECT_EQ(thisAWHP.numUnitUsed, 1);
     thisAWHP.loadSideHeatTransfer = 1000;
     thisAWHP.cyclingRatio = 1.0; // reset cycling ratio back to 1
     thisAWHP.calcPowerUsage(*state, availableCapacityBeforeMultiplier);
-    EXPECT_EQ(thisAWHP.speedLevel, 1);
+    EXPECT_EQ(thisAWHP.speedLevel, 2);
     EXPECT_EQ(thisAWHP.powerUsage, 1000);
     EXPECT_EQ(thisAWHP.cyclingRatio, 1.0);
     EXPECT_EQ(thisAWHP.numUnitUsed, 1);
     thisAWHP.loadSideHeatTransfer = 1500;
     thisAWHP.cyclingRatio = 1.0; // reset cycling ratio back to 1
     thisAWHP.calcPowerUsage(*state, availableCapacityBeforeMultiplier);
-    EXPECT_EQ(thisAWHP.speedLevel, 0);
+    EXPECT_EQ(thisAWHP.speedLevel, 1);
     EXPECT_EQ(thisAWHP.powerUsage, 1500);
     EXPECT_EQ(thisAWHP.numUnitUsed, 2);
     EXPECT_EQ(thisAWHP.cyclingRatio, 300.0 / 600.0);
     thisAWHP.loadSideHeatTransfer = 2000;
     thisAWHP.cyclingRatio = 1.0; // reset cycling ratio back to 1
     thisAWHP.calcPowerUsage(*state, availableCapacityBeforeMultiplier);
-    EXPECT_EQ(thisAWHP.speedLevel, 1);
+    EXPECT_EQ(thisAWHP.speedLevel, 2);
     EXPECT_EQ(thisAWHP.powerUsage, 2000);
     EXPECT_EQ(thisAWHP.numUnitUsed, 2);
     EXPECT_EQ(thisAWHP.cyclingRatio, 1.0);
@@ -3489,7 +3489,12 @@ TEST_F(EnergyPlusFixture, HeatingSimulate_AirSource)
                                                       "  ,",
                                                       "  dummyCurve,",
                                                       "  dummyCurve,",
-                                                      "  dummyCurve;",
+                                                      "  dummyCurve,",
+                                                      "  1.0,",
+                                                      "  HeatingCapacity,",
+                                                      "  Load,",
+                                                      "  ConstantFlow,",
+                                                      "  0.5;",
                                                       "Curve:Linear,",
                                                       "  dummyCurve,",
                                                       "  0.95,",
@@ -3605,6 +3610,23 @@ TEST_F(EnergyPlusFixture, HeatingSimulate_AirSource)
         // expect it to miss setpoint and be at max capacity
         EXPECT_NEAR(45.0, thisHeatingPLHP->loadSideOutletTemp, 0.001);
         EXPECT_NEAR(30.0, thisHeatingPLHP->sourceSideOutletTemp, 0.001);
+    }
+
+    // now we can call it again from the load side, but this time there is a very low load (still firsthvac)
+    {
+        bool firstHVAC = true;
+        Real64 curLoad = 100.0;
+        bool runFlag = true;
+        Real64 constexpr expectedLoadMassFlowRate = 0.09999;
+        Real64 constexpr expectedCp = 4180;
+        Real64 constexpr specifiedLoadSetpoint = 45;
+        Real64 const calculatedLoadInletTemp = specifiedLoadSetpoint - curLoad / (expectedLoadMassFlowRate * expectedCp);
+        state->dataLoopNodes->Node(thisHeatingPLHP->loadSideNodes.outlet).TempSetPoint = specifiedLoadSetpoint;
+        state->dataLoopNodes->Node(thisHeatingPLHP->loadSideNodes.inlet).Temp = calculatedLoadInletTemp;
+        state->dataLoopNodes->Node(thisHeatingPLHP->sourceSideNodes.inlet).Temp = 30;
+        thisHeatingPLHP->simulate(*state, myLoadLocation, firstHVAC, curLoad, runFlag);
+        // expect it to miss setpoint and be at max capacity
+        EXPECT_NEAR((curLoad / thisHeatingPLHP->referenceCOP) * 0.95 * 0.95, thisHeatingPLHP->powerUsage, 0.001);
     }
 }
 
